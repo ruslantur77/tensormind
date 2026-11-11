@@ -1,0 +1,133 @@
+/* TensorMind Design Tokens - Apple Control Center Frosted Glass & Graphite Aesthetic */
+
+:root,
+[data-theme="dark"] {
+  /* Neutral Dark Charcoal-Gray #222426 (several shades darker than #303234, harmonious with cards) */
+  --tm-bg: #222426;
+  --tm-bg-gradient: #222426;
+
+  --tm-surface: rgba(255, 255, 255, 0.06);
+  --tm-surface-solid: #1c1e20;
+  --tm-surface-inset: rgba(0, 0, 0, 0.32);
+  --tm-surface-hover: rgba(255, 255, 255, 0.10);
+
+  --tm-glass-bg: rgba(30, 32, 34, 0.94);
+  --tm-glass-border: rgba(255, 255, 255, 0.10);
+  --tm-glass-specular: rgba(255, 255, 255, 0.12);
+  --tm-glass-shadow: 0 16px 40px -8px rgba(0, 0, 0, 0.55), inset 0 1px 0 0 rgba(255, 255, 255, 0.09);
+
+  --tm-card-bg: rgba(255, 255, 255, 0.05);
+  --tm-card-border: rgba(255, 255, 255, 0.08);
+  --tm-card-hover-border: rgba(255, 255, 255, 0.18);
+  --tm-card-shadow: 0 8px 24px -4px rgba(0, 0, 0, 0.45), inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+
+  --tm-text-primary: #f8fafc;
+  --tm-text-secondary: #cbd5e1;
+  --tm-text-muted: #94a3b8;
+
+  --tm-accent: #38bdf8;
+  --tm-accent-hover: #7dd3fc;
+  --tm-accent-bg: rgba(56, 189, 248, 0.14);
+  --tm-accent-border: rgba(56, 189, 248, 0.28);
+
+  --tm-badge-bg: rgba(255, 255, 255, 0.1);
+  --tm-badge-text: #f1f5f9;
+  --tm-badge-border: rgba(255, 255, 255, 0.14);
+
+  --tm-code-bg: rgba(0, 0, 0, 0.3);
+  --tm-code-border: rgba(255, 255, 255, 0.1);
+
+  --tm-blur: 28px;
+}
+
+[data-theme="light"] {
+  /* Crisp Modern Frosted Light (Apple Control Center glass aesthetic) */
+  --tm-bg: #eff2f6;
+  --tm-bg-gradient: #eff2f6;
+
+  --tm-surface: rgba(255, 255, 255, 0.55);
+  --tm-surface-solid: #ffffff;
+  --tm-surface-inset: rgba(0, 0, 0, 0.04);
+  --tm-surface-hover: rgba(255, 255, 255, 0.75);
+
+  --tm-glass-bg: rgba(255, 255, 255, 0.65);
+  --tm-glass-border: rgba(255, 255, 255, 0.75);
+  --tm-glass-specular: rgba(255, 255, 255, 0.98);
+  --tm-glass-shadow: 0 12px 32px -4px rgba(15, 23, 42, 0.04), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+
+  --tm-card-bg: rgba(255, 255, 255, 0.50);
+  --tm-card-border: rgba(255, 255, 255, 0.75);
+  --tm-card-hover-border: rgba(2, 132, 199, 0.35);
+  --tm-card-shadow: 0 8px 24px -2px rgba(15, 23, 42, 0.04), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+
+  --tm-text-primary: #18191b;
+  --tm-text-secondary: #374151;
+  --tm-text-muted: #64748b;
+
+  --tm-accent: #0284c7;
+  --tm-accent-hover: #0369a1;
+  --tm-accent-bg: rgba(2, 132, 199, 0.08);
+  --tm-accent-border: rgba(2, 132, 199, 0.2);
+
+  --tm-badge-bg: rgba(0, 0, 0, 0.05);
+  --tm-badge-text: #1e293b;
+  --tm-badge-border: rgba(0, 0, 0, 0.08);
+
+  --tm-code-bg: rgba(241, 245, 249, 0.9);
+  --tm-code-border: rgba(203, 213, 225, 0.7);
+
+  --tm-blur: 28px;
+}
+
+/* Base Body Application */
+body {
+  background-color: var(--tm-bg) !important;
+  color: var(--tm-text-primary);
+  min-height: 100vh;
+}
+
+/* Frosted Glassmorphism Styles (Apple Control Center style) */
+.aero-glass {
+  background: var(--tm-glass-bg);
+  border: 1px solid var(--tm-glass-border);
+  backdrop-filter: blur(var(--tm-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--tm-blur)) saturate(180%);
+  box-shadow: var(--tm-glass-shadow);
+}
+
+.aero-card {
+  background: var(--tm-card-bg);
+  border: 1px solid var(--tm-card-border);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  box-shadow: var(--tm-card-shadow);
+  transition: border-color 0.2s ease,
+              background-color 0.2s ease,
+              box-shadow 0.2s ease;
+}
+
+/* Smooth, stable card hover without displacement or jumpiness */
+.aero-card:hover {
+  border-color: var(--tm-card-hover-border);
+  box-shadow: 0 10px 28px -4px rgba(15, 23, 42, 0.06), inset 0 1px 1px 0 rgba(255, 255, 255, 0.95);
+}
+
+[data-theme="dark"] .aero-card:hover {
+  box-shadow: 0 10px 28px -4px rgba(0, 0, 0, 0.5), inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+}
+
+.aero-inset {
+  background: var(--tm-surface-inset);
+  border: 1px solid var(--tm-glass-border);
+}
+
+/* Text helpers */
+.text-tm-primary {
+  color: var(--tm-text-primary);
+}
+.text-tm-secondary {
+  color: var(--tm-text-secondary);
+}
+.text-tm-muted {
+  color: var(--tm-text-muted);
+}
