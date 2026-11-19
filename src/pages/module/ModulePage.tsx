@@ -81,7 +81,7 @@ export const ModulePage: React.FC = () => {
               <ModuleIcon moduleId={moduleData.meta.id} className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <span className="text-xs font-mono text-sky-600 dark:text-sky-400 font-bold">
+              <span className="text-xs font-mono text-[var(--tm-ochre-text)] font-bold">
                 Модуль {moduleData.meta.order}
               </span>
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
@@ -109,7 +109,7 @@ export const ModulePage: React.FC = () => {
               <Button
                 variant="glass"
                 size="sm"
-                icon={<HelpCircle className="w-4 h-4 text-indigo-500" />}
+                icon={<HelpCircle className="w-4 h-4 text-[var(--tm-wine-text)]" />}
                 onClick={() => navigate(`/quiz?module=${moduleData.meta.id}`)}
               >
                 Тест ({moduleData.quiz.length})
@@ -124,9 +124,9 @@ export const ModulePage: React.FC = () => {
             <span>
               Пройдено: {completedCount} из {totalLessons} уроков
             </span>
-            <span className="text-sky-600 dark:text-sky-400 font-bold">{Math.round(progressPercent)}%</span>
+            <span className="text-[var(--tm-ochre-text)] font-bold">{Math.round(progressPercent)}%</span>
           </div>
-          <ProgressBar value={progressPercent} height="sm" variant="gradient" />
+          <ProgressBar value={progressPercent} height="sm" variant="ochre" />
         </div>
       </GlassPanel>
 
@@ -153,14 +153,14 @@ export const ModulePage: React.FC = () => {
                     }`
                   );
                 }}
-                className="hover:border-sky-500/40 p-4 transition"
+                className="hover:border-[var(--tm-ochre-border)] p-4 transition-colors"
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3.5">
                     <div
                       className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${
                         isCompleted
-                          ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                          ? 'bg-[var(--tm-sage-soft)] text-[var(--tm-sage-text)] border border-[var(--tm-sage-border)]'
                           : 'aero-inset text-slate-700 dark:text-slate-300'
                       }`}
                     >
@@ -188,7 +188,7 @@ export const ModulePage: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="p-2 rounded-xl text-slate-400 hover:text-sky-500 transition shrink-0">
+                  <div className="p-2 rounded-xl text-slate-400 hover:text-[var(--tm-ochre-text)] transition-colors shrink-0">
                     <Play className="w-4 h-4 fill-current" />
                   </div>
                 </div>

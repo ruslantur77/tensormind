@@ -10,7 +10,6 @@ import {
   Compass,
 } from 'lucide-react';
 import { Card } from '@/shared/ui/Card';
-import { Badge } from '@/shared/ui/Badge';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
 import { ModuleIcon } from '@/shared/ui/AppIcons';
 import { contentRegistry } from '@/shared/content';
@@ -344,13 +343,64 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
     navigate(`/module/${moduleId}?from=roadmap`);
   };
 
+  const flowTheme = {
+    sequential: {
+      text: 'text-[var(--tm-ochre-text)]',
+      hoverText: 'group-hover:text-[var(--tm-ochre-text)]',
+      bg: 'bg-[var(--tm-ochre-soft)]',
+      border: 'border-[var(--tm-ochre-border)]',
+      dot: 'bg-[var(--tm-ochre-dot)]',
+    },
+    parallel: {
+      text: 'text-[var(--tm-olive-text)]',
+      hoverText: 'group-hover:text-[var(--tm-olive-text)]',
+      bg: 'bg-[var(--tm-olive-soft)]',
+      border: 'border-[var(--tm-olive-border)]',
+      dot: 'bg-[var(--tm-olive-dot)]',
+    },
+    specialization: {
+      text: 'text-[var(--tm-wine-text)]',
+      hoverText: 'group-hover:text-[var(--tm-wine-text)]',
+      bg: 'bg-[var(--tm-wine-soft)]',
+      border: 'border-[var(--tm-wine-border)]',
+      dot: 'bg-[var(--tm-wine-dot)]',
+    },
+  } as const;
+
+  const legendItems = [
+    {
+      flow: 'sequential' as const,
+      title: lang === 'en' ? 'Core Track (Sequential)' : 'Базовый трек (последовательно)',
+      hint:
+        lang === 'en'
+          ? 'Fundamental base for next topics'
+          : 'Фундаментальная основа для следующих тем',
+    },
+    {
+      flow: 'parallel' as const,
+      title: lang === 'en' ? 'Parallel Branches' : 'Параллельные ветки',
+      hint:
+        lang === 'en'
+          ? 'Can be learned simultaneously'
+          : 'Можно изучать параллельно или по выбору',
+    },
+    {
+      flow: 'specialization' as const,
+      title: lang === 'en' ? 'Specializations & MLOps' : 'Специализации и MLOps',
+      hint:
+        lang === 'en'
+          ? 'Deep Learning, LLMs & Production'
+          : 'Глубокое обучение, LLM и продакшн',
+    },
+  ];
+
   return (
     <div className="space-y-8 animate-fade-in">
       {/* Roadmap Legend */}
-      <div className="p-4 sm:p-5 rounded-2xl aero-glass border border-slate-200/80 dark:border-white/10 space-y-3">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200/60 dark:border-white/5 pb-2.5">
+      <div className="p-4 sm:p-5 rounded-xl aero-glass space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-[var(--tm-card-border)] pb-2.5">
           <div className="flex items-center gap-2">
-            <Compass className="w-5 h-5 text-sky-500 shrink-0" />
+            <Compass className="w-5 h-5 text-[var(--tm-ochre-text)] shrink-0" />
             <h4 className="text-sm font-bold text-slate-900 dark:text-white">
               {lang === 'en' ? 'Machine Learning Learning Path' : 'Интерактивная дорожная карта ML-инженера'}
             </h4>
@@ -363,44 +413,23 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-          {/* Sequential (Core) */}
-          <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-slate-800 dark:text-slate-200">
-            <span className="w-3 h-3 rounded-full bg-violet-500 shrink-0" />
-            <div className="space-y-0.5">
-              <span className="font-bold block text-violet-700 dark:text-violet-300">
-                {lang === 'en' ? 'Core Track (Sequential)' : 'Базовый трек (последовательно)'}
-              </span>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight block">
-                {lang === 'en' ? 'Fundamental base for next topics' : 'Фундаментальная основа для следующих тем'}
-              </span>
-            </div>
-          </div>
-
-          {/* Parallel */}
-          <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-slate-800 dark:text-slate-200">
-            <span className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
-            <div className="space-y-0.5">
-              <span className="font-bold block text-emerald-700 dark:text-emerald-300">
-                {lang === 'en' ? 'Parallel Branches' : 'Параллельные ветки'}
-              </span>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight block">
-                {lang === 'en' ? 'Can be learned simultaneously' : 'Можно изучать параллельно или по выбору'}
-              </span>
-            </div>
-          </div>
-
-          {/* Specialization (Blue) */}
-          <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-slate-800 dark:text-slate-200">
-            <span className="w-3 h-3 rounded-full bg-sky-500 shrink-0" />
-            <div className="space-y-0.5">
-              <span className="font-bold block text-sky-700 dark:text-sky-300">
-                {lang === 'en' ? 'Specializations & MLOps' : 'Специализации и MLOps'}
-              </span>
-              <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight block">
-                {lang === 'en' ? 'Deep Learning, LLMs & Production' : 'Глубокое обучение, LLM и продакшн'}
-              </span>
-            </div>
-          </div>
+          {legendItems.map((item) => {
+            const theme = flowTheme[item.flow];
+            return (
+              <div
+                key={item.flow}
+                className={`flex items-center gap-2.5 p-2.5 rounded-lg border ${theme.bg} ${theme.border}`}
+              >
+                <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${theme.dot}`} />
+                <div className="space-y-0.5">
+                  <span className={`font-semibold block ${theme.text}`}>{item.title}</span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 leading-tight block">
+                    {item.hint}
+                  </span>
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
 
@@ -408,12 +437,13 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
       <div className="space-y-7 relative">
         {ROADMAP_STAGES.map((stage, stageIdx) => {
           const isLastStage = stageIdx === ROADMAP_STAGES.length - 1;
+          const stageTheme = flowTheme[stage.mode];
 
           return (
             <div key={stage.id} className="relative space-y-4">
               {/* Stage Milestone Header */}
               <div className="flex items-center gap-3">
-                <div className="w-9 h-9 rounded-xl bg-slate-900 text-white dark:bg-white dark:text-slate-900 font-extrabold text-sm flex items-center justify-center shrink-0 shadow-md">
+                <div className={`w-9 h-9 rounded-lg border font-semibold text-sm flex items-center justify-center shrink-0 ${stageTheme.bg} ${stageTheme.border} ${stageTheme.text}`}>
                   {stage.stepNumber}
                 </div>
                 <div className="space-y-0.5 min-w-0">
@@ -421,22 +451,13 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                     <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                       {lang === 'en' ? stage.titleEn : stage.titleRu}
                     </h3>
-                    <Badge
-                      variant={
-                        stage.mode === 'sequential'
-                          ? 'violet'
-                          : stage.mode === 'specialization'
-                          ? 'cyan'
-                          : 'success'
-                      }
-                      size="sm"
-                    >
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border ${stageTheme.bg} ${stageTheme.border} ${stageTheme.text}`}>
                       {stage.mode === 'sequential'
                         ? (lang === 'en' ? 'Sequential' : 'Последовательно')
                         : stage.mode === 'specialization'
                         ? (lang === 'en' ? 'Specialization' : 'Специализация')
                         : (lang === 'en' ? 'Parallel tracks' : 'Параллельные ветки')}
-                    </Badge>
+                    </span>
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-400">
                     {lang === 'en' ? stage.subtitleEn : stage.subtitleRu}
@@ -467,39 +488,22 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                   const isDone = totalLessons > 0 && completedLessons === totalLessons;
                   const isInProgress = progress > 0 && !isDone;
 
-                  // Distinct color matching legend
-                  const barColorClass =
-                    isDone
-                      ? 'bg-emerald-500'
-                      : node.flowType === 'sequential'
-                      ? 'bg-violet-500'
-                      : node.flowType === 'specialization'
-                      ? 'bg-sky-500'
-                      : 'bg-emerald-500';
-
-                  const badgeVariant =
-                    node.flowType === 'sequential'
-                      ? 'violet'
-                      : node.flowType === 'specialization'
-                      ? 'cyan'
-                      : 'success';
+                  // Warm accent per flow type, matching the legend
+                  const nodeTheme = flowTheme[node.flowType];
 
                   return (
                     <Card
                       key={node.moduleId}
                       interactive
                       onClick={() => handleOpenModule(node.moduleId)}
-                      className={`p-4 sm:p-5 flex flex-col justify-between gap-3.5 transition-all cursor-pointer relative overflow-hidden group ${
+                      className={`p-4 sm:p-5 flex flex-col justify-between gap-3.5 transition-colors cursor-pointer group ${
                         isDone
-                          ? 'border-emerald-500/30 bg-emerald-500/[0.04]'
+                          ? 'border-[var(--tm-sage-border)] bg-[var(--tm-sage-soft)]'
                           : isInProgress
-                          ? 'border-sky-500/40 bg-sky-500/[0.04]'
-                          : 'hover:border-sky-500/40'
+                          ? 'border-[var(--tm-ochre-border)] bg-[var(--tm-ochre-soft)]'
+                          : 'hover:border-[var(--tm-card-hover-border)]'
                       }`}
                     >
-                      {/* Top flow indicator bar */}
-                      <div className={`absolute top-0 left-0 right-0 h-1 ${barColorClass}`} />
-
                       <div className="space-y-3">
                         {/* Row 1: Order + Role Tag on Left, Badge on Right */}
                         <div className="flex items-center justify-between gap-2">
@@ -513,14 +517,14 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                           </div>
 
                           {isDone ? (
-                            <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/15 px-2 py-0.5 rounded-full border border-emerald-500/30 shrink-0">
+                            <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-[var(--tm-sage-text)] bg-[var(--tm-sage-soft)] px-2 py-0.5 rounded-full border border-[var(--tm-sage-border)] shrink-0">
                               <CheckCircle2 className="w-3.5 h-3.5" />
                               {lang === 'en' ? 'Done' : 'Пройден'}
                             </span>
                           ) : (
-                            <Badge variant={badgeVariant} size="sm" className="shrink-0 font-medium">
+                            <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-medium border shrink-0 ${nodeTheme.bg} ${nodeTheme.border} ${nodeTheme.text}`}>
                               {lang === 'en' ? node.badgeEn : node.badgeRu}
-                            </Badge>
+                            </span>
                           )}
                         </div>
 
@@ -529,7 +533,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                           <div className="w-10 h-10 rounded-lg aero-inset flex items-center justify-center shrink-0">
                             <ModuleIcon moduleId={mod.meta.id} className="w-5 h-5" />
                           </div>
-                          <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors flex-1 pt-0.5">
+                          <h4 className={`text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug transition-colors flex-1 pt-0.5 ${nodeTheme.hoverText}`}>
                             {mod.meta.title[lang]}
                           </h4>
                         </div>
@@ -541,7 +545,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                       </div>
 
                       {/* Card Footer: Metadata and Progress */}
-                      <div className="space-y-2 pt-2 border-t border-slate-200/60 dark:border-white/5">
+                      <div className="space-y-2 pt-2 border-t border-[var(--tm-card-border)]">
                         <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                           <span className="flex items-center gap-1 font-medium">
                             <Clock className="w-3 h-3 shrink-0" />
@@ -551,7 +555,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                             <BookOpen className="w-3 h-3 shrink-0" />
                             {mod.lessons.length} уроков
                           </span>
-                          <span className="font-mono font-bold text-sky-600 dark:text-sky-400">
+                          <span className={`font-mono font-bold ${isDone ? 'text-[var(--tm-sage-text)]' : 'text-[var(--tm-ochre-text)]'}`}>
                             {Math.round(progress)}%
                           </span>
                         </div>
@@ -559,7 +563,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                         <ProgressBar
                           value={progress}
                           height="sm"
-                          variant={isDone ? 'success' : 'cyan'}
+                          variant={isDone ? 'sage' : 'ochre'}
                         />
 
                         <div className="flex items-center justify-between pt-1">
@@ -570,7 +574,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                               ? (lang === 'en' ? 'In progress' : 'В процессе изучения')
                               : (lang === 'en' ? 'Ready to start' : 'Готов к изучению')}
                           </span>
-                          <span className="inline-flex items-center gap-1 text-xs font-bold text-sky-600 dark:text-sky-400 group-hover:translate-x-0.5 transition-transform">
+                          <span className={`inline-flex items-center gap-1 text-xs font-semibold group-hover:translate-x-0.5 transition-transform ${nodeTheme.text}`}>
                             {lang === 'en' ? 'Open' : 'Открыть'} <ArrowRight className="w-3.5 h-3.5" />
                           </span>
                         </div>
@@ -585,7 +589,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                 <div className="flex items-center justify-center py-2">
                   <div className="flex flex-col items-center">
                     <div className="w-px h-6 bg-[var(--tm-card-border)]" />
-                    <div className="p-1 rounded-full bg-sky-500 text-white shadow-sm">
+                    <div className="p-1 rounded-full bg-[var(--tm-ochre)] text-[#1a1208]">
                       <ArrowDown className="w-3.5 h-3.5" />
                     </div>
                   </div>

@@ -3,7 +3,7 @@ import React from 'react';
 export interface ProgressBarProps {
   value: number; // 0 to 100
   height?: 'sm' | 'md' | 'lg';
-  variant?: 'cyan' | 'gradient' | 'success' | 'warning';
+  variant?: 'cyan' | 'gradient' | 'success' | 'warning' | 'ochre' | 'sage';
   showLabel?: boolean;
   className?: string;
 }
@@ -28,6 +28,8 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
     gradient: 'bg-sky-500 dark:bg-sky-400',
     success: 'bg-emerald-500 dark:bg-emerald-400',
     warning: 'bg-amber-500 dark:bg-amber-400',
+    ochre: 'bg-[var(--tm-ochre)]',
+    sage: 'bg-[var(--tm-sage-fill)]',
   };
 
   return (

@@ -29,6 +29,34 @@
   --tm-accent-bg: rgba(56, 189, 248, 0.10);
   --tm-accent-border: rgba(56, 189, 248, 0.22);
 
+  /* Warm editorial palette — used for the learning roadmap and accents */
+  --tm-ochre: #d17a22;
+  --tm-sage: #b4c292;
+  --tm-olive: #736f4e;
+  --tm-wine: #4c061d;
+  --tm-khaki: #3b3923;
+
+  --tm-ochre-text: #e6a565;
+  --tm-sage-text: #c9d5a9;
+  --tm-olive-text: #c0bb96;
+  --tm-wine-text: #cf7f96;
+
+  --tm-ochre-dot: #d17a22;
+  --tm-sage-dot: #b4c292;
+  --tm-olive-dot: #918c66;
+  --tm-wine-dot: #9b3450;
+  --tm-sage-fill: #b4c292;
+
+  --tm-ochre-soft: rgba(209, 122, 34, 0.14);
+  --tm-sage-soft: rgba(180, 194, 146, 0.12);
+  --tm-olive-soft: rgba(115, 111, 78, 0.24);
+  --tm-wine-soft: rgba(207, 127, 150, 0.12);
+
+  --tm-ochre-border: rgba(209, 122, 34, 0.38);
+  --tm-sage-border: rgba(180, 194, 146, 0.30);
+  --tm-olive-border: rgba(160, 155, 115, 0.38);
+  --tm-wine-border: rgba(207, 127, 150, 0.28);
+
   --tm-badge-bg: rgba(255, 255, 255, 0.06);
   --tm-badge-text: #d7dbe0;
   --tm-badge-border: rgba(255, 255, 255, 0.10);
@@ -67,6 +95,34 @@
   --tm-accent-bg: rgba(2, 132, 199, 0.08);
   --tm-accent-border: rgba(2, 132, 199, 0.20);
 
+  /* Warm editorial palette — used for the learning roadmap and accents */
+  --tm-ochre: #d17a22;
+  --tm-sage: #b4c292;
+  --tm-olive: #736f4e;
+  --tm-wine: #4c061d;
+  --tm-khaki: #3b3923;
+
+  --tm-ochre-text: #97560f;
+  --tm-sage-text: #57652f;
+  --tm-olive-text: #565337;
+  --tm-wine-text: #6a1029;
+
+  --tm-ochre-dot: #d17a22;
+  --tm-sage-dot: #b4c292;
+  --tm-olive-dot: #736f4e;
+  --tm-wine-dot: #4c061d;
+  --tm-sage-fill: #8fa06a;
+
+  --tm-ochre-soft: rgba(209, 122, 34, 0.10);
+  --tm-sage-soft: rgba(180, 194, 146, 0.22);
+  --tm-olive-soft: rgba(115, 111, 78, 0.10);
+  --tm-wine-soft: rgba(76, 6, 29, 0.06);
+
+  --tm-ochre-border: rgba(209, 122, 34, 0.28);
+  --tm-sage-border: rgba(115, 111, 78, 0.26);
+  --tm-olive-border: rgba(115, 111, 78, 0.28);
+  --tm-wine-border: rgba(76, 6, 29, 0.18);
+
   --tm-badge-bg: #f1f3f5;
   --tm-badge-text: #374151;
   --tm-badge-border: #e4e7eb;
@@ -85,42 +141,46 @@ body {
 }
 
 /* Panels and cards are solid surfaces: blur is reserved for the sticky bars
-   that actually overlay scrolling content (header, bottom nav). */
-.aero-glass {
-  background: var(--tm-surface);
-  border: 1px solid var(--tm-card-border);
-  box-shadow: var(--tm-card-shadow);
-}
+   that actually overlay scrolling content (header, bottom nav).
+   These live in the components layer so Tailwind color utilities can override
+   backgrounds and borders per instance. */
+@layer components {
+  .aero-glass {
+    background: var(--tm-surface);
+    border: 1px solid var(--tm-card-border);
+    box-shadow: var(--tm-card-shadow);
+  }
 
-.aero-bar {
-  background: var(--tm-glass-bg);
-  backdrop-filter: blur(var(--tm-blur)) saturate(140%);
-  -webkit-backdrop-filter: blur(var(--tm-blur)) saturate(140%);
-}
+  .aero-bar {
+    background: var(--tm-glass-bg);
+    backdrop-filter: blur(var(--tm-blur)) saturate(140%);
+    -webkit-backdrop-filter: blur(var(--tm-blur)) saturate(140%);
+  }
 
-.aero-card {
-  background: var(--tm-card-bg);
-  border: 1px solid var(--tm-card-border);
-  box-shadow: var(--tm-card-shadow);
-  transition: border-color 0.15s ease, background-color 0.15s ease;
-}
+  .aero-card {
+    background: var(--tm-card-bg);
+    border: 1px solid var(--tm-card-border);
+    box-shadow: var(--tm-card-shadow);
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+  }
 
-.aero-card:hover {
-  border-color: var(--tm-card-hover-border);
-}
+  .aero-card:hover {
+    border-color: var(--tm-card-hover-border);
+  }
 
-.aero-inset {
-  background: var(--tm-surface-inset);
-  border: 1px solid var(--tm-card-border);
-}
+  .aero-inset {
+    background: var(--tm-surface-inset);
+    border: 1px solid var(--tm-card-border);
+  }
 
-/* Text helpers */
-.text-tm-primary {
-  color: var(--tm-text-primary);
-}
-.text-tm-secondary {
-  color: var(--tm-text-secondary);
-}
-.text-tm-muted {
-  color: var(--tm-text-muted);
+  /* Text helpers */
+  .text-tm-primary {
+    color: var(--tm-text-primary);
+  }
+  .text-tm-secondary {
+    color: var(--tm-text-secondary);
+  }
+  .text-tm-muted {
+    color: var(--tm-text-muted);
+  }
 }

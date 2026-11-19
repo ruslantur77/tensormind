@@ -408,7 +408,7 @@ export const HomePage: React.FC = () => {
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Compass className="w-4 h-4 text-sky-500 shrink-0" />
+              <Compass className="w-4 h-4 text-[var(--tm-ochre-text)] shrink-0" />
               <span>{lang === 'en' ? 'Roadmap' : 'Роадмап'}</span>
             </button>
           </div>
@@ -442,7 +442,7 @@ export const HomePage: React.FC = () => {
                   className={`transition ${
                     isPlaceholder
                       ? 'opacity-60 cursor-not-allowed border-dashed'
-                      : 'hover:border-sky-500/40'
+                      : 'hover:border-[var(--tm-ochre-border)]'
                   }`}
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -460,7 +460,7 @@ export const HomePage: React.FC = () => {
                             {mod.meta.title[lang]}
                           </h4>
                           {isCompleted && (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-500 dark:text-emerald-400 shrink-0" />
+                            <CheckCircle2 className="w-4 h-4 text-[var(--tm-sage-text)] shrink-0" />
                           )}
                           {isPlaceholder && (
                             <Badge variant="neutral" size="sm">
@@ -494,11 +494,11 @@ export const HomePage: React.FC = () => {
                           <div className="w-full space-y-1">
                             <div className="flex justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-400">
                               <span>Прогресс</span>
-                              <span className="text-sky-600 dark:text-sky-400 font-bold">{Math.round(progressPercent)}%</span>
+                              <span className="text-[var(--tm-ochre-text)] font-bold">{Math.round(progressPercent)}%</span>
                             </div>
-                            <ProgressBar value={progressPercent} height="sm" variant={isCompleted ? 'success' : 'cyan'} />
+                            <ProgressBar value={progressPercent} height="sm" variant={isCompleted ? 'sage' : 'ochre'} />
                           </div>
-                          <span className="hidden sm:inline-flex items-center gap-1 text-xs font-bold text-sky-600 dark:text-sky-400 hover:text-sky-500">
+                          <span className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-[var(--tm-ochre-text)] hover:text-[var(--tm-ochre)]">
                             Открыть <ArrowRight className="w-3.5 h-3.5 shrink-0" />
                           </span>
                         </>
