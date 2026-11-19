@@ -48,7 +48,7 @@ export const BottomNav: React.FC = () => {
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-40 aero-bar border-t border-[var(--tm-card-border)] safe-bottom">
-      <div className="max-w-md sm:max-w-lg mx-auto px-4 flex items-center justify-around h-14 sm:h-16">
+      <div className="max-w-md sm:max-w-lg mx-auto px-4 flex items-center justify-around h-[60px] sm:h-16">
         {navItems.map(({ to, label, icon: Icon, isActive }) => (
           <NavLink
             key={to}
