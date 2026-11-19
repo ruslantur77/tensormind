@@ -32,14 +32,14 @@ export const PracticePage: React.FC<PracticePageProps> = ({ initialTab }) => {
   return (
     <div className="space-y-4">
       {/* Sleek Segmented Glass Switcher: Карточки | Спидран | Экзамен */}
-      <div className="sticky top-14 sm:top-16 z-30 pt-1 pb-3 backdrop-blur-md bg-[var(--tm-bg)]/80">
-        <div className="grid grid-cols-3 gap-1 p-1 rounded-2xl aero-inset max-w-md mx-auto shadow-sm">
+      <div className="sticky top-14 sm:top-16 z-30 pt-1 pb-3 bg-[var(--tm-bg)]">
+        <div className="grid grid-cols-3 gap-1 p-1 rounded-xl aero-inset max-w-md mx-auto">
           <button
             type="button"
             onClick={() => switchTab('cards')}
             className={`py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer select-none ${
               currentTab === 'cards'
-                ? 'bg-white/20 dark:bg-white/15 text-slate-900 dark:text-white shadow-sm border border-white/20 font-bold'
+                ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm font-semibold'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -52,7 +52,7 @@ export const PracticePage: React.FC<PracticePageProps> = ({ initialTab }) => {
             onClick={() => switchTab('speedrun')}
             className={`py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer select-none ${
               currentTab === 'speedrun'
-                ? 'bg-white/20 dark:bg-white/15 text-slate-900 dark:text-white shadow-sm border border-white/20 font-bold'
+                ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm font-semibold'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -65,7 +65,7 @@ export const PracticePage: React.FC<PracticePageProps> = ({ initialTab }) => {
             onClick={() => switchTab('exam')}
             className={`py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer select-none ${
               currentTab === 'exam'
-                ? 'bg-white/20 dark:bg-white/15 text-slate-900 dark:text-white shadow-sm border border-white/20 font-bold'
+                ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm font-semibold'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >

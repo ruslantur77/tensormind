@@ -365,7 +365,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
           {/* Sequential (Core) */}
           <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-violet-500/10 border border-violet-500/20 text-slate-800 dark:text-slate-200">
-            <span className="w-3 h-3 rounded-full bg-violet-500 shadow-[0_0_8px_rgba(139,92,246,0.6)] shrink-0" />
+            <span className="w-3 h-3 rounded-full bg-violet-500 shrink-0" />
             <div className="space-y-0.5">
               <span className="font-bold block text-violet-700 dark:text-violet-300">
                 {lang === 'en' ? 'Core Track (Sequential)' : 'Базовый трек (последовательно)'}
@@ -378,7 +378,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
 
           {/* Parallel */}
           <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-slate-800 dark:text-slate-200">
-            <span className="w-3 h-3 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.6)] shrink-0" />
+            <span className="w-3 h-3 rounded-full bg-emerald-500 shrink-0" />
             <div className="space-y-0.5">
               <span className="font-bold block text-emerald-700 dark:text-emerald-300">
                 {lang === 'en' ? 'Parallel Branches' : 'Параллельные ветки'}
@@ -391,7 +391,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
 
           {/* Specialization (Blue) */}
           <div className="flex items-center gap-2.5 p-2.5 rounded-xl bg-sky-500/10 border border-sky-500/20 text-slate-800 dark:text-slate-200">
-            <span className="w-3 h-3 rounded-full bg-sky-500 shadow-[0_0_8px_rgba(14,165,233,0.6)] shrink-0" />
+            <span className="w-3 h-3 rounded-full bg-sky-500 shrink-0" />
             <div className="space-y-0.5">
               <span className="font-bold block text-sky-700 dark:text-sky-300">
                 {lang === 'en' ? 'Specializations & MLOps' : 'Специализации и MLOps'}
@@ -491,9 +491,9 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                       onClick={() => handleOpenModule(node.moduleId)}
                       className={`p-4 sm:p-5 flex flex-col justify-between gap-3.5 transition-all cursor-pointer relative overflow-hidden group ${
                         isDone
-                          ? 'border-emerald-500/40 bg-emerald-500/5 shadow-[0_0_15px_rgba(16,185,129,0.08)]'
+                          ? 'border-emerald-500/30 bg-emerald-500/[0.04]'
                           : isInProgress
-                          ? 'border-sky-500/50 bg-sky-500/5 shadow-[0_0_15px_rgba(14,165,233,0.1)]'
+                          ? 'border-sky-500/40 bg-sky-500/[0.04]'
                           : 'hover:border-sky-500/40'
                       }`}
                     >
@@ -504,7 +504,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                         {/* Row 1: Order + Role Tag on Left, Badge on Right */}
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5 min-w-0">
-                            <span className="px-1.5 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-[11px] font-mono font-extrabold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-white/10 shrink-0">
+                            <span className="px-1.5 py-0.5 rounded-md bg-[var(--tm-surface-inset)] border border-[var(--tm-card-border)] text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300 shrink-0">
                               #{mod.meta.order}
                             </span>
                             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">
@@ -526,7 +526,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
 
                         {/* Row 2: Module Icon + Full-width Title */}
                         <div className="flex items-start gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-white/80 dark:bg-slate-900/90 border border-slate-200/80 dark:border-white/10 flex items-center justify-center shrink-0 shadow-xs">
+                          <div className="w-10 h-10 rounded-lg aero-inset flex items-center justify-center shrink-0">
                             <ModuleIcon moduleId={mod.meta.id} className="w-5 h-5" />
                           </div>
                           <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white leading-snug group-hover:text-sky-600 dark:group-hover:text-sky-400 transition-colors flex-1 pt-0.5">
@@ -584,7 +584,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
               {!isLastStage && (
                 <div className="flex items-center justify-center py-2">
                   <div className="flex flex-col items-center">
-                    <div className="w-0.5 h-6 bg-gradient-to-b from-slate-300 dark:from-slate-700 to-sky-500" />
+                    <div className="w-px h-6 bg-[var(--tm-card-border)]" />
                     <div className="p-1 rounded-full bg-sky-500 text-white shadow-sm">
                       <ArrowDown className="w-3.5 h-3.5" />
                     </div>

@@ -328,9 +328,9 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
 
     return (
       <div className="space-y-4 pt-2">
-        <div className="p-4 sm:p-5 rounded-2xl aero-glass border border-indigo-500/30 dark:border-indigo-500/20 bg-indigo-500/[0.03] space-y-4 relative overflow-hidden">
-          {/* Accent top gradient bar */}
-          <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+        <div className="p-4 sm:p-5 rounded-xl aero-glass border border-indigo-500/25 space-y-4 relative overflow-hidden">
+          {/* Accent top bar */}
+          <div className="absolute top-0 left-0 right-0 h-0.5 bg-indigo-500/60" />
 
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -370,7 +370,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
           </div>
 
           {/* Project Specification */}
-          <div className="p-4 rounded-xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/5 space-y-2 text-xs sm:text-sm">
+          <div className="p-4 rounded-xl bg-[var(--tm-surface)] border border-slate-200/80 dark:border-white/5 space-y-2 text-xs sm:text-sm">
             <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
               <Terminal className="w-4 h-4 text-indigo-500 shrink-0" />
               <span>{taskTitle}</span>
@@ -516,9 +516,9 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
   return (
     <div className="space-y-4 pt-2">
       {/* Practice Header Card */}
-      <div className="p-4 sm:p-5 rounded-2xl aero-glass border border-emerald-500/30 dark:border-emerald-500/20 bg-emerald-500/[0.03] space-y-3 relative overflow-hidden">
+      <div className="p-4 sm:p-5 rounded-xl aero-glass border border-emerald-500/25 space-y-3 relative overflow-hidden">
         {/* Accent bar */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-500 via-sky-500 to-indigo-500" />
+        <div className="absolute top-0 left-0 right-0 h-0.5 bg-emerald-500/60" />
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -575,7 +575,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
         </div>
 
         {/* Task Specification */}
-        <div className="p-3.5 rounded-xl bg-white/70 dark:bg-slate-900/60 border border-slate-200/80 dark:border-white/5 space-y-2 text-xs sm:text-sm">
+        <div className="p-3.5 rounded-xl bg-[var(--tm-surface)] border border-slate-200/80 dark:border-white/5 space-y-2 text-xs sm:text-sm">
           <div className="font-bold text-slate-900 dark:text-white flex items-center gap-2">
             <Terminal className="w-4 h-4 text-sky-500 shrink-0" />
             <span>{taskTitle}</span>

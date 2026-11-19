@@ -59,15 +59,15 @@ export const GlossaryCard: React.FC<GlossaryCardProps> = ({
   const lessonTitle = term.lessonPath ? getLocalized(term.lessonPath.title, lang) : '';
 
   return (
-    <div className="relative rounded-2xl border border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-[#181a1d]/80 backdrop-blur-md shadow-sm hover:shadow-md transition-all duration-200 p-5 sm:p-6 flex flex-col justify-between group overflow-hidden">
+    <div className="relative rounded-xl border border-[var(--tm-card-border)] bg-[var(--tm-surface)] hover:border-[var(--tm-card-hover-border)] transition-colors duration-150 p-5 sm:p-6 flex flex-col justify-between group overflow-hidden">
       {/* Top subtle category accent line */}
-      <div className={`absolute top-0 inset-x-0 h-1 bg-gradient-to-r ${categoryMeta.color} opacity-70 group-hover:opacity-100 transition-opacity`} />
+      <div className={`absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r ${categoryMeta.color} opacity-50 group-hover:opacity-80 transition-opacity`} />
 
       <div>
         {/* Header: Title + Category */}
         <div className="flex items-start justify-between gap-3 mb-2.5">
           <div className="flex-1 min-w-0">
-            <h3 className="text-base sm:text-lg font-extrabold text-slate-900 dark:text-white tracking-tight leading-snug">
+            <h3 className="text-base sm:text-lg font-semibold text-slate-900 dark:text-white tracking-tight leading-snug">
               {termTitle}
             </h3>
             <span className="text-xs font-medium text-slate-500 dark:text-slate-400 font-sans block mt-0.5">
@@ -75,7 +75,7 @@ export const GlossaryCard: React.FC<GlossaryCardProps> = ({
             </span>
           </div>
 
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-slate-100 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 text-slate-700 dark:text-slate-300 shrink-0 select-none">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-medium bg-[var(--tm-surface-inset)] border border-[var(--tm-card-border)] text-slate-700 dark:text-slate-300 shrink-0 select-none">
             <span>{categoryMeta.icon}</span>
             <span>{categoryLabel}</span>
           </span>
@@ -168,7 +168,7 @@ export const GlossaryCard: React.FC<GlossaryCardProps> = ({
             <button
               key={tag}
               onClick={() => onSelectTag?.(tag)}
-              className="text-[10px] px-2 py-0.5 rounded-md bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 transition cursor-pointer"
+              className="text-[10px] px-2 py-0.5 rounded-md bg-[var(--tm-surface-inset)] border border-[var(--tm-card-border)] text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 transition-colors cursor-pointer"
             >
               #{tag}
             </button>

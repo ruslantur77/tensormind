@@ -229,7 +229,6 @@ export const CardsPage: React.FC = () => {
       {/* Main Flashcard Container with Flip Animation */}
       <div className="perspective-1000 min-h-[320px]">
         <GlassPanel
-          glow={isFlipped}
           className="p-6 sm:p-8 min-h-[320px] max-h-[60vh] overflow-y-auto flex flex-col justify-between transition-all duration-300 relative cursor-pointer"
           onClick={() => {
             if (currentCard.type !== 'cloze' || clozeChecked) {
@@ -279,7 +278,7 @@ export const CardsPage: React.FC = () => {
                   <div className="space-y-3 max-w-sm mx-auto">
                     <input
                       type="text"
-                      className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-xl px-4 py-2.5 text-center text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+                      className="w-full bg-[var(--tm-surface)] border border-[var(--tm-card-border)] rounded-lg px-4 py-2.5 text-center text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
                       placeholder={t('cards.type_cloze_placeholder')}
                       value={clozeInput}
                       onChange={(e) => setClozeInput(e.target.value)}

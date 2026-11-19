@@ -188,7 +188,7 @@ export const SettingsPage: React.FC = () => {
     <div className="max-w-xl mx-auto space-y-6">
       {/* Title */}
       <div className="flex items-center gap-3">
-        <div className="p-2.5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-sky-600 dark:text-sky-400">
+        <div className="p-2.5 rounded-xl aero-inset text-sky-600 dark:text-sky-400">
           <SettingsIcon className="w-6 h-6" />
         </div>
         <div>
@@ -254,7 +254,7 @@ export const SettingsPage: React.FC = () => {
               className={`p-3 rounded-xl border flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer transition ${
                 theme === 'dark'
                   ? 'border-sky-500 bg-sky-500/15 text-sky-950 dark:text-white ring-1 ring-sky-500/40'
-                  : 'border-slate-200 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  : 'border-slate-200 dark:border-white/10 bg-[var(--tm-surface)] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <Moon className="w-4 h-4 text-sky-500" />
@@ -266,7 +266,7 @@ export const SettingsPage: React.FC = () => {
               className={`p-3 rounded-xl border flex items-center justify-center gap-2 text-xs font-semibold cursor-pointer transition ${
                 theme === 'light'
                   ? 'border-sky-500 bg-sky-500/15 text-sky-950 dark:text-white ring-1 ring-sky-500/40'
-                  : 'border-slate-200 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  : 'border-slate-200 dark:border-white/10 bg-[var(--tm-surface)] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <Sun className="w-4 h-4 text-amber-500" />
@@ -287,7 +287,7 @@ export const SettingsPage: React.FC = () => {
               className={`p-3 rounded-xl border text-xs font-semibold cursor-pointer transition ${
                 language === 'ru'
                   ? 'border-sky-500 bg-sky-500/15 text-sky-950 dark:text-white ring-1 ring-sky-500/40'
-                  : 'border-slate-200 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  : 'border-slate-200 dark:border-white/10 bg-[var(--tm-surface)] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               Русский (RU)
@@ -298,7 +298,7 @@ export const SettingsPage: React.FC = () => {
               className={`p-3 rounded-xl border text-xs font-semibold cursor-pointer transition ${
                 language === 'en'
                   ? 'border-sky-500 bg-sky-500/15 text-sky-950 dark:text-white ring-1 ring-sky-500/40'
-                  : 'border-slate-200 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  : 'border-slate-200 dark:border-white/10 bg-[var(--tm-surface)] text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               English (EN)

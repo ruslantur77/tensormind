@@ -43,7 +43,7 @@ export default function App() {
 
   if (!isReady) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#222426] text-slate-100">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--tm-bg)] text-slate-100">
         <div className="flex flex-col items-center gap-3">
           <div className="w-16 h-16 rounded-2xl bg-white p-1.5 shadow-xl border border-white/20 flex items-center justify-center overflow-hidden">
             <img

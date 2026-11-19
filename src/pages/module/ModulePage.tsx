@@ -74,10 +74,10 @@ export const ModulePage: React.FC = () => {
       </button>
 
       {/* Module Header Card */}
-      <GlassPanel glow className="p-6 space-y-4">
+      <GlassPanel className="p-6 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-start gap-4">
-            <div className="w-14 h-14 rounded-2xl bg-white/80 dark:bg-slate-900/80 border border-slate-200 dark:border-white/10 flex items-center justify-center shrink-0 shadow-md">
+            <div className="w-14 h-14 rounded-xl aero-inset flex items-center justify-center shrink-0">
               <ModuleIcon moduleId={moduleData.meta.id} className="w-8 h-8" />
             </div>
             <div className="space-y-1">
@@ -161,7 +161,7 @@ export const ModulePage: React.FC = () => {
                       className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${
                         isCompleted
                           ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                          : 'bg-white/50 dark:bg-white/5 text-slate-700 dark:text-slate-300 border border-white/80 dark:border-white/10 backdrop-blur-sm'
+                          : 'aero-inset text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       {isCompleted ? <CheckCircle2 className="w-5 h-5" /> : idx + 1}

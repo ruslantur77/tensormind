@@ -195,7 +195,7 @@ export const ExamPage: React.FC = () => {
   if (!isStarted) {
     return (
       <div className="max-w-3xl mx-auto py-6 space-y-6">
-        <GlassPanel glow className="p-6 sm:p-8 text-center space-y-4">
+        <GlassPanel className="p-6 sm:p-8 text-center space-y-4">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-sky-500/15 border border-sky-400/30 text-sky-400 shadow-lg mx-auto">
             <GraduationCap className="w-8 h-8" />
           </div>
@@ -234,7 +234,7 @@ export const ExamPage: React.FC = () => {
                   className={`p-4 rounded-2xl border transition-all cursor-pointer flex flex-col justify-between gap-3 ${
                     isSelected
                       ? 'border-sky-500 bg-sky-500/10 dark:bg-sky-500/15 shadow-md shadow-sky-500/10 ring-2 ring-sky-500/40'
-                      : 'border-slate-200/80 dark:border-white/10 bg-white/70 dark:bg-slate-900/60 hover:border-sky-400/50 hover:bg-white/90 dark:hover:bg-slate-900/80'
+                      : 'border-[var(--tm-card-border)] bg-[var(--tm-surface)] hover:border-sky-400/50 hover:bg-[var(--tm-surface-hover)]'
                   }`}
                 >
                   <div className="flex items-start gap-3">
@@ -314,7 +314,7 @@ export const ExamPage: React.FC = () => {
 
     return (
       <div className="max-w-xl mx-auto py-8 space-y-6">
-        <GlassPanel glow className="p-6 sm:p-8 text-center space-y-4">
+        <GlassPanel className="p-6 sm:p-8 text-center space-y-4">
           <div
             className={`inline-flex items-center justify-center w-16 h-16 rounded-2xl border shadow-lg mx-auto ${
               passed
@@ -340,7 +340,7 @@ export const ExamPage: React.FC = () => {
             </p>
           </div>
 
-          <div className="p-4 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 max-w-sm mx-auto text-center space-y-1">
+          <div className="p-4 rounded-xl aero-inset max-w-sm mx-auto text-center space-y-1">
             <span className="text-xs text-slate-500 dark:text-slate-400">Результат аттестации</span>
             <p className="text-3xl font-extrabold text-slate-900 dark:text-white">
               {score} / {examQuestions.length}{' '}
@@ -417,7 +417,7 @@ export const ExamPage: React.FC = () => {
           className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold ${
             timeLeftSec < 180
               ? 'bg-red-500/20 text-red-600 dark:text-red-400 animate-pulse'
-              : 'bg-slate-200 dark:bg-slate-900 text-slate-800 dark:text-slate-200'
+              : 'aero-inset text-slate-800 dark:text-slate-200'
           }`}
         >
           <Clock className="w-3.5 h-3.5" />
@@ -451,7 +451,7 @@ export const ExamPage: React.FC = () => {
                   className={`p-3.5 rounded-xl border text-xs sm:text-sm cursor-pointer transition ${
                     isSelected
                       ? 'border-sky-500 bg-sky-500/15 text-sky-950 dark:text-sky-100 font-medium ring-1 ring-sky-500/40'
-                      : 'border-slate-200 dark:border-white/10 hover:border-sky-400/40 bg-white/70 dark:bg-slate-900/60 text-slate-800 dark:text-slate-300'
+                      : 'border-slate-200 dark:border-white/10 hover:border-sky-400/40 bg-[var(--tm-surface)] text-slate-800 dark:text-slate-300'
                   }`}
                 >
                   <MathText text={getLocalized(opt, lang)} />
@@ -483,7 +483,7 @@ export const ExamPage: React.FC = () => {
                   className={`p-3.5 rounded-xl border text-xs sm:text-sm cursor-pointer transition flex items-center justify-between ${
                     isSelected
                       ? 'border-sky-500 bg-sky-500/15 text-sky-950 dark:text-sky-100 font-medium ring-1 ring-sky-500/40'
-                      : 'border-slate-200 dark:border-white/10 hover:border-sky-400/40 bg-white/70 dark:bg-slate-900/60 text-slate-800 dark:text-slate-300'
+                      : 'border-slate-200 dark:border-white/10 hover:border-sky-400/40 bg-[var(--tm-surface)] text-slate-800 dark:text-slate-300'
                   }`}
                 >
                   <MathText text={getLocalized(opt, lang)} />
@@ -503,7 +503,7 @@ export const ExamPage: React.FC = () => {
           <div className="space-y-2">
             <input
               type="text"
-              className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+              className="w-full bg-[var(--tm-surface)] border border-[var(--tm-card-border)] rounded-lg px-4 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
               placeholder={
                 currentQ.type === 'numeric'
                   ? (lang === 'en' ? 'Numeric answer (e.g. 0.5)' : 'Числовой ответ (например, 0.5)')

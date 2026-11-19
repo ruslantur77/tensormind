@@ -257,7 +257,7 @@ export const LessonPage: React.FC = () => {
 
                   <div className="space-y-2">
                     {q.options.map((opt, optIdx) => {
-                      let btnStyle = 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-white/70 dark:bg-slate-900/60 text-slate-800 dark:text-slate-200';
+                      let btnStyle = 'border-slate-200 dark:border-white/10 hover:border-slate-300 dark:hover:border-white/20 bg-[var(--tm-surface)] text-slate-800 dark:text-slate-200';
                       if (isAnswered) {
                         if (optIdx === q.correctAnswer) {
                           btnStyle = 'border-emerald-500/60 bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 font-medium';
@@ -284,7 +284,7 @@ export const LessonPage: React.FC = () => {
                   </div>
 
                   {isAnswered && (
-                    <div className="p-3.5 rounded-xl bg-slate-100 dark:bg-slate-900/90 border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-slate-300 space-y-1">
+                    <div className="p-3.5 rounded-xl aero-inset text-xs text-slate-700 dark:text-slate-300 space-y-1">
                       <span className="font-bold text-sky-600 dark:text-sky-400">{lang === 'en' ? 'Explanation: ' : 'Объяснение: '}</span>
                       <MathText text={getLocalized(q.explanation, lang)} />
                     </div>

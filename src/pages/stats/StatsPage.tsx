@@ -215,8 +215,8 @@ export const StatsPage: React.FC = () => {
               key={i}
               className={`p-2 rounded-xl flex flex-col items-center justify-center text-center transition ${
                 d.isActive
-                  ? 'bg-amber-500/20 border border-amber-500/40 text-amber-800 dark:text-amber-300 shadow-[0_0_10px_rgba(245,158,11,0.15)] font-semibold'
-                  : 'bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-white/5 text-slate-400 dark:text-slate-500'
+                  ? 'bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 font-semibold'
+                  : 'aero-inset text-slate-400 dark:text-slate-500'
               }`}
             >
               <span className="text-[10px] text-slate-500 dark:text-slate-400">{d.month}</span>
@@ -284,12 +284,12 @@ export const StatsPage: React.FC = () => {
                 key={ach.id}
                 className={`p-4 transition ${
                   isUnlocked
-                    ? 'border-sky-500/30 bg-sky-500/5 shadow-[0_0_15px_rgba(14,165,233,0.1)]'
+                    ? 'border-sky-500/30 bg-sky-500/[0.04]'
                     : 'opacity-50 grayscale border-dashed'
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-white/10 shrink-0">
+                  <div className="p-2.5 rounded-lg aero-inset shrink-0">
                     <AchievementIcon achievementId={ach.id} className="w-5 h-5" />
                   </div>
                   <div className="space-y-1">

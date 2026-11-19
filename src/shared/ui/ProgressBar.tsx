@@ -19,15 +19,15 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
 
   const heightClasses = {
     sm: 'h-1.5',
-    md: 'h-2.5',
-    lg: 'h-3.5',
+    md: 'h-2',
+    lg: 'h-2.5',
   };
 
   const fillVariants = {
-    cyan: 'bg-sky-500 dark:bg-sky-400 shadow-[0_0_8px_rgba(14,165,233,0.35)]',
-    gradient: 'bg-sky-600 dark:bg-sky-400 shadow-[0_0_8px_rgba(14,165,233,0.35)]',
-    success: 'bg-emerald-500 dark:bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.35)]',
-    warning: 'bg-amber-500 dark:bg-amber-400 shadow-[0_0_8px_rgba(245,158,11,0.35)]',
+    cyan: 'bg-sky-500 dark:bg-sky-400',
+    gradient: 'bg-sky-500 dark:bg-sky-400',
+    success: 'bg-emerald-500 dark:bg-emerald-400',
+    warning: 'bg-amber-500 dark:bg-amber-400',
   };
 
   return (
@@ -38,10 +38,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
         </div>
       )}
       <div
-        className={`w-full bg-slate-200 dark:bg-slate-800/80 rounded-full overflow-hidden p-0.5 border border-slate-300/50 dark:border-white/5 ${heightClasses[height]}`}
+        className={`w-full bg-slate-200/80 dark:bg-white/10 rounded-full overflow-hidden ${heightClasses[height]}`}
       >
         <div
-          className={`h-full rounded-full transition-all duration-300 ease-out ${fillVariants[variant]}`}
+          className={`h-full rounded-full transition-[width] duration-300 ease-out ${fillVariants[variant]}`}
           style={{ width: `${clamped}%` }}
         />
       </div>

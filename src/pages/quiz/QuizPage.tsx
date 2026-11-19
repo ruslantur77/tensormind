@@ -178,7 +178,7 @@ export const QuizPage: React.FC = () => {
                   <h4 className="text-xs sm:text-sm font-semibold text-slate-900 dark:text-slate-100">
                     <MathText text={getLocalized(mq.question, lang)} />
                   </h4>
-                  <div className="p-3 rounded-lg bg-white dark:bg-slate-900 border border-slate-200 dark:border-white/10 text-xs text-slate-700 dark:text-slate-300">
+                  <div className="p-3 rounded-lg aero-inset text-xs text-slate-700 dark:text-slate-300">
                     <span className="font-semibold text-sky-700 dark:text-sky-400">{lang === 'en' ? 'Explanation: ' : 'Пояснение: '}</span>
                     <MathText text={getLocalized(mq.explanation, lang)} />
                   </div>
@@ -251,7 +251,7 @@ export const QuizPage: React.FC = () => {
           <div className="space-y-2.5">
             {currentQ.options.map((opt, optIdx) => {
               const isSelected = currentAnswer === optIdx;
-              let style = 'border-slate-200 dark:border-white/10 hover:border-sky-400/50 bg-white/70 dark:bg-slate-900/60 text-slate-800 dark:text-slate-300';
+              let style = 'border-slate-200 dark:border-white/10 hover:border-sky-400/50 bg-[var(--tm-surface)] text-slate-800 dark:text-slate-300';
 
               if (isAnswerSubmitted) {
                 if (optIdx === currentQ.correctAnswer) {
@@ -295,7 +295,7 @@ export const QuizPage: React.FC = () => {
               const isSelected = currentArr.includes(optIdx);
               const isOptionCorrect = currentQ.correctAnswers.includes(optIdx);
 
-              let style = 'border-slate-200 dark:border-white/10 hover:border-sky-400/50 bg-white/70 dark:bg-slate-900/60 text-slate-800 dark:text-slate-300';
+              let style = 'border-slate-200 dark:border-white/10 hover:border-sky-400/50 bg-[var(--tm-surface)] text-slate-800 dark:text-slate-300';
               if (isAnswerSubmitted) {
                 if (isOptionCorrect) {
                   style = 'border-emerald-500/60 bg-emerald-500/15 text-emerald-900 dark:text-emerald-300 font-medium';
@@ -338,7 +338,7 @@ export const QuizPage: React.FC = () => {
             <input
               type="text"
               disabled={isAnswerSubmitted}
-              className="w-full bg-white dark:bg-slate-900 border border-slate-300 dark:border-white/10 rounded-xl px-4 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400/40"
+              className="w-full bg-[var(--tm-surface)] border border-[var(--tm-card-border)] rounded-lg px-4 py-3 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-500/30"
               placeholder={currentQ.type === 'numeric' ? (lang === 'en' ? 'Enter a number (e.g., 0.5)' : 'Введите число (например, 0.5)') : (lang === 'en' ? 'Enter a formula (e.g., X^T y)' : 'Введите формулу (например, X^T y)')}
               value={inputVal}
               onChange={(e) => {
@@ -368,7 +368,7 @@ export const QuizPage: React.FC = () => {
 
         {/* Explanation Banner */}
         {isAnswerSubmitted && (
-          <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-white/10 space-y-1.5 animate-fade-in">
+          <div className="p-4 rounded-xl aero-inset space-y-1.5 animate-fade-in">
             <div className="flex items-center gap-2">
               {isCorrect ? (
                 <Badge variant="success" size="sm" icon={<CheckCircle2 className="w-3 h-3" />}>

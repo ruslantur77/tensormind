@@ -43,7 +43,7 @@ export const Header: React.FC = () => {
   }, [loadStats]);
 
   return (
-    <header className="sticky top-0 z-40 w-full aero-glass border-b border-slate-200/80 dark:border-white/10 safe-top">
+    <header className="sticky top-0 z-40 w-full aero-bar border-b border-[var(--tm-card-border)] safe-top">
       <div className="max-w-5xl mx-auto px-4 h-14 sm:h-16 flex items-center justify-between">
         {/* Brand */}
         <div
@@ -51,7 +51,7 @@ export const Header: React.FC = () => {
           className="flex items-center gap-2.5 cursor-pointer select-none group"
         >
           {/* Logo boldly filling the white square badge */}
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white shadow-sm border border-slate-200/80 dark:border-white/20 group-hover:scale-105 transition-transform flex items-center justify-center shrink-0 overflow-hidden relative">
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-white border border-slate-200/80 dark:border-white/20 flex items-center justify-center shrink-0 overflow-hidden relative">
             <img
               src="/logo.png"
               alt="TensorMind"
@@ -59,7 +59,7 @@ export const Header: React.FC = () => {
             />
           </div>
           <div>
-            <h1 className="font-extrabold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white">
+            <h1 className="font-bold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white">
               Tensor<span className="text-sky-600 dark:text-sky-400">Mind</span>
             </h1>
           </div>
@@ -70,7 +70,7 @@ export const Header: React.FC = () => {
           {/* Streak */}
           <div
             onClick={() => navigate('/stats')}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs font-semibold cursor-pointer hover:bg-amber-500/25 transition"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold cursor-pointer hover:bg-amber-500/15 transition"
           >
             <Flame className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
             <span>{streakCount}</span>
@@ -79,7 +79,7 @@ export const Header: React.FC = () => {
           {/* XP */}
           <div
             onClick={() => navigate('/stats')}
-            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-sky-500/15 border border-sky-500/30 text-sky-700 dark:text-sky-400 text-xs font-semibold cursor-pointer hover:bg-sky-500/25 transition"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-700 dark:text-sky-400 text-xs font-semibold cursor-pointer hover:bg-sky-500/15 transition"
           >
             <Sparkles className="w-3.5 h-3.5 text-sky-500" />
             <span>{totalXP} XP</span>

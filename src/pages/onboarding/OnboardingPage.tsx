@@ -52,7 +52,7 @@ export const OnboardingPage: React.FC = () => {
           </p>
         </div>
 
-        <GlassPanel glow className="p-6">
+        <GlassPanel className="p-6">
           <form onSubmit={handleStart} className="space-y-5">
             {/* Name Input */}
             <Input

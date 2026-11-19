@@ -173,9 +173,9 @@ export const HomePage: React.FC = () => {
     <div className="space-y-6">
       {/* Backup Reminder Banner */}
       {showBackupBanner && (
-        <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-start sm:items-center justify-between gap-4">
+        <div className="p-4 rounded-xl bg-amber-500/[0.08] border border-amber-500/20 flex items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-amber-500/20 text-amber-400 shrink-0">
+            <div className="p-2 rounded-lg bg-amber-500/15 text-amber-600 dark:text-amber-400 shrink-0">
               <AlertTriangle className="w-5 h-5" />
             </div>
             <div>
@@ -190,7 +190,7 @@ export const HomePage: React.FC = () => {
           <Button
             size="sm"
             variant="glass"
-            className="border-amber-500/40 text-amber-800 dark:text-amber-300 shrink-0"
+            className="border-amber-500/30 text-amber-800 dark:text-amber-300 shrink-0"
             onClick={() => navigate('/settings')}
           >
             {t('home.backup_banner_action')}
@@ -199,7 +199,7 @@ export const HomePage: React.FC = () => {
       )}
 
       {/* Hero Profile & Daily Goal */}
-      <GlassPanel glow className="p-5 sm:p-6">
+      <GlassPanel className="p-5 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
@@ -208,7 +208,7 @@ export const HomePage: React.FC = () => {
               </Badge>
               <div
                 onClick={() => navigate('/stats')}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-700 dark:text-amber-400 text-xs font-semibold cursor-pointer hover:bg-amber-500/25 transition"
+                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold cursor-pointer hover:bg-amber-500/15 transition"
               >
                 <Flame className="w-3 h-3 fill-amber-500 text-amber-500" />
                 <span>{t('home.streak_days', { count: streakDays })}</span>
@@ -234,7 +234,7 @@ export const HomePage: React.FC = () => {
           </div>
 
           {/* Daily Progress */}
-          <div className="sm:w-64 p-3.5 rounded-xl bg-white/45 dark:bg-slate-900/60 border border-white/70 dark:border-white/10 space-y-2 shadow-sm backdrop-blur-md">
+          <div className="sm:w-64 p-3.5 rounded-lg aero-inset space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold">
               <span className="text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
                 <Flame className="w-4 h-4 text-amber-500 fill-amber-500 shrink-0" />
@@ -247,7 +247,7 @@ export const HomePage: React.FC = () => {
             <ProgressBar
               value={(cardsReviewedToday / Math.max(1, dailyGoalTarget)) * 100}
               height="sm"
-              variant="gradient"
+              variant="cyan"
             />
           </div>
         </div>
@@ -344,19 +344,19 @@ export const HomePage: React.FC = () => {
           platform.haptics.light();
           navigate('/glossary');
         }}
-        className="relative overflow-hidden rounded-2xl border border-sky-500/20 dark:border-white/10 bg-gradient-to-r from-sky-500/10 via-indigo-500/10 to-purple-500/10 hover:from-sky-500/15 hover:via-indigo-500/15 hover:to-purple-500/15 p-4 sm:p-5 transition-all duration-200 cursor-pointer shadow-xs group"
+        className="rounded-xl border border-[var(--tm-card-border)] bg-[var(--tm-surface)] hover:border-[var(--tm-card-hover-border)] p-4 sm:p-5 transition-colors cursor-pointer group"
       >
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3.5 min-w-0">
-            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-sky-500/20 border border-sky-500/30 flex items-center justify-center text-sky-600 dark:text-sky-400 shrink-0 group-hover:scale-105 transition-transform shadow-xs">
-              <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
+            <div className="w-10 h-10 rounded-lg bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-600 dark:text-sky-400 shrink-0">
+              <BookOpen className="w-5 h-5" />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <h4 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight">
+                <h4 className="font-semibold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight">
                   {lang === 'en' ? 'ML Formulas & Glossary' : 'Глоссарий формул & терминов'}
                 </h4>
-                <span className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-sky-500/20 text-sky-700 dark:text-sky-300">
+                <span className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-[var(--tm-surface-inset)] border border-[var(--tm-card-border)] text-slate-500 dark:text-slate-400">
                   F1, L1, ROC, PPO...
                 </span>
               </div>
@@ -368,7 +368,7 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-white/10 text-xs font-bold text-sky-600 dark:text-sky-400 group-hover:bg-sky-500 group-hover:text-white transition shadow-2xs shrink-0">
+          <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-sky-600 dark:text-sky-400 group-hover:bg-sky-500/10 transition-colors shrink-0">
             <span className="hidden sm:inline">{lang === 'en' ? 'Open' : 'Открыть'}</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
           </div>
@@ -379,7 +379,7 @@ export const HomePage: React.FC = () => {
       <div className="space-y-4 pt-2">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           {/* Segmented Control / Tabs */}
-          <div className="inline-flex p-1.5 rounded-2xl aero-inset border border-slate-200/80 dark:border-white/10 w-full sm:w-auto">
+          <div className="inline-flex p-1 rounded-xl aero-inset w-full sm:w-auto">
             <button
               onClick={() => {
                 platform.haptics.light();
@@ -388,7 +388,7 @@ export const HomePage: React.FC = () => {
               }}
               className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
                 homeTab === 'modules'
-                  ? 'bg-white dark:bg-white/15 text-slate-900 dark:text-white shadow-sm border border-slate-200/60 dark:border-white/20'
+                  ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -404,11 +404,11 @@ export const HomePage: React.FC = () => {
               }}
               className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
                 homeTab === 'roadmap'
-                  ? 'bg-white dark:bg-white/15 text-slate-900 dark:text-white shadow-sm border border-slate-200/60 dark:border-white/20'
+                  ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
-              <Compass className="w-4 h-4 text-violet-500 shrink-0" />
+              <Compass className="w-4 h-4 text-sky-500 shrink-0" />
               <span>{lang === 'en' ? 'Roadmap' : 'Роадмап'}</span>
             </button>
           </div>
@@ -447,7 +447,7 @@ export const HomePage: React.FC = () => {
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div className="flex items-start gap-3.5">
-                      <div className="w-12 h-12 rounded-xl bg-white/50 dark:bg-slate-900/80 border border-white/80 dark:border-white/10 flex items-center justify-center shrink-0 shadow-sm backdrop-blur-md">
+                      <div className="w-12 h-12 rounded-lg aero-inset flex items-center justify-center shrink-0">
                         <ModuleIcon moduleId={mod.meta.id} className="w-6 h-6" />
                       </div>
 

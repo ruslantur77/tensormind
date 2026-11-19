@@ -250,7 +250,7 @@ export const MathText: React.FC<MathTextProps> = ({
           `;
 
           outputParts.push(`
-            <div class="my-4 overflow-x-auto rounded-xl border border-slate-200/80 dark:border-white/10 shadow-sm bg-white/40 dark:bg-slate-900/40 backdrop-blur-sm">
+            <div class="my-4 overflow-x-auto rounded-xl border border-[var(--tm-card-border)] bg-[var(--tm-surface-inset)]">
               <table class="w-full text-left text-xs sm:text-sm border-collapse font-sans">
                 ${theadHtml}
                 ${tbodyHtml}

@@ -121,9 +121,9 @@ export const AchievementIcon: React.FC<{ achievementId: string; className?: stri
     case 'streak_14':
       return <Crown className={`${baseClass} text-amber-500 dark:text-amber-400`} />;
     case 'streak_30':
-      return <Flame className={`${baseClass} text-rose-500 dark:text-rose-400 fill-current drop-shadow-[0_0_8px_rgba(244,63,94,0.4)]`} />;
+      return <Flame className={`${baseClass} text-rose-500 dark:text-rose-400 fill-current`} />;
     case 'streak_100':
-      return <Trophy className={`${baseClass} text-amber-400 dark:text-amber-300 fill-current drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]`} />;
+      return <Trophy className={`${baseClass} text-amber-400 dark:text-amber-300 fill-current`} />;
     case 'perfect_quiz':
       return <Target className={`${baseClass} text-emerald-500 dark:text-emerald-400`} />;
     case 'quiz_veteran_5':

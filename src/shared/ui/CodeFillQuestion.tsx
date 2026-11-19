@@ -107,7 +107,7 @@ export const CodeFillQuestion: React.FC<CodeFillQuestionProps> = ({
             const isThisCorrect = idx === correctAnswer;
 
             let cardStyle =
-              'border-slate-200 dark:border-white/10 hover:border-sky-400/50 bg-white/70 dark:bg-slate-900/60 text-slate-800 dark:text-slate-200';
+              'border-slate-200 dark:border-white/10 hover:border-sky-400/50 bg-[var(--tm-surface)] text-slate-800 dark:text-slate-200';
 
             if (isSubmitted) {
               if (isThisCorrect) {

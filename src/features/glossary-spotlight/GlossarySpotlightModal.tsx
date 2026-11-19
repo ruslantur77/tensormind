@@ -109,7 +109,7 @@ export const GlossarySpotlightModal: React.FC<GlossarySpotlightModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-start justify-center pt-16 sm:pt-24 px-4 bg-black/50 animate-in fade-in duration-200">
       {/* Backdrop click to close */}
       <div className="absolute inset-0" onClick={onClose} />
 
@@ -161,7 +161,7 @@ export const GlossarySpotlightModal: React.FC<GlossarySpotlightModalProps> = ({
               className={`px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition cursor-pointer select-none flex items-center gap-1 ${
                 selectedCategory === cat.id
                   ? 'bg-sky-500 text-white shadow-xs'
-                  : 'bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
+                  : 'aero-inset text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
               <span>{cat.icon}</span>

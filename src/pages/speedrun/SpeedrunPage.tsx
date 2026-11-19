@@ -330,7 +330,7 @@ export const SpeedrunPage: React.FC = () => {
             onClick={() => setActiveTab('cards')}
             className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'cards'
-                ? 'bg-white/20 dark:bg-white/15 text-slate-900 dark:text-white shadow-sm border border-white/20'
+                ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -342,7 +342,7 @@ export const SpeedrunPage: React.FC = () => {
             onClick={() => setActiveTab('quiz')}
             className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'quiz'
-                ? 'bg-white/20 dark:bg-white/15 text-slate-900 dark:text-white shadow-sm border border-white/20'
+                ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -457,7 +457,7 @@ export const SpeedrunPage: React.FC = () => {
                     onClick={() => setQuizQuestionCount(count)}
                     className={`py-2.5 px-2 rounded-xl text-sm sm:text-base font-bold font-mono transition border cursor-pointer text-center ${
                       quizQuestionCount === count
-                        ? 'bg-sky-500 text-white border-sky-400 shadow-[0_0_12px_rgba(14,165,233,0.35)]'
+                        ? 'bg-sky-500 text-white border-sky-400'
                         : 'aero-inset text-slate-700 dark:text-slate-300 hover:border-white/30 hover:text-slate-900 dark:hover:text-white'
                     }`}
                   >
@@ -791,7 +791,7 @@ export const SpeedrunPage: React.FC = () => {
               <div
                 key={optIdx}
                 onClick={() => handleQuizAnswer(optIdx)}
-                className="p-3.5 rounded-xl border border-white/10 hover:border-white/25 bg-white/40 dark:bg-white/5 hover:bg-white/60 dark:hover:bg-white/10 text-xs sm:text-sm text-slate-800 dark:text-slate-200 cursor-pointer transition flex items-center justify-between active:scale-[0.99]"
+                className="p-3.5 rounded-xl border border-[var(--tm-card-border)] hover:border-[var(--tm-card-hover-border)] bg-[var(--tm-surface-inset)] hover:bg-[var(--tm-surface-hover)] text-xs sm:text-sm text-slate-800 dark:text-slate-200 cursor-pointer transition-colors flex items-center justify-between active:scale-[0.99]"
               >
                 <div className="flex items-center gap-2.5 flex-1">
                   <span className="w-5 h-5 rounded-lg aero-inset flex items-center justify-center text-[10px] font-mono text-slate-500 font-bold shrink-0">
@@ -814,7 +814,7 @@ export const SpeedrunPage: React.FC = () => {
                 <div
                   key={optIdx}
                   onClick={() => handleQuizAnswer(optIdx)}
-                  className="p-3 rounded-xl border border-white/10 hover:border-white/25 bg-white/40 dark:bg-white/5 hover:bg-white/60 dark:hover:bg-white/10 text-xs font-mono text-slate-800 dark:text-slate-200 cursor-pointer transition flex items-center justify-between active:scale-[0.99]"
+                  className="p-3 rounded-xl border border-[var(--tm-card-border)] hover:border-[var(--tm-card-hover-border)] bg-[var(--tm-surface-inset)] hover:bg-[var(--tm-surface-hover)] text-xs font-mono text-slate-800 dark:text-slate-200 cursor-pointer transition-colors flex items-center justify-between active:scale-[0.99]"
                 >
                   <div className="flex items-center gap-2.5 flex-1">
                     <span className="w-5 h-5 rounded-lg aero-inset flex items-center justify-center text-[10px] font-mono text-slate-500 font-bold shrink-0">

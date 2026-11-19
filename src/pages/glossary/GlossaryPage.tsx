@@ -86,14 +86,14 @@ export const GlossaryPage: React.FC = () => {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Header Banner */}
-      <div className="relative rounded-3xl overflow-hidden border border-slate-200/80 dark:border-white/10 bg-gradient-to-br from-sky-500/10 via-indigo-500/5 to-purple-500/10 p-6 sm:p-8 backdrop-blur-xl">
+      <div className="rounded-xl border border-[var(--tm-card-border)] bg-[var(--tm-surface)] p-6 sm:p-8">
         <div className="max-w-2xl space-y-2.5">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-sky-500/15 border border-sky-500/30 text-sky-700 dark:text-sky-300">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-sky-500/10 border border-sky-500/20 text-sky-700 dark:text-sky-300">
             <BookOpen className="w-3.5 h-3.5" />
             <span>{isEn ? 'Formula & Concept Cheat Sheet' : 'Справочник формул & терминов'}</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
             {isEn ? 'Machine Learning Glossary' : 'Глоссарий машинного обучения'}
           </h1>
 
@@ -163,8 +163,8 @@ export const GlossaryPage: React.FC = () => {
                 }}
                 className={`px-3 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition cursor-pointer select-none flex items-center gap-1.5 ${
                   isSelected
-                    ? 'bg-sky-500 text-white shadow-xs scale-102'
-                    : 'bg-white/80 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 text-slate-700 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-slate-50'
+                    ? 'bg-sky-500 text-white'
+                    : 'bg-[var(--tm-surface)] border border-[var(--tm-card-border)] text-slate-700 dark:text-slate-300 hover:text-sky-600 dark:hover:text-sky-400 hover:border-[var(--tm-card-hover-border)]'
                 }`}
               >
                 <span>{cat.icon}</span>
@@ -173,7 +173,7 @@ export const GlossaryPage: React.FC = () => {
                   className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
                     isSelected
                       ? 'bg-white/25 text-white'
-                      : 'bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-slate-400'
+                      : 'bg-[var(--tm-surface-inset)] text-slate-500 dark:text-slate-400'
                   }`}
                 >
                   {count}
@@ -203,7 +203,7 @@ export const GlossaryPage: React.FC = () => {
 
       {/* Terms Grid */}
       {filteredTerms.length === 0 ? (
-        <div className="py-16 text-center rounded-3xl border border-dashed border-slate-300 dark:border-white/10 bg-white/40 dark:bg-white/[0.02]">
+        <div className="py-16 text-center rounded-xl border border-dashed border-slate-300 dark:border-white/10 bg-[var(--tm-surface)]">
           <Sparkles className="w-10 h-10 text-slate-400 mx-auto mb-3 opacity-60" />
           <h3 className="text-base font-bold text-slate-900 dark:text-white mb-1">
             {isEn ? 'No terms found' : 'Ничего не найдено'}

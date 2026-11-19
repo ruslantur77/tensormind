@@ -31,7 +31,7 @@ export const Modal: React.FC<ModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/60 backdrop-blur-sm animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/50 animate-fade-in">
       <div
         className="fixed inset-0"
         onClick={() => {
@@ -39,21 +39,27 @@ export const Modal: React.FC<ModalProps> = ({
           onClose();
         }}
       />
-      <GlassPanel glow className="relative z-10 w-full max-w-lg p-6 max-h-[90vh] flex flex-col shadow-2xl">
-        <div className="flex items-center justify-between pb-3 border-b border-white/10">
-          {title && <h3 className="text-lg font-semibold text-slate-100">{title}</h3>}
+      <GlassPanel className="relative z-10 w-full max-w-lg p-6 max-h-[90vh] flex flex-col shadow-xl">
+        <div className="flex items-center justify-between pb-3 border-b border-[var(--tm-card-border)]">
+          {title && (
+            <h3 className="text-lg font-semibold text-[var(--tm-text-primary)]">{title}</h3>
+          )}
           <button
             onClick={() => {
               platform.haptics.light();
               onClose();
             }}
-            className="p-1 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition cursor-pointer"
+            className="p-1 rounded-lg hover:bg-[var(--tm-surface-hover)] text-[var(--tm-text-muted)] hover:text-[var(--tm-text-primary)] transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
         <div className="py-4 overflow-y-auto flex-1">{children}</div>
-        {footer && <div className="pt-3 border-t border-white/10 flex justify-end gap-3">{footer}</div>}
+        {footer && (
+          <div className="pt-3 border-t border-[var(--tm-card-border)] flex justify-end gap-3">
+            {footer}
+          </div>
+        )}
       </GlassPanel>
     </div>
   );

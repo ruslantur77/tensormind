@@ -21,13 +21,13 @@ export const Badge: React.FC<BadgeProps> = ({
   };
 
   const variantStyles = {
-    cyan: 'bg-sky-500/15 text-sky-700 dark:text-sky-300 border border-sky-500/30 shadow-[0_0_8px_rgba(14,165,233,0.15)] font-semibold',
-    purple: 'bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30 font-semibold',
-    violet: 'bg-violet-500/15 text-violet-700 dark:text-violet-300 border border-violet-500/30 font-semibold',
-    success: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 font-semibold',
-    warning: 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-semibold',
-    neutral: 'bg-slate-500/15 text-slate-700 dark:text-slate-300 border border-slate-500/25 font-semibold',
-    draft: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/35 font-mono tracking-wider uppercase font-bold',
+    cyan: 'bg-sky-500/10 text-sky-700 dark:text-sky-300 border border-sky-500/20',
+    purple: 'bg-purple-500/10 text-purple-700 dark:text-purple-300 border border-purple-500/20',
+    violet: 'bg-violet-500/10 text-violet-700 dark:text-violet-300 border border-violet-500/20',
+    success: 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20',
+    warning: 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/20',
+    neutral: 'bg-[var(--tm-badge-bg)] text-[var(--tm-badge-text)] border border-[var(--tm-badge-border)]',
+    draft: 'bg-indigo-500/10 text-indigo-700 dark:text-indigo-300 border border-indigo-500/20 font-mono tracking-wider uppercase',
   };
 
   return (
