@@ -574,7 +574,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                               ? (lang === 'en' ? 'In progress' : 'В процессе изучения')
                               : (lang === 'en' ? 'Ready to start' : 'Готов к изучению')}
                           </span>
-                          <span className={`inline-flex items-center gap-1 text-xs font-semibold group-hover:translate-x-0.5 transition-transform ${nodeTheme.text}`}>
+                          <span className={`inline-flex items-center gap-1 text-xs font-semibold ${nodeTheme.text}`}>
                             {lang === 'en' ? 'Open' : 'Открыть'} <ArrowRight className="w-3.5 h-3.5" />
                           </span>
                         </div>

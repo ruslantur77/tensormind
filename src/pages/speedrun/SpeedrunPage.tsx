@@ -330,7 +330,7 @@ export const SpeedrunPage: React.FC = () => {
             onClick={() => setActiveTab('cards')}
             className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'cards'
-                ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm'
+                ? 'bg-[var(--tm-surface-elevated)] text-slate-900 dark:text-white shadow-sm border border-[var(--tm-card-border)]'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -342,7 +342,7 @@ export const SpeedrunPage: React.FC = () => {
             onClick={() => setActiveTab('quiz')}
             className={`py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold transition flex items-center justify-center gap-2 cursor-pointer ${
               activeTab === 'quiz'
-                ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm'
+                ? 'bg-[var(--tm-surface-elevated)] text-slate-900 dark:text-white shadow-sm border border-[var(--tm-card-border)]'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >

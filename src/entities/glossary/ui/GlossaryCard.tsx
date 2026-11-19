@@ -178,14 +178,14 @@ export const GlossaryCard: React.FC<GlossaryCardProps> = ({
         {term.lessonPath && (
           <button
             onClick={handleGoToLesson}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/20 transition cursor-pointer ml-auto group/btn"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-sky-500/10 hover:bg-sky-500/20 text-sky-700 dark:text-sky-300 border border-sky-500/20 transition-colors cursor-pointer ml-auto"
           >
             <span>
               {isEn ? 'Lesson: ' : 'В урок «'}
               {lessonTitle.length > 24 ? lessonTitle.slice(0, 24) + '...' : lessonTitle}
               {!isEn && '»'}
             </span>
-            <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-0.5 transition-transform" />
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
         )}
       </div>

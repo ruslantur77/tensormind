@@ -370,7 +370,7 @@ export const HomePage: React.FC = () => {
 
           <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-sky-600 dark:text-sky-400 group-hover:bg-sky-500/10 transition-colors shrink-0">
             <span className="hidden sm:inline">{lang === 'en' ? 'Open' : 'Открыть'}</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+            <ArrowRight className="w-4 h-4" />
           </div>
         </div>
       </div>
@@ -388,7 +388,7 @@ export const HomePage: React.FC = () => {
               }}
               className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
                 homeTab === 'modules'
-                  ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm'
+                  ? 'bg-[var(--tm-surface-elevated)] text-slate-900 dark:text-white shadow-sm border border-[var(--tm-card-border)]'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >
@@ -404,7 +404,7 @@ export const HomePage: React.FC = () => {
               }}
               className={`flex-1 sm:flex-initial px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition flex items-center justify-center gap-2 cursor-pointer ${
                 homeTab === 'roadmap'
-                  ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm'
+                  ? 'bg-[var(--tm-surface-elevated)] text-slate-900 dark:text-white shadow-sm border border-[var(--tm-card-border)]'
                   : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
             >

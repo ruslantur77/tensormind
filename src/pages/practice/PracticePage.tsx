@@ -39,7 +39,7 @@ export const PracticePage: React.FC<PracticePageProps> = ({ initialTab }) => {
             onClick={() => switchTab('cards')}
             className={`py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer select-none ${
               currentTab === 'cards'
-                ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm font-semibold'
+                ? 'bg-[var(--tm-surface-elevated)] text-slate-900 dark:text-white shadow-sm border border-[var(--tm-card-border)] font-semibold'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -52,7 +52,7 @@ export const PracticePage: React.FC<PracticePageProps> = ({ initialTab }) => {
             onClick={() => switchTab('speedrun')}
             className={`py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer select-none ${
               currentTab === 'speedrun'
-                ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm font-semibold'
+                ? 'bg-[var(--tm-surface-elevated)] text-slate-900 dark:text-white shadow-sm border border-[var(--tm-card-border)] font-semibold'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >
@@ -65,7 +65,7 @@ export const PracticePage: React.FC<PracticePageProps> = ({ initialTab }) => {
             onClick={() => switchTab('exam')}
             className={`py-2 px-3 rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center justify-center gap-1.5 cursor-pointer select-none ${
               currentTab === 'exam'
-                ? 'bg-[var(--tm-surface-solid)] text-slate-900 dark:text-white shadow-sm font-semibold'
+                ? 'bg-[var(--tm-surface-elevated)] text-slate-900 dark:text-white shadow-sm border border-[var(--tm-card-border)] font-semibold'
                 : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
             }`}
           >

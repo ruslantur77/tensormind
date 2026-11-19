@@ -9,6 +9,7 @@
   --tm-surface-solid: #191b1e;
   --tm-surface-inset: #15171a;
   --tm-surface-hover: #202327;
+  --tm-surface-elevated: #2a2e34;
 
   --tm-glass-bg: rgba(18, 19, 21, 0.82);
   --tm-glass-border: rgba(255, 255, 255, 0.07);
@@ -75,6 +76,7 @@
   --tm-surface-solid: #ffffff;
   --tm-surface-inset: #f0f2f5;
   --tm-surface-hover: #f7f9fb;
+  --tm-surface-elevated: #ffffff;
 
   --tm-glass-bg: rgba(245, 246, 248, 0.85);
   --tm-glass-border: rgba(15, 23, 42, 0.08);
