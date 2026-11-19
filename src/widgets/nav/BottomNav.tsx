@@ -48,11 +48,12 @@ export const BottomNav: React.FC = () => {
 
   return (
     <nav className="fixed bottom-0 inset-x-0 z-40 aero-bar border-t border-[var(--tm-card-border)] safe-bottom">
-      <div className="max-w-md sm:max-w-lg mx-auto px-4 flex items-center justify-around h-16">
+      <div className="max-w-md sm:max-w-lg mx-auto px-4 flex items-center justify-around h-14 sm:h-16">
         {navItems.map(({ to, label, icon: Icon, isActive }) => (
           <NavLink
             key={to}
             to={to}
+            aria-label={label}
             onClick={() => platform.haptics.light()}
             className={`group flex flex-col items-center justify-center flex-1 py-1 text-xs select-none transition-colors duration-150 ${
               isActive
@@ -69,7 +70,7 @@ export const BottomNav: React.FC = () => {
             >
               <Icon className={`w-5 h-5 shrink-0 ${isActive ? 'stroke-[2.25]' : 'stroke-2'}`} />
             </div>
-            <span className="mt-0.5 tracking-tight transition-colors duration-200">{label}</span>
+            <span className="hidden sm:block mt-0.5 tracking-tight transition-colors duration-200">{label}</span>
           </NavLink>
         ))}
       </div>
