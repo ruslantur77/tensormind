@@ -21,7 +21,6 @@ import { Button } from '@/shared/ui/Button';
 import { Badge } from '@/shared/ui/Badge';
 import { ProgressBar } from '@/shared/ui/ProgressBar';
 import { profileRepository } from '@/entities/profile/model/repository';
-import { streakRepository } from '@/entities/streak/model/repository';
 import { xpRepository } from '@/entities/xp/model/repository';
 import { cardRepository } from '@/entities/card/model/repository';
 import { lessonRepository } from '@/entities/lesson/model/repository';
@@ -39,8 +38,6 @@ import { STATS_UPDATED_EVENT } from '@/shared/lib/events';
 interface HomeDataCache {
   userName: string;
   level: number;
-  totalXP: number;
-  streakDays: number;
   dailyGoalTarget: number;
   cardsReviewedToday: number;
   dueCardIds: string[];
@@ -66,8 +63,6 @@ export const HomePage: React.FC = () => {
   const [isInitialLoaded, setIsInitialLoaded] = useState(homeDataCache?.isInitialLoaded ?? false);
   const [userName, setUserName] = useState(homeDataCache?.userName ?? '');
   const [level, setLevel] = useState(homeDataCache?.level ?? 1);
-  const [totalXP, setTotalXP] = useState(homeDataCache?.totalXP ?? 0);
-  const [streakDays, setStreakDays] = useState(homeDataCache?.streakDays ?? 0);
   const [dailyGoalTarget, setDailyGoalTarget] = useState(homeDataCache?.dailyGoalTarget ?? 15);
   const [cardsReviewedToday, setCardsReviewedToday] = useState(homeDataCache?.cardsReviewedToday ?? 0);
   const [dueCardIds, setDueCardIds] = useState<string[]>(homeDataCache?.dueCardIds ?? []);
@@ -96,10 +91,9 @@ export const HomePage: React.FC = () => {
       const allCardIds = contentRegistry.getAllCards().map(c => c.id);
 
       // Concurrent fetch of all database stores in a single parallel batch
-      const [profile, xp, streak, reviewedToday, due, completed, backupNeeded] = await Promise.all([
+      const [profile, xp, reviewedToday, due, completed, backupNeeded] = await Promise.all([
         profileRepository.getProfile(),
         xpRepository.getTotalXP(),
-        streakRepository.getStreak(),
         cardRepository.getReviewLogsCountToday(),
         cardRepository.getDueCards(allCardIds),
         lessonRepository.getAllProgress(),
@@ -137,8 +131,6 @@ export const HomePage: React.FC = () => {
       homeDataCache = {
         userName: profile.name,
         level: calculatedLevel,
-        totalXP: xp,
-        streakDays: streak.currentStreak,
         dailyGoalTarget: targetGoal,
         cardsReviewedToday: reviewedToday,
         dueCardIds: due,
@@ -151,9 +143,7 @@ export const HomePage: React.FC = () => {
       // Atomic batched update in React 18
       setUserName(profile.name);
       setDailyGoalTarget(targetGoal);
-      setTotalXP(xp);
       setLevel(calculatedLevel);
-      setStreakDays(streak.currentStreak);
       setCardsReviewedToday(reviewedToday);
       setDueCardIds(due);
       setCompletedLessonIds(compSet);
@@ -202,24 +192,14 @@ export const HomePage: React.FC = () => {
       <GlassPanel className="p-5 sm:p-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5 flex-wrap">
+              <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
+                {userName ? t('home.welcome', { name: userName }) : (lang === 'en' ? 'Welcome!' : 'Привет!')}
+              </h2>
               <Badge variant="cyan" size="sm">
                 {t('home.level', { level })}
               </Badge>
-              <div
-                onClick={() => navigate('/stats')}
-                className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-semibold cursor-pointer hover:bg-amber-500/15 transition"
-              >
-                <Flame className="w-3 h-3 fill-amber-500 text-amber-500" />
-                <span>{t('home.streak_days', { count: streakDays })}</span>
-              </div>
-              <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
-                {t('home.xp_total', { count: totalXP })}
-              </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-              {userName ? t('home.welcome', { name: userName }) : (lang === 'en' ? 'Welcome!' : 'Привет!')}
-            </h2>
             <div
               onClick={() => {
                 platform.haptics.light();
