@@ -3,7 +3,7 @@
  */
 
 export const APP_NAME = 'TensorMind';
-export const APP_VERSION = '1.1.7';
+export const APP_VERSION = '1.1.8';
 export const SCHEMA_VERSION = 1;
 export const CONTENT_VERSION = '1.0.0';
 

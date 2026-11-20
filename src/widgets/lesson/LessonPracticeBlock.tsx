@@ -1,4 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
+import Prism from 'prismjs';
+import 'prismjs/components/prism-python';
+import 'prismjs/components/prism-sql';
 import {
   Terminal,
   Play,
@@ -39,6 +42,28 @@ interface LessonPracticeBlockProps {
   lesson: Lesson;
   lang: 'ru' | 'en';
   onTaskCompleted?: () => void;
+}
+
+const INDENT_UNIT = '    ';
+
+function getBlockBounds(value: string, start: number, end: number, hasSelection: boolean) {
+  const blockStart = value.lastIndexOf('\n', start - 1) + 1;
+  let blockEnd = value.indexOf('\n', end);
+  if (blockEnd === -1) blockEnd = value.length;
+  // Do not indent a trailing line when the selection ends exactly at its start
+  if (hasSelection && end > start && value[end - 1] === '\n') {
+    blockEnd = end - 1;
+  }
+  return { blockStart, blockEnd };
+}
+
+function highlightSource(source: string, language: 'python' | 'sql'): string {
+  try {
+    const html = Prism.highlight(source, Prism.languages[language], language);
+    return source.endsWith('\n') ? html + ' ' : html;
+  } catch {
+    return source.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
 }
 
 export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
@@ -100,6 +125,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
   });
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const highlightRef = useRef<HTMLPreElement>(null);
 
   // Sync state when lesson changes
   useEffect(() => {
@@ -139,23 +165,96 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
     setCopiedColab(false);
   }, [lesson.id, practiceTask.starterCode, isLocalProject]);
 
-  // Tab key indent in textarea
+  // Insert text through execCommand so the browser keeps its native undo history
+  const insertAtCursor = (
+    text: string,
+    nextSelection?: { start: number; end: number }
+  ) => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.focus();
+
+    const previousValue = el.value;
+    let applied = false;
+    try {
+      applied = document.execCommand('insertText', false, text) && el.value !== previousValue;
+    } catch {
+      applied = false;
+    }
+
+    if (!applied) {
+      const start = el.selectionStart;
+      const end = el.selectionEnd;
+      const next = el.value.slice(0, start) + text + el.value.slice(end);
+      setCode(next);
+      practiceTaskRepository.saveUserCode(lesson.id, next);
+    }
+
+    if (nextSelection) {
+      requestAnimationFrame(() => {
+        const node = textareaRef.current;
+        if (!node) return;
+        node.selectionStart = nextSelection.start;
+        node.selectionEnd = nextSelection.end;
+      });
+    }
+  };
+
+  const replaceBlock = (start: number, end: number, text: string) => {
+    const el = textareaRef.current;
+    if (!el) return;
+    el.focus();
+    el.setSelectionRange(start, end);
+    insertAtCursor(text, { start, end: start + text.length });
+  };
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.nativeEvent.isComposing) return;
+
+    const el = e.currentTarget;
+    const value = el.value;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+
     if (e.key === 'Tab') {
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
       e.preventDefault();
-      const target = e.currentTarget;
-      const start = target.selectionStart;
-      const end = target.selectionEnd;
 
-      const newCode = code.substring(0, start) + '    ' + code.substring(end);
-      setCode(newCode);
-      practiceTaskRepository.saveUserCode(lesson.id, newCode);
+      const hasSelection = start !== end;
+      if (!hasSelection && !e.shiftKey) {
+        insertAtCursor(INDENT_UNIT);
+        return;
+      }
 
-      setTimeout(() => {
-        if (textareaRef.current) {
-          textareaRef.current.selectionStart = textareaRef.current.selectionEnd = start + 4;
-        }
-      }, 0);
+      const { blockStart, blockEnd } = getBlockBounds(value, start, end, hasSelection);
+      const block = value.slice(blockStart, blockEnd);
+      if (!block) {
+        if (!e.shiftKey) insertAtCursor(INDENT_UNIT);
+        return;
+      }
+
+      const nextBlock = e.shiftKey
+        ? block
+            .split('\n')
+            .map((line) => (line.startsWith('\t') ? line.slice(1) : line.replace(/^ {1,4}/, '')))
+            .join('\n')
+        : block
+            .split('\n')
+            .map((line) => INDENT_UNIT + line)
+            .join('\n');
+
+      if (nextBlock === block) return;
+      replaceBlock(blockStart, blockEnd, nextBlock);
+      return;
+    }
+
+    if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      const lineStart = value.lastIndexOf('\n', start - 1) + 1;
+      const currentLine = value.slice(lineStart, start);
+      const leading = currentLine.match(/^[ \t]*/)?.[0] ?? '';
+      const indent = currentLine.trimEnd().endsWith(':') ? leading + INDENT_UNIT : leading;
+      insertAtCursor('\n' + indent);
     }
   };
 
@@ -163,6 +262,13 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
     const val = e.target.value;
     setCode(val);
     practiceTaskRepository.saveUserCode(lesson.id, val);
+  };
+
+  const handleEditorScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
+    const pre = highlightRef.current;
+    if (!pre) return;
+    pre.scrollTop = e.currentTarget.scrollTop;
+    pre.scrollLeft = e.currentTarget.scrollLeft;
   };
 
   const handleResetCode = () => {
@@ -282,6 +388,10 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
 
   const lineCount = Math.max(code.split('\n').length, 8);
   const isSql = practiceTask.language === 'sql' || code.trim().toLowerCase().startsWith('select');
+
+  const highlightedCode = useMemo(() => {
+    return highlightSource(code, isSql ? 'sql' : 'python');
+  }, [code, isSql]);
 
   // Verdict config helper
   const getVerdictBadge = (verdict: TestVerdict) => {
@@ -468,7 +578,12 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
             </div>
 
             <pre className="p-4 bg-black/40 text-slate-200 font-mono text-xs overflow-x-auto leading-relaxed border-t border-white/5 max-h-[380px]">
-              <code>{practiceTask.solutionCode}</code>
+              <code
+                className={`language-${isSql ? 'sql' : 'python'}`}
+                dangerouslySetInnerHTML={{
+                  __html: highlightSource(practiceTask.solutionCode, isSql ? 'sql' : 'python'),
+                }}
+              />
             </pre>
           </div>
 
@@ -625,24 +740,45 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
               ))}
             </div>
 
-            {/* Editable Code */}
-            <textarea
-              ref={textareaRef}
-              value={code}
-              onChange={handleCodeChange}
-              onKeyDown={handleKeyDown}
-              spellCheck={false}
-              autoCapitalize="off"
-              autoComplete="off"
-              autoCorrect="off"
-              rows={Math.max(lineCount, 8)}
-              className="w-full py-3 px-3.5 bg-transparent text-slate-200 font-mono text-xs sm:text-sm leading-6 resize-y outline-none focus:ring-0 focus:border-transparent selection:bg-sky-500/30"
-              placeholder={
-                isSql
-                  ? '-- Напишите ваш SQL запрос здесь...'
-                  : '# Напишите ваш Python код здесь...'
-              }
-            />
+            {/* Editable Code with syntax highlighting overlay */}
+            <div className="relative flex-1 min-w-0">
+              <pre
+                ref={highlightRef}
+                aria-hidden="true"
+                className="pointer-events-none select-none absolute inset-0 m-0 py-3 px-3.5 overflow-hidden whitespace-pre bg-transparent text-slate-200 font-mono text-xs sm:text-sm"
+                style={{ lineHeight: '1.5rem', tabSize: 4, textShadow: 'none' }}
+              >
+                <code
+                  className={`language-${isSql ? 'sql' : 'python'} font-mono`}
+                  style={{ lineHeight: '1.5rem', textShadow: 'none' }}
+                  dangerouslySetInnerHTML={{ __html: highlightedCode }}
+                />
+              </pre>
+              <textarea
+                ref={textareaRef}
+                value={code}
+                onChange={handleCodeChange}
+                onKeyDown={handleKeyDown}
+                onScroll={handleEditorScroll}
+                wrap="off"
+                spellCheck={false}
+                autoCapitalize="off"
+                autoComplete="off"
+                autoCorrect="off"
+                rows={Math.max(lineCount, 8)}
+                className="relative block w-full py-3 px-3.5 bg-transparent text-transparent caret-sky-400 font-mono text-xs sm:text-sm resize-y outline-none focus:ring-0 focus:border-transparent selection:bg-sky-500/30 whitespace-pre placeholder:text-slate-500"
+                style={{
+                  lineHeight: '1.5rem',
+                  tabSize: 4,
+                  WebkitTextFillColor: 'transparent',
+                }}
+                placeholder={
+                  isSql
+                    ? '-- Напишите ваш SQL запрос здесь...'
+                    : '# Напишите ваш Python код здесь...'
+                }
+              />
+            </div>
           </div>
 
           {/* Editor Bottom Controls */}
@@ -953,7 +1089,12 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
             </div>
 
             <pre className="p-3 rounded-lg bg-black/40 text-slate-200 font-mono text-xs overflow-x-auto leading-relaxed border border-white/5">
-              <code>{practiceTask.solutionCode}</code>
+              <code
+                className={`language-${isSql ? 'sql' : 'python'}`}
+                dangerouslySetInnerHTML={{
+                  __html: highlightSource(practiceTask.solutionCode, isSql ? 'sql' : 'python'),
+                }}
+              />
             </pre>
           </div>
         )}
