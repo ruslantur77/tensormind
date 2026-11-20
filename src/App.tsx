@@ -12,6 +12,7 @@ import { SettingsPage } from '@/pages/settings/SettingsPage';
 import { GlossaryPage } from '@/pages/glossary/GlossaryPage';
 import { initializeDatabase } from '@/shared/lib/db';
 import { profileRepository } from '@/entities/profile/model/repository';
+import { achievementRepository } from '@/entities/achievement/model/repository';
 import { platform } from '@/shared/lib/platform';
 import { applyTheme } from '@/shared/lib/theme';
 
@@ -23,6 +24,7 @@ export default function App() {
     async function setupApp() {
       try {
         await initializeDatabase();
+        await achievementRepository.backfillXP();
         const profile = await profileRepository.getProfile();
         if (profile) {
           setHasProfile(true);

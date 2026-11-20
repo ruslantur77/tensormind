@@ -1,6 +1,7 @@
 import { db, AchievementRecord } from '@/shared/lib/db';
 import { fireCelebrationConfetti } from '@/shared/ui/Confetti';
 import { platform } from '@/shared/lib/platform';
+import { xpRepository } from '@/entities/xp/model/repository';
 
 export interface AchievementMeta {
   id: string;
@@ -196,6 +197,37 @@ export const achievementRepository = {
     return !!record;
   },
 
+  /**
+   * One-time repair: achievements unlocked before XP rewards were wired up
+   * never produced an XP event. Grant the missing reward once per achievement.
+   */
+  async backfillXP(): Promise<void> {
+    const done = await db.meta.get('achievementXpBackfillDone');
+    if (done) return;
+
+    const [unlocked, xpEvents] = await Promise.all([
+      db.achievements.toArray(),
+      db.xpEvents.toArray(),
+    ]);
+    const rewardedSources = new Set(xpEvents.map((event) => event.source));
+
+    for (const record of unlocked) {
+      const meta = ACHIEVEMENTS_LIST.find((item) => item.id === record.achievementId);
+      if (!meta || meta.xpReward <= 0) continue;
+
+      const source = `Достижение: ${meta.titleRu}`;
+      if (rewardedSources.has(source)) continue;
+
+      await xpRepository.addXP(meta.xpReward, source);
+    }
+
+    await db.meta.put({
+      key: 'achievementXpBackfillDone',
+      value: true,
+      updatedAt: new Date().toISOString(),
+    });
+  },
+
   async unlock(achievementId: string): Promise<boolean> {
     const existing = await db.achievements.get(achievementId);
     if (existing) return false;
@@ -206,6 +238,11 @@ export const achievementRepository = {
       updatedAt: new Date().toISOString(),
     };
     await db.achievements.put(record);
+
+    const meta = ACHIEVEMENTS_LIST.find((item) => item.id === achievementId);
+    if (meta && meta.xpReward > 0) {
+      await xpRepository.addXP(meta.xpReward, `Достижение: ${meta.titleRu}`);
+    }
 
     platform.haptics.success();
     fireCelebrationConfetti();
