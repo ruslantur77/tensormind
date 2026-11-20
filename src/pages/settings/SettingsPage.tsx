@@ -417,10 +417,6 @@ export const SettingsPage: React.FC = () => {
             <span>Версия приложения:</span>
             <span className="text-slate-900 dark:text-slate-200">{APP_VERSION}</span>
           </div>
-          <div className="pt-2 flex items-center justify-center gap-1.5 text-emerald-600 dark:text-emerald-400 font-sans font-medium">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
-            <span>{t('settings.offline_ready')}</span>
-          </div>
         </div>
       </GlassPanel>
 
