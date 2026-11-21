@@ -368,7 +368,7 @@ export const SpeedrunPage: React.FC = () => {
                 <Trophy className="w-4 h-4 text-amber-500" />
                 Личный рекорд:
               </span>
-              <span className="text-base font-bold text-amber-600 dark:text-amber-400 font-mono">
+              <span className="text-base font-bold text-amber-600 dark:text-amber-400 font-numeric">
                 {bestCardsScore} очков
               </span>
             </div>
@@ -455,7 +455,7 @@ export const SpeedrunPage: React.FC = () => {
                   <button
                     key={count}
                     onClick={() => setQuizQuestionCount(count)}
-                    className={`py-2.5 px-2 rounded-xl text-sm sm:text-base font-bold font-mono transition border cursor-pointer text-center ${
+                    className={`py-2.5 px-2 rounded-xl text-sm sm:text-base font-bold font-numeric transition border cursor-pointer text-center ${
                       quizQuestionCount === count
                         ? 'bg-sky-500 text-white border-sky-400'
                         : 'aero-inset text-slate-700 dark:text-slate-300 hover:border-white/30 hover:text-slate-900 dark:hover:text-white'
@@ -472,7 +472,7 @@ export const SpeedrunPage: React.FC = () => {
                 <Trophy className="w-4 h-4 text-amber-500 shrink-0" />
                 {lang === 'en' ? 'Personal best:' : 'Личный рекорд:'}
               </span>
-              <span className="text-base font-bold text-amber-600 dark:text-amber-400 font-mono">
+              <span className="text-base font-bold text-amber-600 dark:text-amber-400 font-numeric">
                 {bestQuizScore} {lang === 'en' ? 'pts' : 'очков'}
               </span>
             </div>
@@ -515,13 +515,13 @@ export const SpeedrunPage: React.FC = () => {
           <div className="grid grid-cols-2 gap-3 text-xs text-slate-700 dark:text-slate-300">
             <div className="p-3.5 rounded-xl aero-inset">
               <span className="text-slate-500 dark:text-slate-400 block mb-1">Точность ответов</span>
-              <span className="text-lg font-bold text-sky-700 dark:text-sky-400 font-mono">
+              <span className="text-lg font-bold text-sky-700 dark:text-sky-400 font-numeric">
                 {correctCount} / {totalCount} {totalCount > 0 && `(${Math.round((correctCount / totalCount) * 100)}%)`}
               </span>
             </div>
             <div className="p-3.5 rounded-xl aero-inset">
               <span className="text-slate-500 dark:text-slate-400 block mb-1">Заработано опыта</span>
-              <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-mono">
+              <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-numeric">
                 +{Math.floor(score / 5)} XP
               </span>
             </div>
@@ -668,7 +668,7 @@ export const SpeedrunPage: React.FC = () => {
       <div className="max-w-xl mx-auto space-y-4 pb-36">
         {/* HUD: Timer, Score, Combo */}
         <div className="flex items-center justify-between p-3 rounded-2xl aero-glass">
-          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full aero-inset text-xs font-mono font-bold text-amber-600 dark:text-amber-400">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full aero-inset text-xs font-numeric font-bold text-amber-600 dark:text-amber-400">
             <Clock className="w-4 h-4 shrink-0" />
             <span>{timeLeft}{lang === 'en' ? 's' : 'с'}</span>
           </div>
@@ -764,7 +764,7 @@ export const SpeedrunPage: React.FC = () => {
     <div className="max-w-xl mx-auto space-y-4 pb-36">
       {/* HUD: Stopwatch, Progress, Score */}
       <div className="flex items-center justify-between p-3 rounded-2xl aero-glass">
-        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full aero-inset text-xs font-mono font-bold text-sky-600 dark:text-sky-400">
+        <div className="flex items-center gap-1.5 px-3 py-1 rounded-full aero-inset text-xs font-numeric font-bold text-sky-600 dark:text-sky-400">
           <Clock className="w-4 h-4 shrink-0" />
           <span>{quizElapsedSec}{lang === 'en' ? 's' : 'с'}</span>
         </div>
@@ -775,7 +775,7 @@ export const SpeedrunPage: React.FC = () => {
             : `Вопрос ${quizIndex + 1} из ${quizQueue.length}`}
         </span>
 
-        <span className="text-xs font-mono font-bold text-emerald-600 dark:text-emerald-400">
+        <span className="text-xs font-numeric font-bold text-emerald-600 dark:text-emerald-400">
           {score} pts
         </span>
       </div>
@@ -794,7 +794,7 @@ export const SpeedrunPage: React.FC = () => {
                 className="p-3.5 rounded-xl border border-[var(--tm-card-border)] hover:border-[var(--tm-card-hover-border)] bg-[var(--tm-surface-inset)] hover:bg-[var(--tm-surface-hover)] text-xs sm:text-sm text-slate-800 dark:text-slate-200 cursor-pointer transition-colors flex items-center justify-between active:scale-[0.99]"
               >
                 <div className="flex items-center gap-2.5 flex-1">
-                  <span className="w-5 h-5 rounded-lg aero-inset flex items-center justify-center text-[10px] font-mono text-slate-500 font-bold shrink-0">
+                  <span className="w-5 h-5 rounded-lg aero-inset flex items-center justify-center text-[10px] font-numeric text-slate-500 font-bold shrink-0">
                     {optIdx + 1}
                   </span>
                   <MathText text={getLocalized(opt, lang)} />
@@ -817,7 +817,7 @@ export const SpeedrunPage: React.FC = () => {
                   className="p-3 rounded-xl border border-[var(--tm-card-border)] hover:border-[var(--tm-card-hover-border)] bg-[var(--tm-surface-inset)] hover:bg-[var(--tm-surface-hover)] text-xs font-mono text-slate-800 dark:text-slate-200 cursor-pointer transition-colors flex items-center justify-between active:scale-[0.99]"
                 >
                   <div className="flex items-center gap-2.5 flex-1">
-                    <span className="w-5 h-5 rounded-lg aero-inset flex items-center justify-center text-[10px] font-mono text-slate-500 font-bold shrink-0">
+                    <span className="w-5 h-5 rounded-lg aero-inset flex items-center justify-center text-[10px] font-numeric text-slate-500 font-bold shrink-0">
                       {optIdx + 1}
                     </span>
                     <span>{getLocalized(opt, lang)}</span>

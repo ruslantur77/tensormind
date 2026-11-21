@@ -220,7 +220,7 @@ export const HomePage: React.FC = () => {
                 <Flame className="w-4 h-4 text-amber-500 fill-amber-500 shrink-0" />
                 {t('home.daily_goal')}
               </span>
-              <span className="text-sky-600 dark:text-sky-400 font-mono font-bold">
+              <span className="text-sky-600 dark:text-sky-400 font-numeric font-bold">
                 {cardsReviewedToday} / {dailyGoalTarget}
               </span>
             </div>
@@ -336,7 +336,7 @@ export const HomePage: React.FC = () => {
                 <h4 className="font-semibold text-sm sm:text-base text-slate-900 dark:text-white tracking-tight">
                   {lang === 'en' ? 'ML Formulas & Glossary' : 'Глоссарий формул & терминов'}
                 </h4>
-                <span className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-mono bg-[var(--tm-surface-inset)] border border-[var(--tm-card-border)] text-slate-500 dark:text-slate-400">
+                <span className="hidden sm:inline-block px-1.5 py-0.5 rounded text-[10px] font-numeric bg-[var(--tm-surface-inset)] border border-[var(--tm-card-border)] text-slate-500 dark:text-slate-400">
                   F1, L1, ROC, PPO...
                 </span>
               </div>
@@ -433,7 +433,7 @@ export const HomePage: React.FC = () => {
 
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-mono font-bold text-slate-500 dark:text-slate-400">
+                          <span className="text-xs font-numeric font-bold text-slate-500 dark:text-slate-400">
                             #{mod.meta.order}
                           </span>
                           <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-slate-100">

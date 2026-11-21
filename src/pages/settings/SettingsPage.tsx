@@ -410,7 +410,7 @@ export const SettingsPage: React.FC = () => {
           <Info className="w-4 h-4 text-sky-600 dark:text-sky-400" />
           <span>{t('settings.about_section')}</span>
         </h3>
-        <div className="space-y-1 text-xs text-slate-600 dark:text-slate-400 font-mono">
+        <div className="space-y-1 text-xs text-slate-600 dark:text-slate-400 font-numeric">
           <div className="flex justify-between">
             <span>Приложение:</span>
             <span className="text-slate-900 dark:text-slate-200">{APP_NAME}</span>

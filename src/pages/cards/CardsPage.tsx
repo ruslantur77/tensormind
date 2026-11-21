@@ -322,7 +322,7 @@ export const CardsPage: React.FC = () => {
               className="p-3 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-800 dark:text-red-300 flex flex-col items-center justify-center cursor-pointer transition active:scale-95"
             >
               <span className="text-xs font-bold">{t('cards.again')}</span>
-              <span className="text-[10px] text-red-600 dark:text-red-400 font-mono mt-0.5">&lt;10 мин [1]</span>
+              <span className="text-[10px] text-red-600 dark:text-red-400 font-numeric mt-0.5">&lt;10 мин [1]</span>
             </button>
 
             <button
@@ -330,7 +330,7 @@ export const CardsPage: React.FC = () => {
               className="p-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-800 dark:text-amber-300 flex flex-col items-center justify-center cursor-pointer transition active:scale-95"
             >
               <span className="text-xs font-bold">{t('cards.hard')}</span>
-              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-mono mt-0.5">1-2 дн [2]</span>
+              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-numeric mt-0.5">1-2 дн [2]</span>
             </button>
 
             <button
@@ -338,7 +338,7 @@ export const CardsPage: React.FC = () => {
               className="p-3 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-800 dark:text-sky-300 flex flex-col items-center justify-center cursor-pointer transition active:scale-95"
             >
               <span className="text-xs font-bold">{t('cards.good')}</span>
-              <span className="text-[10px] text-sky-600 dark:text-sky-400 font-mono mt-0.5">3-5 дн [3]</span>
+              <span className="text-[10px] text-sky-600 dark:text-sky-400 font-numeric mt-0.5">3-5 дн [3]</span>
             </button>
 
             <button
@@ -346,7 +346,7 @@ export const CardsPage: React.FC = () => {
               className="p-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 flex flex-col items-center justify-center cursor-pointer transition active:scale-95"
             >
               <span className="text-xs font-bold">{t('cards.easy')}</span>
-              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-mono mt-0.5">7+ дн [4]</span>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-numeric mt-0.5">7+ дн [4]</span>
             </button>
           </div>
         </div>

@@ -144,7 +144,7 @@ export const StatsPage: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5 text-sky-500" />
             Всего опыта
           </span>
-          <p className="text-xl sm:text-2xl font-extrabold text-sky-700 dark:text-sky-400 font-mono">
+          <p className="text-xl sm:text-2xl font-extrabold text-sky-700 dark:text-sky-400 font-numeric">
             {totalXP} XP
           </p>
           <span className="text-[11px] text-slate-500 dark:text-slate-400">Уровень {level}</span>
@@ -155,10 +155,10 @@ export const StatsPage: React.FC = () => {
             <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
             Текущий стрик
           </span>
-          <p className="text-xl sm:text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-mono">
-            {currentStreak} дн.
+          <p className="text-xl sm:text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-numeric">
+            {currentStreak}
           </p>
-          <span className="text-[11px] text-slate-500 dark:text-slate-400">Рекорд: {longestStreak} дн.</span>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400">Рекорд: {longestStreak}</span>
         </Card>
 
         <Card className="p-4 space-y-1">
@@ -166,7 +166,7 @@ export const StatsPage: React.FC = () => {
             <Layers className="w-3.5 h-3.5 text-indigo-500" />
             Карточки
           </span>
-          <p className="text-xl sm:text-2xl font-extrabold text-indigo-700 dark:text-indigo-400 font-mono">
+          <p className="text-xl sm:text-2xl font-extrabold text-indigo-700 dark:text-indigo-400 font-numeric">
             {cardsReviewedCount}
           </p>
           <span className="text-[11px] text-slate-500 dark:text-slate-400">в долговременной памяти</span>
@@ -177,7 +177,7 @@ export const StatsPage: React.FC = () => {
             <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
             Уроки
           </span>
-          <p className="text-xl sm:text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 font-mono">
+          <p className="text-xl sm:text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 font-numeric">
             {lessonsCompletedCount}
           </p>
           <span className="text-[11px] text-slate-500 dark:text-slate-400">полностью пройдено</span>
@@ -190,7 +190,7 @@ export const StatsPage: React.FC = () => {
           <span className="text-slate-700 dark:text-slate-300">
             Уровень {level} → Уровень {level + 1}
           </span>
-          <span className="text-sky-700 dark:text-sky-400 font-mono font-bold">
+          <span className="text-sky-700 dark:text-sky-400 font-numeric font-bold">
             {xpInCurrentLevel} / {xpNeeded} XP
           </span>
         </div>
@@ -220,7 +220,7 @@ export const StatsPage: React.FC = () => {
               }`}
             >
               <span className="text-[10px] text-slate-500 dark:text-slate-400">{d.month}</span>
-              <span className="text-xs font-bold font-mono">{d.day}</span>
+              <span className="text-xs font-bold font-numeric">{d.day}</span>
               <div
                 className={`w-1.5 h-1.5 rounded-full mt-1 ${
                   d.isActive ? 'bg-amber-500' : 'bg-transparent'
@@ -270,7 +270,7 @@ export const StatsPage: React.FC = () => {
             <Trophy className="w-5 h-5 text-amber-500" />
             <span>{t('stats.achievements_title')}</span>
           </h3>
-          <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
+          <span className="text-xs text-slate-500 dark:text-slate-400 font-numeric">
             {unlockedAchievementIds.size} / {ACHIEVEMENTS_LIST.length}
           </span>
         </div>
@@ -302,7 +302,7 @@ export const StatsPage: React.FC = () => {
                     <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-tight">
                       {lang === 'en' ? ach.descEn : ach.descRu}
                     </p>
-                    <span className="text-[10px] font-mono text-sky-700 dark:text-sky-400 block pt-0.5">
+                    <span className="text-[10px] font-numeric text-sky-700 dark:text-sky-400 block pt-0.5">
                       +{ach.xpReward} XP
                     </span>
                   </div>

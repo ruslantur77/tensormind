@@ -508,7 +508,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                         {/* Row 1: Order + Role Tag on Left, Badge on Right */}
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-1.5 min-w-0">
-                            <span className="px-1.5 py-0.5 rounded-md bg-[var(--tm-surface-inset)] border border-[var(--tm-card-border)] text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300 shrink-0">
+                            <span className="px-1.5 py-0.5 rounded-md bg-[var(--tm-surface-inset)] border border-[var(--tm-card-border)] text-[11px] font-numeric font-bold text-slate-700 dark:text-slate-300 shrink-0">
                               #{mod.meta.order}
                             </span>
                             <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 truncate">
@@ -555,7 +555,7 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                             <BookOpen className="w-3 h-3 shrink-0" />
                             {mod.lessons.length} уроков
                           </span>
-                          <span className={`font-mono font-bold ${isDone ? 'text-[var(--tm-sage-text)]' : 'text-[var(--tm-ochre-text)]'}`}>
+                          <span className={`font-numeric font-bold ${isDone ? 'text-[var(--tm-sage-text)]' : 'text-[var(--tm-ochre-text)]'}`}>
                             {Math.round(progress)}%
                           </span>
                         </div>

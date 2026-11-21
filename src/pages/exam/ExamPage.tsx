@@ -414,7 +414,7 @@ export const ExamPage: React.FC = () => {
           </span>
         </div>
         <div
-          className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-mono font-bold ${
+          className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-numeric font-bold ${
             timeLeftSec < 180
               ? 'bg-red-500/20 text-red-600 dark:text-red-400 animate-pulse'
               : 'aero-inset text-slate-800 dark:text-slate-200'

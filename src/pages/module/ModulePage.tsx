@@ -81,7 +81,7 @@ export const ModulePage: React.FC = () => {
               <ModuleIcon moduleId={moduleData.meta.id} className="w-8 h-8" />
             </div>
             <div className="space-y-1">
-              <span className="text-xs font-mono text-[var(--tm-ochre-text)] font-bold">
+              <span className="text-xs font-numeric text-[var(--tm-ochre-text)] font-bold">
                 Модуль {moduleData.meta.order}
               </span>
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">

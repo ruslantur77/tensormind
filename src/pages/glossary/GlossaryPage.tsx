@@ -170,7 +170,7 @@ export const GlossaryPage: React.FC = () => {
                 <span>{cat.icon}</span>
                 <span>{catLabel}</span>
                 <span
-                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono ${
+                  className={`text-[10px] px-1.5 py-0.2 rounded-full font-numeric ${
                     isSelected
                       ? 'bg-white/25 text-white'
                       : 'bg-[var(--tm-surface-inset)] text-slate-500 dark:text-slate-400'
