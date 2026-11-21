@@ -15,6 +15,8 @@ import {
   CheckCircle2,
   Info,
   Smartphone,
+  Github,
+  ExternalLink,
 } from 'lucide-react';
 import { GlassPanel } from '@/shared/ui/GlassPanel';
 import { Button } from '@/shared/ui/Button';
@@ -25,7 +27,7 @@ import { profileRepository } from '@/entities/profile/model/repository';
 import { backupManager } from '@/features/backup/model/backupManager';
 import { contentRegistry } from '@/shared/content';
 import { db } from '@/shared/lib/db';
-import { APP_NAME, APP_VERSION } from '@/shared/config';
+import { APP_NAME, APP_VERSION, GITHUB_URL } from '@/shared/config';
 import { platform } from '@/shared/lib/platform';
 import { applyTheme } from '@/shared/lib/theme';
 
@@ -419,6 +421,29 @@ export const SettingsPage: React.FC = () => {
           </div>
         </div>
       </GlassPanel>
+
+      {/* GitHub Link */}
+      <a
+        href={GITHUB_URL}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="group block focus:outline-none"
+      >
+        <GlassPanel className="p-4 flex items-center gap-3.5 transition-colors group-hover:border-sky-500/30 group-focus-visible:ring-2 group-focus-visible:ring-sky-500/50">
+          <div className="p-2 rounded-lg aero-inset text-slate-700 dark:text-slate-200 shrink-0">
+            <Github className="w-5 h-5" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+              {t('settings.github_title')}
+            </div>
+            <div className="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">
+              {t('settings.github_subtitle')}
+            </div>
+          </div>
+          <ExternalLink className="w-4 h-4 text-slate-400 group-hover:text-sky-500 transition-colors shrink-0" />
+        </GlassPanel>
+      </a>
 
       {/* Import Choice Modal */}
       <Modal
