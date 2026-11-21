@@ -59,10 +59,7 @@ export const GlossaryCard: React.FC<GlossaryCardProps> = ({
   const lessonTitle = term.lessonPath ? getLocalized(term.lessonPath.title, lang) : '';
 
   return (
-    <div className="relative rounded-xl border border-[var(--tm-card-border)] bg-[var(--tm-surface)] hover:border-[var(--tm-card-hover-border)] transition-colors duration-150 p-5 sm:p-6 flex flex-col justify-between group overflow-hidden">
-      {/* Top subtle category accent line */}
-      <div className={`absolute top-0 inset-x-0 h-0.5 bg-gradient-to-r ${categoryMeta.color} opacity-50 group-hover:opacity-80 transition-opacity`} />
-
+    <div className="relative rounded-xl border border-[var(--tm-card-border)] bg-[var(--tm-surface)] hover:border-[var(--tm-card-hover-border)] transition-colors duration-150 p-5 sm:p-6 flex flex-col justify-between overflow-hidden">
       <div>
         {/* Header: Title + Category */}
         <div className="flex items-start justify-between gap-3 mb-2.5">
