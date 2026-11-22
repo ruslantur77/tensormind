@@ -243,9 +243,6 @@ export const HomePage: React.FC = () => {
                 <Layers className="w-4 h-4 shrink-0" />
                 {t('home.due_cards_title')}
               </span>
-              <Badge variant={dueCardIds.length > 0 ? 'warning' : 'success'} size="sm">
-                <span className="font-text font-bold">{dueCardIds.length}</span>
-              </Badge>
             </div>
             <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 font-text">
               {isInitialLoaded
