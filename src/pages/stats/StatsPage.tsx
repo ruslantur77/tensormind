@@ -144,7 +144,7 @@ export const StatsPage: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5 text-sky-500" />
             Всего опыта
           </span>
-          <p className="text-xl sm:text-2xl font-extrabold text-sky-700 dark:text-sky-400 font-numeric">
+          <p className="text-xl sm:text-2xl font-extrabold text-sky-700 dark:text-sky-400 font-poppins">
             {totalXP} XP
           </p>
           <span className="text-[11px] text-slate-500 dark:text-slate-400">Уровень {level}</span>
@@ -190,7 +190,7 @@ export const StatsPage: React.FC = () => {
           <span className="text-slate-700 dark:text-slate-300">
             Уровень {level} → Уровень {level + 1}
           </span>
-          <span className="text-sky-700 dark:text-sky-400 font-numeric font-bold">
+          <span className="text-sky-700 dark:text-sky-400 font-poppins">
             {xpInCurrentLevel} / {xpNeeded} XP
           </span>
         </div>
@@ -302,7 +302,7 @@ export const StatsPage: React.FC = () => {
                     <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-tight">
                       {lang === 'en' ? ach.descEn : ach.descRu}
                     </p>
-                    <span className="text-[10px] font-numeric text-sky-700 dark:text-sky-400 block pt-0.5">
+                    <span className="text-[10px] font-poppins text-sky-700 dark:text-sky-400 block pt-0.5">
                       +{ach.xpReward} XP
                     </span>
                   </div>

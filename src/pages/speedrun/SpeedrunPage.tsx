@@ -521,7 +521,7 @@ export const SpeedrunPage: React.FC = () => {
             </div>
             <div className="p-3.5 rounded-xl aero-inset">
               <span className="text-slate-500 dark:text-slate-400 block mb-1">Заработано опыта</span>
-              <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-numeric">
+              <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-poppins">
                 +{Math.floor(score / 5)} XP
               </span>
             </div>

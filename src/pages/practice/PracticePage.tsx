@@ -44,7 +44,7 @@ export const PracticePage: React.FC<PracticePageProps> = ({ initialTab }) => {
             }`}
           >
             <Layers className="w-3.5 h-3.5 text-sky-400 shrink-0" />
-            <span>Карточки</span>
+            <span>{t('nav.cards')}</span>
           </button>
 
           <button
@@ -57,7 +57,7 @@ export const PracticePage: React.FC<PracticePageProps> = ({ initialTab }) => {
             }`}
           >
             <Zap className="w-3.5 h-3.5 text-amber-400 shrink-0" />
-            <span>Спидран</span>
+            <span>{t('nav.speedrun')}</span>
           </button>
 
           <button
@@ -70,7 +70,7 @@ export const PracticePage: React.FC<PracticePageProps> = ({ initialTab }) => {
             }`}
           >
             <GraduationCap className="w-3.5 h-3.5 text-indigo-400 shrink-0" />
-            <span>Экзамен</span>
+            <span>{t('nav.exam')}</span>
           </button>
         </div>
       </div>

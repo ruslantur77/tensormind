@@ -172,11 +172,11 @@ export const CardsPage: React.FC = () => {
 
         <GlassPanel className="p-6 grid grid-cols-2 gap-4">
           <div className="text-center space-y-1">
-            <span className="text-xs text-slate-500 dark:text-slate-400">Повторено</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">{t('cards.reviewed_label')}</span>
             <p className="text-2xl font-bold text-sky-700 dark:text-sky-400">{reviewedCount}</p>
           </div>
           <div className="text-center space-y-1">
-            <span className="text-xs text-slate-500 dark:text-slate-400">Заработано XP</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">{t('cards.earned_xp_label')}</span>
             <p className="text-2xl font-bold text-emerald-600 dark:text-emerald-400">+{earnedXP}</p>
           </div>
         </GlassPanel>
@@ -219,9 +219,9 @@ export const CardsPage: React.FC = () => {
         <div className="flex items-center justify-between text-xs font-semibold text-slate-600 dark:text-slate-400">
           <span className="flex items-center gap-1.5 text-sky-700 dark:text-sky-400">
             <Layers className="w-4 h-4" />
-            <span>Карточка {currentIndex + 1} из {queue.length}</span>
+            <span>{t('cards.card_of', { current: currentIndex + 1, total: queue.length })}</span>
           </span>
-          <span className="text-sky-700 dark:text-sky-400 font-bold">+{earnedXP} XP</span>
+          <span className="text-sky-700 dark:text-sky-400 font-poppins">{t('cards.earned_xp', { count: earnedXP })}</span>
         </div>
         <ProgressBar value={progressPercent} height="sm" variant="cyan" />
       </div>
@@ -239,11 +239,11 @@ export const CardsPage: React.FC = () => {
           {/* Top metadata tags */}
           <div className="flex items-center justify-between">
             <Badge variant="cyan" size="sm">
-              {currentCard.type === 'cloze' ? 'Cloze-тест' : 'Вопрос — Ответ'}
+              {currentCard.type === 'cloze' ? t('cards.cloze_test') : t('cards.question_answer')}
             </Badge>
             <span className="text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-1">
               <Keyboard className="w-3 h-3" />
-              Пробел — перевернуть
+              {t('cards.space_to_flip')}
             </span>
           </div>
 
@@ -322,7 +322,7 @@ export const CardsPage: React.FC = () => {
               className="p-3 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/30 text-red-800 dark:text-red-300 flex flex-col items-center justify-center cursor-pointer transition active:scale-95"
             >
               <span className="text-xs font-bold">{t('cards.again')}</span>
-              <span className="text-[10px] text-red-600 dark:text-red-400 font-numeric mt-0.5">&lt;10 мин [1]</span>
+              <span className="text-[10px] text-red-600 dark:text-red-400 font-numeric mt-0.5">{t('cards.interval_again')}</span>
             </button>
 
             <button
@@ -330,7 +330,7 @@ export const CardsPage: React.FC = () => {
               className="p-3 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-800 dark:text-amber-300 flex flex-col items-center justify-center cursor-pointer transition active:scale-95"
             >
               <span className="text-xs font-bold">{t('cards.hard')}</span>
-              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-numeric mt-0.5">1-2 дн [2]</span>
+              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-numeric mt-0.5">{t('cards.interval_hard')}</span>
             </button>
 
             <button
@@ -338,7 +338,7 @@ export const CardsPage: React.FC = () => {
               className="p-3 rounded-xl bg-sky-500/15 hover:bg-sky-500/25 border border-sky-500/30 text-sky-800 dark:text-sky-300 flex flex-col items-center justify-center cursor-pointer transition active:scale-95"
             >
               <span className="text-xs font-bold">{t('cards.good')}</span>
-              <span className="text-[10px] text-sky-600 dark:text-sky-400 font-numeric mt-0.5">3-5 дн [3]</span>
+              <span className="text-[10px] text-sky-600 dark:text-sky-400 font-numeric mt-0.5">{t('cards.interval_good')}</span>
             </button>
 
             <button
@@ -346,7 +346,7 @@ export const CardsPage: React.FC = () => {
               className="p-3 rounded-xl bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 flex flex-col items-center justify-center cursor-pointer transition active:scale-95"
             >
               <span className="text-xs font-bold">{t('cards.easy')}</span>
-              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-numeric mt-0.5">7+ дн [4]</span>
+              <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-numeric mt-0.5">{t('cards.interval_easy')}</span>
             </button>
           </div>
         </div>

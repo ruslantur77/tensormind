@@ -467,12 +467,12 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
 
             {/* Reward badge / Status */}
             {isCompleted ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shrink-0">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shrink-0 font-poppins">
                 <CheckCircle2 className="w-4 h-4" />
                 {lang === 'en' ? 'Project Completed (+25 XP)' : 'Проект выполнен (+25 XP)'}
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/15 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 shrink-0 animate-pulse">
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/15 border border-indigo-500/30 text-indigo-600 dark:text-indigo-400 shrink-0 animate-pulse font-poppins">
                 <Sparkles className="w-3.5 h-3.5" />
                 {lang === 'en' ? '+25 XP Project' : '+25 XP за проект'}
               </span>
@@ -613,11 +613,11 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
             >
               {isCompleted
                 ? lang === 'en'
-                  ? 'Completed (+25 XP)'
-                  : 'Проект засчитан (+25 XP)'
+                  ? <span className="font-poppins">Completed (+25 XP)</span>
+                  : <span className="font-poppins">Проект засчитан (+25 XP)</span>
                 : lang === 'en'
-                ? 'Mark Project Completed (+25 XP)'
-                : 'Отметить проект как выполненный (+25 XP)'}
+                ? <span className="font-poppins">Mark Project Completed (+25 XP)</span>
+                : <span className="font-poppins">Отметить проект как выполненный (+25 XP)</span>}
             </Button>
           </div>
         </div>
@@ -659,7 +659,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
 
           {/* Reward badge */}
           {isCompleted ? (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shrink-0">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 shrink-0 font-poppins">
               <CheckCircle2 className="w-4 h-4" />
               {lang === 'en'
                 ? hasViewedSolution
@@ -671,7 +671,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
             </span>
           ) : hasViewedSolution ? (
             <span
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 shrink-0"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/15 border border-amber-500/30 text-amber-600 dark:text-amber-400 shrink-0 font-poppins"
               title={
                 lang === 'en'
                   ? 'XP reward reduced from 25 to 10 XP because reference solution was viewed'
@@ -682,7 +682,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
               {lang === 'en' ? '+10 XP (with solution)' : '+10 XP (с решением)'}
             </span>
           ) : (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sky-500/15 border border-sky-500/30 text-sky-600 dark:text-sky-400 shrink-0">
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-sky-500/15 border border-sky-500/30 text-sky-600 dark:text-sky-400 shrink-0 font-poppins">
               <Sparkles className="w-3.5 h-3.5" />
               {lang === 'en' ? '+25 XP Challenge' : '+25 XP за решение'}
             </span>
@@ -824,7 +824,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                 }
               >
                 <Eye className="w-3.5 h-3.5" />
-                <span>
+                <span className="font-poppins">
                   {showSolution
                     ? lang === 'en'
                       ? 'Hide Solution'
@@ -1043,10 +1043,10 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
               <div className="p-2.5 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-start gap-2.5 text-xs text-amber-300">
                 <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="font-bold">
+                  <span className="font-bold font-poppins">
                     {lang === 'en' ? 'XP Penalty Applied: ' : 'Награда за задачу снижена: '}
                   </span>
-                  <span>
+                  <span className="font-poppins">
                     {lang === 'en'
                       ? 'Because the reference solution was viewed, solving this challenge now grants +10 XP instead of +25 XP.'
                       : 'Из-за просмотра эталонного решения за решение этой задачи будет начислено +10 XP вместо +25 XP.'}

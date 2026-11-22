@@ -300,7 +300,7 @@ export const LessonPage: React.FC = () => {
       <div className="pt-4 pb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-xs text-slate-400">
           <Sparkles className="w-4 h-4 text-sky-400" />
-          <span>Награда за урок: +{XP_REWARDS.LESSON_COMPLETE} XP</span>
+          <span className="font-poppins">Награда за урок: +{XP_REWARDS.LESSON_COMPLETE} XP</span>
         </div>
 
         <Button

@@ -82,7 +82,7 @@ export const Header: React.FC = () => {
             className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-700 dark:text-sky-400 text-xs font-semibold cursor-pointer hover:bg-sky-500/15 transition"
           >
             <Sparkles className="w-3.5 h-3.5 text-sky-500" />
-            <span>{totalXP} XP</span>
+            <span className="font-poppins">{totalXP} XP</span>
           </div>
         </div>
       </div>

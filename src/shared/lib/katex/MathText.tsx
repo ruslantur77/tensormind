@@ -134,13 +134,23 @@ export const MathText: React.FC<MathTextProps> = ({
 
     // Helper to format inline markdown formatting (bold, italic, code)
     const formatInline = (str: string): string => {
-      return str
+      // Extract inline code first so asterisks inside it (e.g. *args) don't break bold/italic
+      const inlineCodeMap: string[] = [];
+      let result = str.replace(/`([^`]+?)`/g, (_, code) => {
+        const idx = inlineCodeMap.length;
+        inlineCodeMap.push(
+          `<code class="px-1.5 py-0.5 rounded-md text-xs font-mono bg-slate-100 dark:bg-slate-800/80 text-sky-700 dark:text-sky-300 border border-slate-200 dark:border-white/10">${code}</code>`
+        );
+        return `%%INLINE_CODE_${idx}%%`;
+      });
+
+      result = result
         // Bold: **text**
-        .replace(/\*\*([^*]+?)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>')
+        .replace(/\*\*([\s\S]+?)\*\*/g, '<strong class="font-bold text-slate-900 dark:text-white">$1</strong>')
         // Italic: *text* (avoid matching math or single asterisks)
-        .replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, '<em class="italic text-slate-800 dark:text-slate-200">$1</em>')
-        // Inline code: `code`
-        .replace(/`([^`]+?)`/g, '<code class="px-1.5 py-0.5 rounded-md text-xs font-mono bg-slate-100 dark:bg-slate-800/80 text-sky-700 dark:text-sky-300 border border-slate-200 dark:border-white/10">$1</code>');
+        .replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, '<em class="italic text-slate-800 dark:text-slate-200">$1</em>');
+
+      return result.replace(/%%INLINE_CODE_(\d+)%%/g, (_, id) => inlineCodeMap[Number(id)] || '');
     };
 
     // If pure inline mode requested or no newlines/headings/lists/tables

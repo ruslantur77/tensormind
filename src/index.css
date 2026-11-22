@@ -67,6 +67,51 @@
   unicode-range: U+0030-0039;
 }
 
+/* Full-Latin Poppins faces (same Medium 500 file for every weight, so XP labels
+   always match the numeral style without synthetic bolding). */
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/poppins-numerals-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/poppins-numerals-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/poppins-numerals-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url('/fonts/poppins-numerals-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/poppins-numerals-500.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Poppins';
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url('/fonts/poppins-numerals-500.woff2') format('woff2');
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -91,6 +136,16 @@ code, pre, .font-mono {
 .font-numeric {
   font-family: 'Poppins Numerals', 'Inter', system-ui, sans-serif;
   font-variant-numeric: tabular-nums;
+}
+
+/* Force the Poppins Medium style for short labels like "130 XP". */
+.font-poppins {
+  font-family: 'Poppins', 'Inter', system-ui, sans-serif;
+}
+
+/* Opt out of Poppins digits: numbers inherit the regular Inter text weight. */
+.font-text {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Prevent SVG icons from shrinking on mobile screens */

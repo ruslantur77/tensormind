@@ -352,7 +352,7 @@ export const ExamPage: React.FC = () => {
 
           {passed && (
             <Badge variant="success" size="md">
-              Награда: +{earnedXP} XP
+              <span className="font-poppins">Награда: +{earnedXP} XP</span>
             </Badge>
           )}
 

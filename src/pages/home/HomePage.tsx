@@ -244,10 +244,10 @@ export const HomePage: React.FC = () => {
                 {t('home.due_cards_title')}
               </span>
               <Badge variant={dueCardIds.length > 0 ? 'warning' : 'success'} size="sm">
-                {dueCardIds.length}
+                <span className="font-text font-bold">{dueCardIds.length}</span>
               </Badge>
             </div>
-            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 font-text">
               {isInitialLoaded
                 ? dueCardIds.length > 0
                   ? t('home.due_cards_count', { count: dueCardIds.length })
