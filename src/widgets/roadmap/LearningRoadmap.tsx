@@ -135,8 +135,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
       {
         moduleId: 'linear-models',
         flowType: 'sequential',
-        badgeRu: 'Базовый трек',
-        badgeEn: 'Core Foundation',
+        badgeRu: 'Обязательно',
+        badgeEn: 'Mandatory',
         roleRu: 'Линейные модели',
         roleEn: 'Linear Models',
         tipRu: 'Аналитический МНК (OLS), логистическая регрессия, регуляризация L1/L2 и оптимизаторы GD/SGD/Adam.',
@@ -155,8 +155,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
       {
         moduleId: 'svm-pca',
         flowType: 'sequential',
-        badgeRu: 'Базовый трек',
-        badgeEn: 'Core Foundation',
+        badgeRu: 'Обязательно',
+        badgeEn: 'Mandatory',
         roleRu: 'Разделение и метрики',
         roleEn: 'Separation & Metrics',
         tipRu: 'Kernel Trick в SVM, PCA/SVD сжатие размерности и метрики (ROC-AUC, Precision, Recall).',
@@ -176,8 +176,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
       {
         moduleId: 'decision-trees',
         flowType: 'sequential',
-        badgeRu: 'Базовый трек',
-        badgeEn: 'Core Foundation',
+        badgeRu: 'Обязательно',
+        badgeEn: 'Mandatory',
         roleRu: 'Деревья и лес',
         roleEn: 'Trees & Forests',
         tipRu: 'Критерии Джини и энтропия, алгоритм CART, Random Forest, Feature Importance и SHAP.',
@@ -186,8 +186,8 @@ export const ROADMAP_STAGES: RoadmapStage[] = [
       {
         moduleId: 'boosting-nn',
         flowType: 'sequential',
-        badgeRu: 'Базовый трек',
-        badgeEn: 'Core Foundation',
+        badgeRu: 'Обязательно',
+        badgeEn: 'Mandatory',
         roleRu: 'Градиентный бустинг',
         roleEn: 'Gradient Boosting',
         tipRu: 'GBDT, XGBoost, CatBoost, LightGBM (GOSS, Leaf-wise), а также перцептроны и Backpropagation.',
@@ -370,11 +370,11 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
   const legendItems = [
     {
       flow: 'sequential' as const,
-      title: lang === 'en' ? 'Core Track (Sequential)' : 'Базовый трек (последовательно)',
+      title: lang === 'en' ? 'Mandatory (Sequential)' : 'Обязательно (последовательно)',
       hint:
         lang === 'en'
-          ? 'Fundamental base for next topics'
-          : 'Фундаментальная основа для следующих тем',
+          ? 'Mandatory stage for the following topics'
+          : 'Обязательный этап для следующих тем',
     },
     {
       flow: 'parallel' as const,
@@ -499,8 +499,6 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                       className={`p-4 sm:p-5 flex flex-col justify-between gap-3.5 transition-colors cursor-pointer group ${
                         isDone
                           ? 'border-[var(--tm-sage-border)] bg-[var(--tm-sage-soft)]'
-                          : isInProgress
-                          ? 'border-[var(--tm-ochre-border)] bg-[var(--tm-ochre-soft)]'
                           : 'hover:border-[var(--tm-card-hover-border)]'
                       }`}
                     >
