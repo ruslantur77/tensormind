@@ -99,7 +99,49 @@ def train_step(
     pred = sum(features)
     return loss_fn(pred, target)
 \`\`\`
-Аннотации не замедляют выполнение программы в рантайме, но предотвращают сотни скрытых багов через статический анализатор (\`mypy\`, IDE).`,
+Аннотации не замедляют выполнение программы в рантайме, но предотвращают сотни скрытых багов через статический анализатор (\`mypy\`, IDE).
+
+---
+
+#### 5. Стек, куча и время жизни объектов
+
+Переменная в Python — это имя в пространстве имен (фрейме), которое ссылается на объект в куче. Сам объект хранит счетчик ссылок \`ob_refcnt\`. Когда счетчик достигает нуля, память освобождается немедленно (reference counting). Циклические ссылки (\`a.append(a)\`) так не удаляются — для них работает циклический сборщик мусора.
+
+\`\`\`python
+import sys
+
+a = [1, 2, 3]
+print(sys.getrefcount(a))  # 2: переменная a + временный аргумент getrefcount
+
+b = a
+print(sys.getrefcount(a))  # 3: a, b и временный аргумент
+
+del b
+print(sys.getrefcount(a))  # снова 2
+\`\`\`
+
+Практический вывод: \`del\` не «удаляет объект», а удаляет имя; объект живет, пока на него есть хотя бы одна ссылка. Поэтому большой DataFrame может занимать память дольше, чем кажется: на него все еще ссылается кэш, логгер или замыкание.
+
+#### 6. Присваивание, поверхностное и глубокое копирование
+
+\`b = a\` не копирует данные. Для реального копирования есть два уровня:
+
+\`\`\`python
+import copy
+
+a = [[1, 2], [3, 4]]
+b = a                 # тот же объект
+c = a.copy()          # поверхностная копия: внешний список новый, вложенные — общие
+d = copy.deepcopy(a)  # полная копия: новые и внешний, и вложенные списки
+\`\`\`
+
+В ML это критично для конфигов и батчей: если вы передаете \`config\` в функцию и меняете вложенный \`config["augmentation"]\`, поверхностной копии недостаточно — изменится исходный конфиг.
+
+#### 7. Как это проявляется в ML-коде
+
+* **Мутация конфига.** Храните гиперпараметры в \`dataclass\` и передавайте \`copy.deepcopy(cfg)\` в эксперименты, чтобы один запуск не портил другой.
+* **Кэш и память.** Глобальный кэш тензоров или загруженных данных удерживает объекты живыми; очищайте его явно.
+* **Сравнение тензоров.** \`is\` проверяет идентичность объекта, а не равенство значений. Для чисел и строк используйте \`==\`.`,
       en: `### Everything in Python is an Object
 
 Python features **dynamic strong typing**:
@@ -130,7 +172,46 @@ def append_safe(item, history=None):
         history = []
     history.append(item)
     return history
-\`\`\``,
+\`\`\`
+
+---
+
+#### 4. Stack, Heap, and Object Lifetime
+
+A variable is a name in a namespace frame that references a heap object. Each object stores a reference count (\`ob_refcnt\`); when it reaches zero, the memory is reclaimed immediately. Reference cycles (\`a.append(a)\`) are handled later by the cyclic garbage collector.
+
+\`\`\`python
+import sys
+
+a = [1, 2, 3]
+print(sys.getrefcount(a))  # 2: the name a + the temporary argument
+b = a
+print(sys.getrefcount(a))  # 3: a, b + the temporary argument
+del b                      # removes the name, not the object
+\`\`\`
+
+A large DataFrame may stay in memory longer than expected because a cache, logger, or closure still holds a reference to it.
+
+#### 5. Assignment, Shallow Copy, and Deep Copy
+
+\`b = a\` does not copy data. Real copying has two levels:
+
+\`\`\`python
+import copy
+
+a = [[1, 2], [3, 4]]
+b = a                 # same object
+c = a.copy()          # shallow: new outer list, shared inner lists
+d = copy.deepcopy(a)  # deep: new outer and inner lists
+\`\`\`
+
+This matters for ML configs: mutating a nested value through a shallow copy still changes the original configuration.
+
+#### 6. Why This Matters in ML Code
+
+* **Config mutation.** Keep hyperparameters in a \`dataclass\` and pass \`copy.deepcopy(cfg)\` into experiments.
+* **Caches and memory.** Global tensor/data caches keep objects alive; clear them explicitly.
+* **Comparisons.** \`is\` checks object identity, not value equality. Use \`==\` for numbers and strings.`,
     },
     commonMistakes: [
       {
@@ -283,7 +364,53 @@ x, y = y, x
 
 * **Ловушка с собеседования: Можно ли использовать кортеж \`(1, [2, 3])\` как ключ словаря?**
   * **Ответ: НЕТ!** Будет выброшена ошибка \`TypeError: unhashable type: 'list'\`.
-  * Сам кортеж является неизменяемым типом (\`tuple\`), однако его второй элемент — это изменяемый список (\`list\`). Так как список может измениться в любой момент, его хэш не определен. Вычисление \`hash()\` для кортежа рекурсивно требует хэшируемости всех его элементов!`,
+  * Сам кортеж является неизменяемым типом (\`tuple\`), однако его второй элемент — это изменяемый список (\`list\`). Так как список может измениться в любой момент, его хэш не определен. Вычисление \`hash()\` для кортежа рекурсивно требует хэшируемости всех его элементов!
+
+---
+
+#### 5. Что выбирать: список, кортеж, словарь или множество
+
+| Задача | Выбор | Почему |
+| :--- | :--- | :--- |
+| Упорядоченная изменяемая коллекция | \`list\` | быстрый доступ по индексу, \`append\` амортизированно $O(1)$ |
+| Фиксированная запись или ключ словаря | \`tuple\` | неизменяемость и хэшируемость |
+| Поиск по ключу, счетчики, конфиги | \`dict\` | $O(1)$ в среднем |
+| Уникальность и проверка вхождения | \`set\` | $O(1)$ в среднем, автоматически убирает дубликаты |
+
+#### 6. Представления dict (views) и экономия памяти
+
+\`d.keys()\`, \`d.values()\`, \`d.items()\` возвращают не копии списков, а ленивые представления. Они отражают текущее состояние словаря и не занимают память под все элементы:
+
+\`\`\`python
+scores = {"a": 0.9, "b": 0.7}
+keys = scores.keys()
+scores["c"] = 0.8
+print(list(keys))  # ['a', 'b', 'c'] — view видит изменение
+\`\`\`
+
+Если нужен независимый снимок, явно приводите к \`list(...)\`.
+
+#### 7. \`namedtuple\`, \`dataclass\` и словари: когда что использовать
+
+* \`dict\` — когда набор полей динамический (например, JSON-ответ API).
+* \`namedtuple\` — легкая неизменяемая запись с доступом по имени, совместимая с распаковкой.
+* \`dataclass\` — когда нужны значения по умолчанию, валидация, методы и изменяемость.
+
+\`\`\`python
+from collections import namedtuple
+
+Point = namedtuple("Point", ["x", "y"])
+p = Point(1.0, 2.5)
+print(p.x, p.y)  # доступ по имени
+\`\`\`
+
+#### 8. Практический чек-лист
+
+* Проверка вхождения в цикле — только \`set\` или \`dict\`.
+* Очередь — \`deque\`, не \`list.pop(0)\`.
+* Частоты — \`Counter\`, а не ручной \`dict.get\`.
+* Группировка — \`defaultdict(list)\`.
+* Неизменяемый конфиг — \`dataclass(frozen=True)\` или \`namedtuple\`.`,
       en: `### Computational Complexity of Python Collections
 
 Choosing inappropriate data structures causes catastrophic pipeline slowdowns.
@@ -307,7 +434,53 @@ reversed_copy = sequence[::-1]
 #### 3. Standard Library \`collections\`
 * **\`Counter\`**: rapid class frequency histogram extraction.
 * **\`defaultdict\`**: avoids verbose \`if key not in d:\` boilerplates.
-* **\`deque\`**: double-ended queue guaranteeing $O(1)$ push/pop at both boundaries.`,
+* **\`deque\`**: double-ended queue guaranteeing $O(1)$ push/pop at both boundaries.
+
+---
+
+#### 4. Choosing the Right Collection
+
+| Task | Choice | Reason |
+| :--- | :--- | :--- |
+| Ordered mutable collection | \`list\` | index access, amortized $O(1)$ append |
+| Fixed record or dictionary key | \`tuple\` | immutable and hashable |
+| Key lookup, counters, configs | \`dict\` | average $O(1)$ |
+| Uniqueness and membership tests | \`set\` | average $O(1)$, removes duplicates |
+
+#### 5. Dict Views and Memory
+
+\`d.keys()\`, \`d.values()\`, and \`d.items()\` return lazy views, not copies. They reflect the current state of the dictionary:
+
+\`\`\`python
+scores = {"a": 0.9, "b": 0.7}
+keys = scores.keys()
+scores["c"] = 0.8
+print(list(keys))  # ['a', 'b', 'c']
+\`\`\`
+
+Use \`list(...)\` when you need an independent snapshot.
+
+#### 6. \`namedtuple\`, \`dataclass\`, or \`dict\`?
+
+* \`dict\` — dynamic fields, e.g. a JSON API response.
+* \`namedtuple\` — lightweight immutable record with named access and tuple unpacking.
+* \`dataclass\` — defaults, validation, methods, and mutability.
+
+\`\`\`python
+from collections import namedtuple
+
+Point = namedtuple("Point", ["x", "y"])
+p = Point(1.0, 2.5)
+print(p.x, p.y)
+\`\`\`
+
+#### 7. Practical Checklist
+
+* Membership tests inside loops — use \`set\` or \`dict\`.
+* Queues — \`deque\`, not \`list.pop(0)\`.
+* Frequencies — \`Counter\`, not manual \`dict.get\`.
+* Grouping — \`defaultdict(list)\`.
+* Immutable configs — \`dataclass(frozen=True)\` or \`namedtuple\`.`,
     },
     commonMistakes: [
       {
@@ -439,7 +612,70 @@ def stream_csv_batches(file_path: str, batch_size: int = 128):
 sq_gen = (x ** 2 for x in range(10_000_000))
 print(sys.getsizeof(sq_gen)) # Всего ~100 байт памяти независимо от числа элементов!
 \`\`\`
-Именно генераторы лежат в основе загрузчиков данных \`DataLoader\` в PyTorch и потоковых конвейеров TensorFlow.`,
+Именно генераторы лежат в основе загрузчиков данных \`DataLoader\` в PyTorch и потоковых конвейеров TensorFlow.
+
+---
+
+#### 4. Как генератор устроен под капотом
+
+Вызов функции-генератора не выполняет тело, а создает объект-генератор. При каждом \`next()\` интерпретатор возобновляет сохраненный фрейм (локальные переменные, позицию инструкции) и выполняет код до следующего \`yield\`. После исчерпания фрейм освобождается, а повторный \`next()\` бросает \`StopIteration\`.
+
+\`\`\`python
+def countdown(n):
+    while n > 0:
+        yield n
+        n -= 1
+
+gen = countdown(3)
+print(next(gen))  # 3
+print(next(gen))  # 2
+print(list(gen))  # [1] — генератор одноразовый
+\`\`\`
+
+Важное следствие: генератор нельзя «перемотать». Если данные нужны дважды, либо создайте новый генератор, либо материализуйте результат в \`list\` (если он помещается в память).
+
+#### 5. \`yield from\` и композиция генераторов
+
+\`yield from\` делегирует итерацию вложенному итератору и пробрасывает \`send\`/\`throw\`, поэтому это не просто синтаксический сахар:
+
+\`\`\`python
+def read_lines(path):
+    with open(path) as f:
+        yield from f
+
+def non_empty(lines):
+    for line in lines:
+        if line.strip():
+            yield line.strip()
+
+for line in non_empty(read_lines("data.txt")):
+    print(line)
+\`\`\`
+
+Так строятся ленивые пайплайны: каждый этап читает по одному элементу и не хранит весь набор.
+
+#### 6. \`itertools\` для потоковой обработки
+
+* \`itertools.islice(iterable, n)\` — взять первые \`n\` элементов, не материализуя остальное.
+* \`itertools.chain(a, b)\` — склеить несколько итераторов без копирования.
+* \`itertools.groupby(iterable, key)\` — группировка подряд идущих элементов (вход должен быть отсортирован по ключу).
+* \`itertools.tee(iterable, n)\` — разветвить поток на \`n\` независимых итераторов (с внутренним буфером).
+
+\`\`\`python
+from itertools import islice
+
+def batches(iterable, size):
+    it = iter(iterable)
+    while batch := list(islice(it, size)):
+        yield batch
+\`\`\`
+
+#### 7. Когда генератор — плохая идея
+
+* Нужен \`len()\`, индексация \`gen[i]\` или многократный проход — генератор этого не умеет.
+* Нужно сериализовать состояние (например, \`pickle\` DataLoader) — генератор не сериализуется.
+* Ошибка внутри генератора всплывает только в момент итерации, что усложняет отладку.
+* Генератор удерживает открытые ресурсы (файл, соединение), пока его не закроют; используйте \`try/finally\` или \`with\` внутри.`,
       en: `### Processing Datasets Exceeding Physical RAM
 
 Loading multi-gigabyte datasets entirely into memory triggers \`MemoryError\`. **Generators and the iterator protocol** allow streaming streams with constant $O(1)$ memory consumption.
@@ -460,7 +696,70 @@ Iterables implement \`__iter__()\`; Iterators implement \`__next__()\` raising \
 ---
 
 #### 3. Generators and the \`yield\` Keyword
-Generator functions pause execution at each \`yield\`, retaining execution frame state and consuming negligible heap memory regardless of stream length.`,
+Generator functions pause execution at each \`yield\`, retaining execution frame state and consuming negligible heap memory regardless of stream length.
+
+---
+
+#### 4. How a Generator Works Internally
+
+Calling a generator function does not execute its body; it creates a generator object. Each \`next()\` resumes the saved frame (locals and instruction pointer) and runs until the next \`yield\`. When exhausted, the frame is released and further \`next()\` calls raise \`StopIteration\`.
+
+\`\`\`python
+def countdown(n):
+    while n > 0:
+        yield n
+        n -= 1
+
+gen = countdown(3)
+print(next(gen))  # 3
+print(next(gen))  # 2
+print(list(gen))  # [1] — generators are one-shot
+\`\`\`
+
+A generator cannot be rewound. If you need the data twice, create a new generator or materialize it in a \`list\` when it fits in memory.
+
+#### 5. \`yield from\` and Generator Composition
+
+\`yield from\` delegates iteration to a nested iterator and forwards \`send\`/\`throw\`, so it is more than syntax sugar:
+
+\`\`\`python
+def read_lines(path):
+    with open(path) as f:
+        yield from f
+
+def non_empty(lines):
+    for line in lines:
+        if line.strip():
+            yield line.strip()
+
+for line in non_empty(read_lines("data.txt")):
+    print(line)
+\`\`\`
+
+This is how lazy pipelines are built: each stage processes one item at a time.
+
+#### 6. \`itertools\` for Streaming
+
+* \`itertools.islice(iterable, n)\` — take the first \`n\` items without materializing the rest.
+* \`itertools.chain(a, b)\` — concatenate iterators without copying.
+* \`itertools.groupby(iterable, key)\` — group consecutive items (input must be sorted by the key).
+* \`itertools.tee(iterable, n)\` — split a stream into \`n\` independent iterators (with an internal buffer).
+
+\`\`\`python
+from itertools import islice
+
+def batches(iterable, size):
+    it = iter(iterable)
+    while batch := list(islice(it, size)):
+        yield batch
+\`\`\`
+
+#### 7. When a Generator Is the Wrong Tool
+
+* You need \`len()\`, indexing \`gen[i]\`, or multiple passes — generators do not support them.
+* You need to serialize state (e.g. \`pickle\` a DataLoader) — generators are not picklable.
+* Errors surface only during iteration, which complicates debugging.
+* A generator keeps resources (file, connection) open until closed; use \`try/finally\` or \`with\` inside.`,
     },
     commonMistakes: [
       {
@@ -610,7 +909,77 @@ def predict_batch(features):
     return [1, 0, 1]
 \`\`\`
 2. Встроенный кэш \`@functools.lru_cache\` для мемоизации тяжелых расчетов.
-3. Декораторы в PyTorch: \`@torch.no_grad()\` для отключения вычисления градиентов при валидации.`,
+3. Декораторы в PyTorch: \`@torch.no_grad()\` для отключения вычисления градиентов при валидации.
+
+---
+
+#### 4. Области видимости LEGB и \`nonlocal\`
+
+Python ищет имя по цепочке **L**ocal → **E**nclosing → **G**lobal → **B**uilt-in. Замыкание может читать переменную из внешней функции, но для присваивания ей нужно объявить \`nonlocal\`:
+
+\`\`\`python
+def make_counter():
+    count = 0
+    def step():
+        nonlocal count
+        count += 1
+        return count
+    return step
+\`\`\`
+
+Без \`nonlocal\` интерпретатор создаст локальную \`count\` внутри \`step\`, и поведение будет неверным.
+
+#### 5. Декоратор с аргументами
+
+Декоратор с параметрами — это функция, которая возвращает декоратор (три уровня вложенности):
+
+\`\`\`python
+from functools import wraps
+
+def retry(times: int):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(times):
+                try:
+                    return func(*args, **kwargs)
+                except Exception:
+                    if attempt == times - 1:
+                        raise
+        return wrapper
+    return decorator
+
+@retry(times=3)
+def call_api():
+    ...
+\`\`\`
+
+Порядок применения важен: \`@a\` над \`@b\` эквивалентен \`a(b(f))\`, то есть ближайший к функции декоратор срабатывает первым.
+
+#### 6. \`functools.partial\`, \`lru_cache\` и подводные камни
+
+* \`partial\` фиксирует часть аргументов, не создавая новую функцию-обертку вручную.
+* \`lru_cache\` мемоизирует результаты; аргументы должны быть хэшируемыми.
+* \`lru_cache\` на методах экземпляра удерживает \`self\` живым — используйте осторожно в долгоживущих объектах.
+* Кэш не видит изменений внешнего состояния: если функция зависит от глобальной переменной, результат будет устаревшим.
+
+\`\`\`python
+from functools import lru_cache, partial
+
+@lru_cache(maxsize=1024)
+def embed(token: str) -> tuple[float, ...]:
+    ...
+
+to_device = partial(torch.Tensor.to, device="cuda")
+\`\`\`
+
+#### 7. Декораторы в ML-стеке
+
+* \`@torch.no_grad()\` — отключает построение графа и экономит память на инференсе.
+* \`@torch.inference_mode()\` — еще более строгий режим без autograd.
+* \`@tf.function\` — трассирует функцию в граф TensorFlow.
+* \`@app.post(...)\` в FastAPI — регистрирует HTTP-обработчик.
+* \`@retry(...)\` — повторные запросы к нестабильному API модели.`,
       en: `### First-Class Functions and Metaprogramming
 
 Functions are first-class citizens in Python, enabling expressive functional programming constructs.
@@ -642,7 +1011,77 @@ def benchmark(func):
         print(f"Elapsed: {time.perf_counter() - t0:.4f}s")
         return res
     return wrapper
-\`\`\``,
+\`\`\`
+
+---
+
+#### 4. LEGB Scope and \`nonlocal\`
+
+Python resolves names through **L**ocal → **E**nclosing → **G**lobal → **B**uilt-in. A closure can read an enclosing variable, but assignment requires \`nonlocal\`:
+
+\`\`\`python
+def make_counter():
+    count = 0
+    def step():
+        nonlocal count
+        count += 1
+        return count
+    return step
+\`\`\`
+
+Without \`nonlocal\`, \`count += 1\` creates a new local variable and the closure state is lost.
+
+#### 5. Decorators with Arguments
+
+A parameterized decorator is a function returning a decorator (three levels):
+
+\`\`\`python
+from functools import wraps
+
+def retry(times: int):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            for attempt in range(times):
+                try:
+                    return func(*args, **kwargs)
+                except Exception:
+                    if attempt == times - 1:
+                        raise
+        return wrapper
+    return decorator
+
+@retry(times=3)
+def call_api():
+    ...
+\`\`\`
+
+Order matters: \`@a\` above \`@b\` is \`a(b(f))\`; the decorator closest to the function runs first.
+
+#### 6. \`functools.partial\`, \`lru_cache\`, and Pitfalls
+
+* \`partial\` binds some arguments without hand-writing a wrapper.
+* \`lru_cache\` memoizes results; arguments must be hashable.
+* \`lru_cache\` on instance methods keeps \`self\` alive — be careful in long-lived objects.
+* The cache does not observe external state changes; results become stale if the function depends on globals.
+
+\`\`\`python
+from functools import lru_cache, partial
+
+@lru_cache(maxsize=1024)
+def embed(token: str) -> tuple[float, ...]:
+    ...
+
+to_device = partial(torch.Tensor.to, device="cuda")
+\`\`\`
+
+#### 7. Decorators in the ML Stack
+
+* \`@torch.no_grad()\` — disables graph construction and saves inference memory.
+* \`@torch.inference_mode()\` — a stricter autograd-free mode.
+* \`@tf.function\` — traces a function into a TensorFlow graph.
+* \`@app.post(...)\` in FastAPI — registers an HTTP handler.
+* \`@retry(...)\` — retries unstable model API calls.`,
     },
     commonMistakes: [
       {
@@ -821,7 +1260,86 @@ print(cfg) # TrainingConfig(learning_rate=0.0003, batch_size=64, epochs=10, opti
          @staticmethod
          def compute_l2_norm(w: list[float]) -> float:
              return sum(x ** 2 for x in w) ** 0.5
-     \`\`\``,
+     \`\`\`
+
+---
+
+#### 4. \`__repr__\`, \`__str__\`, \`__eq__\` и \`__hash__\`
+
+* \`__repr__\` — однозначное представление для отладки: \`LinearLayer(weight=2.0, bias=1.5)\`.
+* \`__str__\` — человекочитаемое представление для пользователя.
+* \`__eq__\` — логическое равенство; если переопределяете его, переопределите и \`__hash__\`, иначе объект станет нехэшируемым.
+
+\`\`\`python
+class LinearLayer:
+    def __init__(self, weight: float, bias: float):
+        self.weight = weight
+        self.bias = bias
+
+    def __repr__(self) -> str:
+        return f"LinearLayer(weight={self.weight}, bias={self.bias})"
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, LinearLayer):
+            return NotImplemented
+        return (self.weight, self.bias) == (other.weight, other.bias)
+
+    def __hash__(self) -> int:
+        return hash((self.weight, self.bias))
+\`\`\`
+
+#### 5. Наследование, MRO и композиция
+
+Python использует C3-линеаризацию для метода разрешения порядка (MRO). \`super()\` идет к следующему классу в MRO, а не просто к родителю. В ML чаще предпочтительна композиция: модель содержит слои, а не наследует их.
+
+\`\`\`python
+class Encoder:
+    def forward(self, x):
+        ...
+
+class Classifier:
+    def __init__(self, encoder: Encoder):
+        self.encoder = encoder  # композиция
+
+    def forward(self, x):
+        return self.head(self.encoder.forward(x))
+\`\`\`
+
+Наследование уместно для «является» (\`nn.Module\` → \`MyModel\`), композиция — для «содержит» (модель содержит энкодер).
+
+#### 6. \`@property\`, \`__slots__\` и ABC
+
+* \`@property\` позволяет вычислять атрибут и валидировать инварианты без изменения интерфейса.
+* \`__slots__\` убирает \`__dict__\` у экземпляра и экономит память при миллионах объектов.
+* \`abc.ABC\` и \`@abstractmethod\` задают контракт, который обязаны реализовать наследники.
+
+\`\`\`python
+from abc import ABC, abstractmethod
+
+class Estimator(ABC):
+    @abstractmethod
+    def fit(self, X, y): ...
+
+    @abstractmethod
+    def predict(self, X): ...
+\`\`\`
+
+#### 7. Мини-пример: слой как объект
+
+\`\`\`python
+class Linear:
+    def __init__(self, in_features: int, out_features: int):
+        self.weight = [[0.0] * in_features for _ in range(out_features)]
+        self.bias = [0.0] * out_features
+
+    def __call__(self, x: list[float]) -> list[float]:
+        return [
+            sum(w * xi for w, xi in zip(row, x)) + b
+            for row, b in zip(self.weight, self.bias)
+        ]
+\`\`\`
+
+Именно \`__call__\` делает слой вызываемым, а \`__len__\`/\`__getitem__\` — совместимым с \`Dataset\` и \`DataLoader\`.`,
       en: `### OOP Design Patterns in ML Libraries
 
 Modern ML frameworks adhere to standardized object-oriented protocols:
@@ -845,7 +1363,86 @@ class ModelHyperparams:
     embedding_dim: int = 768
     num_heads: int = 12
     dropout: float = 0.1
-\`\`\``,
+\`\`\`
+
+---
+
+#### 3. \`__repr__\`, \`__str__\`, \`__eq__\`, and \`__hash__\`
+
+* \`__repr__\` — unambiguous debugging representation.
+* \`__str__\` — human-readable representation.
+* \`__eq__\` — logical equality; if you override it, override \`__hash__\` too, otherwise instances become unhashable.
+
+\`\`\`python
+class LinearLayer:
+    def __init__(self, weight: float, bias: float):
+        self.weight = weight
+        self.bias = bias
+
+    def __repr__(self) -> str:
+        return f"LinearLayer(weight={self.weight}, bias={self.bias})"
+
+    def __eq__(self, other) -> bool:
+        if not isinstance(other, LinearLayer):
+            return NotImplemented
+        return (self.weight, self.bias) == (other.weight, other.bias)
+
+    def __hash__(self) -> int:
+        return hash((self.weight, self.bias))
+\`\`\`
+
+#### 4. Inheritance, MRO, and Composition
+
+Python uses C3 linearization for method resolution order (MRO). \`super()\` delegates to the next class in the MRO, not simply to the parent. In ML, composition is usually preferable: a model contains layers instead of inheriting from them.
+
+\`\`\`python
+class Encoder:
+    def forward(self, x):
+        ...
+
+class Classifier:
+    def __init__(self, encoder: Encoder):
+        self.encoder = encoder  # composition
+
+    def forward(self, x):
+        return self.head(self.encoder.forward(x))
+\`\`\`
+
+Inheritance fits an "is-a" relationship (\`nn.Module\` → \`MyModel\`); composition fits "has-a" (a model has an encoder).
+
+#### 5. \`@property\`, \`__slots__\`, and ABC
+
+* \`@property\` computes an attribute and validates invariants without changing the interface.
+* \`__slots__\` removes the per-instance \`__dict__\` and saves memory for millions of objects.
+* \`abc.ABC\` and \`@abstractmethod\` define a contract subclasses must implement.
+
+\`\`\`python
+from abc import ABC, abstractmethod
+
+class Estimator(ABC):
+    @abstractmethod
+    def fit(self, X, y): ...
+
+    @abstractmethod
+    def predict(self, X): ...
+\`\`\`
+
+#### 6. Mini-Example: A Layer as an Object
+
+\`\`\`python
+class Linear:
+    def __init__(self, in_features: int, out_features: int):
+        self.weight = [[0.0] * in_features for _ in range(out_features)]
+        self.bias = [0.0] * out_features
+
+    def __call__(self, x: list[float]) -> list[float]:
+        return [
+            sum(w * xi for w, xi in zip(row, x)) + b
+            for row, b in zip(self.weight, self.bias)
+        ]
+\`\`\`
+
+\`__call__\` makes the layer callable, while \`__len__\`/\`__getitem__\` make a dataset compatible with \`DataLoader\`.`,
     },
     commonMistakes: [
       {
@@ -931,35 +1528,145 @@ class ModelHyperparams:
 
 ---
 
-#### 1. Структура проекта и точка входа: \`if __name__ == '__main__':\`
-Когда Python загружает файл, специальная переменная \`__name__\` принимает:
-* \`"__main__"\`, если файл запущен напрямую пользователем: \`python train.py\`.
-* Имя модуля (например, \`"src.models"\`), если файл импортирован другой программой через \`import\`.
+#### 1. Скрипт, модуль и пакет
+
+Пока проект состоит из одного файла, разницы между «скриптом» и «модулем» нет. Она появляется, когда файлов становится несколько.
+
+* **Скрипт** — файл, который вы запускаете напрямую: \`python train.py\`.
+* **Модуль** — любой \`.py\`-файл, который импортируется: \`import utils\`.
+* **Пакет** — каталог с модулями и файлом \`__init__.py\` (в Python 3.3+ допустимы namespace-пакеты без него, но в прикладных проектах файл обычно добавляют).
+
+Когда вы пишете \`import src.models\`, интерпретатор:
+1. Ищет \`src\` в списке путей \`sys.path\` (каталог запускаемого скрипта, \`PYTHONPATH\`, site-packages).
+2. Внутри \`src\` ищет \`models.py\` или \`models/__init__.py\`.
+3. Выполняет найденный файл **сверху вниз ровно один раз** и кэширует его в \`sys.modules\`.
+
+Именно поэтому повторный \`import\` почти бесплатен, а побочные эффекты на верхнем уровне модуля (тяжелая загрузка данных, запуск обучения, сетевые запросы) выполняются при первом импорте. Это первая причина, по которой код запуска принято отделять от кода библиотеки.
+
 \`\`\`python
 # src/models.py
 def train():
-    print("Обучение запущено")
+    ...
+
+print("модуль загружен")  # выполнится при import src.models
+\`\`\`
+
+#### 2. Точка входа: \`if __name__ == "__main__":\`
+
+При загрузке файла Python сам создает переменную \`__name__\`:
+* \`"__main__"\`, если файл запущен напрямую;
+* имя модуля (\`"src.models"\`), если файл импортирован.
+
+Поэтому паттерн:
+
+\`\`\`python
+# train.py
+from src.models import train
 
 if __name__ == "__main__":
-    # Код выполнится только при прямом запуске скрипта
     train()
 \`\`\`
-Это правило предотвращает повторный паразитный запуск тяжелого обучения при импорте функций в тесты или API.
 
----
+делает файл одновременно библиотекой (функцию \`train\` можно импортировать в тестах) и самостоятельной программой. Без этого блока \`import train\` в тестах запустил бы обучение целиком.
 
-#### 2. Контекстные менеджеры (\`with\` statement)
-Гарантируют освобождение системных ресурсов даже при возникновении критических исключений:
+Полезно мыслить так: **модуль — это описание возможностей, а блок \`__main__\` — команда, которую выполняет пользователь.** Верхний уровень модуля должен только объявлять функции, классы и константы; все действия — внутри \`main()\`.
+
+#### 3. От точки входа к ресурсам
+
+Скрипт запущен, модули импортированы, \`main()\` начал работу. Дальше почти любой реальный пайплайн открывает ресурсы: файл с логами, CSV с данными, соединение с базой, сокет, временный каталог, блокировку. И здесь возникает вопрос: **кто гарантирует, что ресурс будет освобожден, если посередине случится исключение?**
+
+Ручной вариант ненадежен:
+
 \`\`\`python
-# Протокол context manager: вызов __enter__ и __exit__
-with open("dataset.csv", "w") as f:
-    f.write("id,target\\n")
-# Файл гарантированно закрыт интерпретатором!
+f = open("train.log", "w")
+try:
+    train()
+finally:
+    f.close()
 \`\`\`
 
+\`try/finally\` работает, но чем больше ресурсов, тем больше вложенности. Для этого в Python есть протокол контекстного менеджера.
+
+#### 4. Контекстные менеджеры: \`with\` как гарантия очистки
+
+Конструкция \`with\` вызывает у объекта два метода:
+1. \`__enter__()\` — подготовка ресурса; результат попадает в переменную после \`as\`.
+2. \`__exit__(exc_type, exc_value, traceback)\` — очистка. Вызывается **всегда**: и при успешном выходе, и при исключении.
+
+\`\`\`python
+with open("dataset.csv", "w") as f:
+    f.write("id,target\\n")
+# здесь файл уже закрыт, даже если write() бросил исключение
+\`\`\`
+
+Минимальный собственный менеджер:
+
+\`\`\`python
+import time
+
+class Timer:
+    def __enter__(self):
+        self.start = time.perf_counter()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.elapsed = time.perf_counter() - self.start
+        print(f"elapsed: {self.elapsed:.3f}s")
+        return False  # False — не подавлять исключение
+\`\`\`
+
+Если \`__exit__\` вернет \`True\`, исключение будет подавлено. По умолчанию так делать не стоит: ошибки должны быть видны.
+
+Для функций есть более короткий путь — декоратор \`contextlib.contextmanager\`:
+
+\`\`\`python
+from contextlib import contextmanager
+
+@contextmanager
+def opened(path):
+    f = open(path, "w")
+    try:
+        yield f
+    finally:
+        f.close()
+
+with opened("train.log") as f:
+    f.write("start\\n")
+\`\`\`
+
+Всё, что до \`yield\`, — это \`__enter__\`; всё после — \`__exit__\`. \`try/finally\` внутри обязателен, иначе при исключении ресурс не закроется.
+
+#### 5. Собираем всё вместе
+
+\`\`\`python
+# train.py
+from contextlib import contextmanager
+from src.models import train
+
+@contextmanager
+def training_run(log_path: str):
+    log = open(log_path, "w")
+    try:
+        log.write("run started\\n")
+        yield log
+    finally:
+        log.write("run finished\\n")
+        log.close()
+
+def main() -> None:
+    with training_run("train.log") as log:
+        train()
+        log.write("model saved\\n")
+
+if __name__ == "__main__":
+    main()
+\`\`\`
+
+Здесь видны все три идеи урока: \`train.py\` — точка входа, \`src.models\` — импортируемый модуль, \`with\` — гарантия, что лог закроется при любом исходе.
+
 ---
 
-#### 3. Почему чистый цикл Python медленный: Boxing и GIL
+#### 6. Почему чистый цикл Python медленный: Boxing и GIL
 
 1. **Dynamic Type Boxing:** в Python число \`42\` — это не 4 байта в регистре CPU, а огромная C-структура \`PyObject\` (~28 байт), содержащая счетчик ссылок и указатель на тип.
 2. **Динамическая диспетчеризация:** на каждой итерации цикла \`for x in numbers:\` интерпретатор заново проверяет тип \`x\` и ищет реализацию сложения.
@@ -968,7 +1675,7 @@ with open("dataset.csv", "w") as f:
      CPython использует подсчет ссылок (\`reference counting\`) как основной механизм сборки мусора: каждый объект хранит поле \`ob_refcnt\`. Если несколько потоков ОС одновременно увеличат или уменьшат счетчик ссылок без синхронизации, возникнет гонка данных (Race Condition), что приведет к утечке памяти или аварийному падению (Segmentation Fault). Чтобы не ставить тяжелые блокировки на каждую операцию каждого объекта, Гвидо ван Россум ввел один глобальный мьютекс — **GIL**, позволяющий только одному системному потоку выполнять байткод Python в любой момент времени.
    * **Следствие:** стандартные потоки \`threading.Thread\` в Python **бесполезны для ускорения CPU-bound вычислений** на многоядерных процессорах (они будут выполняться строго по очереди на одном ядре).
 
-#### 4. Как обходят GIL в реальном машинном обучении
+#### 7. Как обходят GIL в реальном машинном обучении
 1. **Модуль \`multiprocessing\` / \`concurrent.futures.ProcessPoolExecutor\`:**
    Порождает независимые процессы операционной системы. У каждого процесса свой изолированный интерпретатор Python, свое адресное пространство и свой собственный GIL. Стандарт для DataLoader в PyTorch (\`num_workers=4\`).
 2. **Асинхронность (\`asyncio\`):**
@@ -982,19 +1689,152 @@ Why can't we train machine learning models using raw Python loops?
 
 ---
 
-#### 1. Entrypoints: \`if __name__ == '__main__':\`
-Guarantees training routines run only upon intentional direct execution, not during test suite imports or multiprocessing forks.
+#### 1. Scripts, Modules, and Packages
+
+A single-file project does not distinguish between a script and a module. That changes as soon as the codebase grows.
+
+* **Script** — a file you execute directly: \`python train.py\`.
+* **Module** — any \`.py\` file imported elsewhere: \`import utils\`.
+* **Package** — a directory of modules containing an \`__init__.py\` file (Python 3.3+ also supports namespace packages without it, but application projects usually include one).
+
+When you write \`import src.models\`, the interpreter:
+1. Looks for \`src\` on \`sys.path\` (the script directory, \`PYTHONPATH\`, site-packages).
+2. Inside \`src\`, looks for \`models.py\` or \`models/__init__.py\`.
+3. Executes the file **top to bottom exactly once** and caches it in \`sys.modules\`.
+
+That is why repeated imports are almost free, while side effects at module top level (loading data, starting training, network calls) run on the first import. This is the first reason to separate startup code from library code.
+
+\`\`\`python
+# src/models.py
+def train():
+    ...
+
+print("module loaded")  # runs on import src.models
+\`\`\`
+
+#### 2. The Entry Point: \`if __name__ == "__main__":\`
+
+When Python loads a file, it sets \`__name__\`:
+* \`"__main__"\` when the file is executed directly;
+* the module name (\`"src.models"\`) when the file is imported.
+
+Hence the pattern:
+
+\`\`\`python
+# train.py
+from src.models import train
+
+if __name__ == "__main__":
+    train()
+\`\`\`
+
+The file is both a library (tests can import \`train\`) and a standalone program. Without the guard, \`import train\` in a test would start a full training run.
+
+A useful mental model: **a module describes capabilities; the \`__main__\` block is the command the user runs.** Module top level should only declare functions, classes, and constants; actions belong in \`main()\`.
+
+#### 3. From the Entry Point to Resources
+
+The script is running, modules are imported, \`main()\` has started. Almost any real pipeline then opens resources: a log file, a CSV, a database connection, a socket, a temporary directory, a lock. The question becomes: **who guarantees the resource is released if an exception happens halfway through?**
+
+The manual version is fragile:
+
+\`\`\`python
+f = open("train.log", "w")
+try:
+    train()
+finally:
+    f.close()
+\`\`\`
+
+\`try/finally\` works, but nesting grows with every resource. Python therefore provides the context manager protocol.
+
+#### 4. Context Managers: \`with\` as a Cleanup Guarantee
+
+The \`with\` statement calls two methods:
+1. \`__enter__()\` — prepares the resource; its result is bound after \`as\`.
+2. \`__exit__(exc_type, exc_value, traceback)\` — cleanup. It runs **always**, on success and on exception.
+
+\`\`\`python
+with open("dataset.csv", "w") as f:
+    f.write("id,target\\n")
+# the file is closed even if write() raised
+\`\`\`
+
+A minimal custom manager:
+
+\`\`\`python
+import time
+
+class Timer:
+    def __enter__(self):
+        self.start = time.perf_counter()
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.elapsed = time.perf_counter() - self.start
+        print(f"elapsed: {self.elapsed:.3f}s")
+        return False  # False — do not suppress exceptions
+\`\`\`
+
+Returning \`True\` from \`__exit__\` suppresses the exception. Do not do that by default: errors should stay visible.
+
+For functions there is a shorter path — \`contextlib.contextmanager\`:
+
+\`\`\`python
+from contextlib import contextmanager
+
+@contextmanager
+def opened(path):
+    f = open(path, "w")
+    try:
+        yield f
+    finally:
+        f.close()
+
+with opened("train.log") as f:
+    f.write("start\\n")
+\`\`\`
+
+Everything before \`yield\` is \`__enter__\`; everything after is \`__exit__\`. The internal \`try/finally\` is mandatory, otherwise the resource leaks on exceptions.
+
+#### 5. Putting It All Together
+
+\`\`\`python
+# train.py
+from contextlib import contextmanager
+from src.models import train
+
+@contextmanager
+def training_run(log_path: str):
+    log = open(log_path, "w")
+    try:
+        log.write("run started\\n")
+        yield log
+    finally:
+        log.write("run finished\\n")
+        log.close()
+
+def main() -> None:
+    with training_run("train.log") as log:
+        train()
+        log.write("model saved\\n")
+
+if __name__ == "__main__":
+    main()
+\`\`\`
+
+All three ideas of this lesson meet here: \`train.py\` is the entry point, \`src.models\` is an imported module, and \`with\` guarantees the log is closed no matter how the run ends.
 
 ---
 
-#### 2. The Bottlenecks of Pure Python Loops
+#### 6. The Bottlenecks of Pure Python Loops
 * **Object Boxing:** raw integers/floats are wrapped in heap-allocated 28-byte \`PyObject\` structs.
 * **Dynamic Dispatch:** runtime type lookups execute on every loop iteration.
 * **Global Interpreter Lock (GIL):** restricts multi-threaded execution over CPU-bound tasks.
 
 ---
 
-#### 3. The Bridge to Native SIMD and GPU Acceleration
+#### 7. The Bridge to Native SIMD and GPU Acceleration
 Python acts as a high-level orchestrator. Numerical libraries (NumPy, PyTorch, Polars) delegate contiguous memory buffers directly into native C/C++/CUDA kernels executing SIMD instructions and tensor cores.`,
     },
     commonMistakes: [
@@ -1211,7 +2051,63 @@ def level_order(root: Optional[TreeNode]) -> list[list[int]]:
            else:
                return curr # Точка ветвления — это и есть наименьший общий предок
        return root
-   \`\`\``,
+   \`\`\`
+
+---
+
+#### 6. Итеративные обходы и риск \`RecursionError\`
+
+Рекурсия элегантна, но Python ограничивает глубину стека (обычно около 1000 вызовов). Для вырожденного дерева из 10 000 узлов рекурсивный DFS упадет с \`RecursionError\`. Итеративный вариант с явным стеком:
+
+\`\`\`python
+def inorder_iterative(root):
+    result, stack = [], []
+    curr = root
+    while curr or stack:
+        while curr:
+            stack.append(curr)
+            curr = curr.left
+        curr = stack.pop()
+        result.append(curr.val)
+        curr = curr.right
+    return result
+\`\`\`
+
+BFS с \`deque\` уже итеративен, поэтому для широких деревьев он безопаснее по памяти стека, но требует $O(\\text{width})$ памяти.
+
+#### 7. Вставка и поиск в BST
+
+\`\`\`python
+def search(root, target):
+    curr = root
+    while curr:
+        if target == curr.val:
+            return curr
+        curr = curr.left if target < curr.val else curr.right
+    return None
+
+def insert(root, val):
+    if not root:
+        return TreeNode(val)
+    if val < root.val:
+        root.left = insert(root.left, val)
+    elif val > root.val:
+        root.right = insert(root.right, val)
+    return root
+\`\`\`
+
+В среднем — $O(\\log N)$, в вырожденном случае — $O(N)$.
+
+#### 8. Почему BST вырождается и как это лечат
+
+Если вставлять отсортированные данные \`1, 2, 3, 4, ...\`, BST превращается в связный список. Самобалансирующиеся деревья (AVL, Red-Black) поддерживают высоту $O(\\log N)$ за счет поворотов. В ML это важно понимать концептуально: деревья решений тоже могут быть несбалансированными, поэтому глубину ограничивают \`max_depth\`, а ансамбли (Random Forest, GBDT) снижают дисперсию.
+
+#### 9. Связь с ML-алгоритмами
+
+* **CART** выбирает порог $x_j \\le \\theta$, максимизируя прирост информации; каждый узел — бинарный сплит.
+* **Random Forest** усредняет много глубоких деревьев, снижая дисперсию.
+* **GBDT** строит деревья последовательно на антиградиенте, исправляя ошибки предыдущих.
+* **Feature importance** и SHAP объясняют вклад признаков через структуру деревьев.`,
       en: `### Tree Data Structures in ML Technical Interviews
 Why are tree algorithms critical for ML Engineers?
 1. **Decision-based ML Architectures:** Decision trees (CART, Random Forests, Gradient Boosted Trees) evaluate boolean split predicates $x_j \\le \\theta$ at internal nodes and store terminal values at leaves.
@@ -1233,7 +2129,63 @@ In a Binary Search Tree (BST), every node in the left subtree has a value strict
 * **In-Order DFS Traversal (Left -> Root -> Right)** on a BST yields elements in **strictly monotonic ascending order**.
 
 #### 3. Breadth-First Level-Order Traversal via \`collections.deque\`
-Using \`collections.deque\` enables $O(1)$ pop operations for queue-based layer-by-layer exploration.`,
+Using \`collections.deque\` enables $O(1)$ pop operations for queue-based layer-by-layer exploration.
+
+---
+
+#### 4. Iterative Traversals and the \`RecursionError\` Risk
+
+Recursion is elegant, but Python limits stack depth (typically around 1000 frames). A degenerate tree of 10,000 nodes will overflow a recursive DFS. Use an explicit stack:
+
+\`\`\`python
+def inorder_iterative(root):
+    result, stack = [], []
+    curr = root
+    while curr or stack:
+        while curr:
+            stack.append(curr)
+            curr = curr.left
+        curr = stack.pop()
+        result.append(curr.val)
+        curr = curr.right
+    return result
+\`\`\`
+
+BFS with \`deque\` is already iterative, so it avoids stack overflow but uses $O(\\text{width})$ memory.
+
+#### 5. BST Search and Insertion
+
+\`\`\`python
+def search(root, target):
+    curr = root
+    while curr:
+        if target == curr.val:
+            return curr
+        curr = curr.left if target < curr.val else curr.right
+    return None
+
+def insert(root, val):
+    if not root:
+        return TreeNode(val)
+    if val < root.val:
+        root.left = insert(root.left, val)
+    elif val > root.val:
+        root.right = insert(root.right, val)
+    return root
+\`\`\`
+
+Average $O(\\log N)$; worst case $O(N)$.
+
+#### 6. Why BSTs Degenerate and How Balancing Helps
+
+Inserting sorted data \`1, 2, 3, 4, ...\` turns a BST into a linked list. Self-balancing trees (AVL, Red-Black) maintain $O(\\log N)$ height through rotations. In ML this is conceptually important: decision trees can also become unbalanced, so depth is limited by \`max_depth\`, while ensembles (Random Forest, GBDT) reduce variance.
+
+#### 7. Connection to ML Algorithms
+
+* **CART** picks a split threshold $x_j \\le \\theta$ that maximizes information gain; every node is a binary split.
+* **Random Forest** averages many deep trees to reduce variance.
+* **GBDT** builds trees sequentially on the anti-gradient, correcting previous errors.
+* **Feature importance** and SHAP explain feature contributions through tree structure.`,
     },
     commonMistakes: [
       {
@@ -1446,7 +2398,75 @@ print(order) # [0, 1, 2]
 Когда вы вызываете \`loss.backward()\`:
 1. PyTorch идет по графу \`grad_fn\` в **обратном топологическом порядке** (от узла Loss к обучаемым параметрам $W$).
 2. В каждом узле применяется цепное правило (Chain Rule) дифференцирования $\\frac{\\partial L}{\\partial W} = \\frac{\\partial L}{\\partial y} \\cdot \\frac{\\partial y}{\\partial W}$.
-3. Если бы в вычислительном графе был цикл без разрыва во времени, обратное распространение ошибки зациклилось бы навсегда (именно поэтому рекуррентные нейросети RNN разворачивают во времени — Backpropagation Through Time, превращая в DAG!).`,
+3. Если бы в вычислительном графе был цикл без разрыва во времени, обратное распространение ошибки зациклилось бы навсегда (именно поэтому рекуррентные нейросети RNN разворачивают во времени — Backpropagation Through Time, превращая в DAG!).
+
+---
+
+#### 6. Список смежности vs матрица смежности
+
+| Критерий | Список смежности | Матрица смежности |
+| :--- | :--- | :--- |
+| Память | $O(V + E)$ | $O(V^2)$ |
+| Проверка ребра $u \\to v$ | $O(\\deg(u))$ | $O(1)$ |
+| Перебор соседей | $O(\\deg(u))$ | $O(V)$ |
+| Когда использовать | разреженные графы, соцсети, зависимости | плотные графы, малые $V$, GPU-операции |
+
+В ML разреженные графы (батчи, рекомендации, молекулы) почти всегда хранят списком смежности или в формате COO/CSR.
+
+#### 7. DFS по графу: рекурсивный и итеративный
+
+\`\`\`python
+def dfs_recursive(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(start)
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs_recursive(graph, neighbor, visited)
+    return visited
+
+def dfs_iterative(graph, start):
+    visited, stack = set(), [start]
+    while stack:
+        node = stack.pop()
+        if node in visited:
+            continue
+        visited.add(node)
+        stack.extend(graph[node])
+    return visited
+\`\`\`
+
+Итеративный вариант не упирается в \`RecursionError\`, но порядок обхода может отличаться.
+
+#### 8. Топологическая сортировка через DFS
+
+Альтернатива алгоритму Кана — DFS с добавлением узла в результат после обработки всех потомков, затем разворот списка:
+
+\`\`\`python
+def topological_sort_dfs(num_nodes, adj):
+    visited, order = set(), []
+
+    def dfs(u):
+        visited.add(u)
+        for v in adj[u]:
+            if v not in visited:
+                dfs(v)
+        order.append(u)
+
+    for node in range(num_nodes):
+        if node not in visited:
+            dfs(node)
+    return order[::-1]
+\`\`\`
+
+Оба алгоритма работают за $O(V + E)$; Кан проще для обнаружения цикла (если обработано меньше $V$ узлов — цикл есть).
+
+#### 9. Где это в ML-инфраструктуре
+
+* **PyTorch Autograd** хранит граф операций и обходит его в обратном топологическом порядке при \`loss.backward()\`.
+* **Airflow / Prefect / Kubeflow** описывают пайплайны как DAG: узел запускается, когда все его зависимости завершены.
+* **GNN** выполняют message passing по списку смежности или разреженной матрице.
+* **Планировщики обучения** (curriculum, multi-task) используют DAG зависимостей между задачами.`,
       en: `### Graphs & DAGs in Machine Learning Infrastructure
 Graphs underpin modern ML frameworks:
 * **PyTorch Autograd:** Execution graphs are strictly **Directed Acyclic Graphs (DAGs)** where variables are nodes and differential operators are edges.
@@ -1459,7 +2479,75 @@ Adjacency lists using \`defaultdict(list)\` deliver optimal memory footprint $O(
 Nodes are labeled WHITE (unvisited), GRAY (currently in recursion stack), or BLACK (fully resolved). Enountering a GRAY neighbor proves a directed cycle (back-edge) exists.
 
 #### 3. Topological Sort (Kahn's Algorithm)
-Finds a linear sequence of execution for DAG vertices such that each dependency preceeds its dependents. Nodes with \`in_degree == 0\` are greedily queued.`,
+Finds a linear sequence of execution for DAG vertices such that each dependency preceeds its dependents. Nodes with \`in_degree == 0\` are greedily queued.
+
+---
+
+#### 4. Adjacency List vs Adjacency Matrix
+
+| Criterion | Adjacency list | Adjacency matrix |
+| :--- | :--- | :--- |
+| Memory | $O(V + E)$ | $O(V^2)$ |
+| Edge check $u \\to v$ | $O(\\deg(u))$ | $O(1)$ |
+| Neighbor iteration | $O(\\deg(u))$ | $O(V)$ |
+| Best for | sparse graphs, social networks, dependencies | dense graphs, small $V$, GPU operations |
+
+In ML, sparse graphs (batches, recommendations, molecules) are almost always stored as adjacency lists or COO/CSR tensors.
+
+#### 5. Graph DFS: Recursive and Iterative
+
+\`\`\`python
+def dfs_recursive(graph, start, visited=None):
+    if visited is None:
+        visited = set()
+    visited.add(start)
+    for neighbor in graph[start]:
+        if neighbor not in visited:
+            dfs_recursive(graph, neighbor, visited)
+    return visited
+
+def dfs_iterative(graph, start):
+    visited, stack = set(), [start]
+    while stack:
+        node = stack.pop()
+        if node in visited:
+            continue
+        visited.add(node)
+        stack.extend(graph[node])
+    return visited
+\`\`\`
+
+The iterative version avoids \`RecursionError\`, though traversal order may differ.
+
+#### 6. Topological Sort via DFS
+
+An alternative to Kahn's algorithm is DFS that appends a node after all descendants are processed, then reverses the result:
+
+\`\`\`python
+def topological_sort_dfs(num_nodes, adj):
+    visited, order = set(), []
+
+    def dfs(u):
+        visited.add(u)
+        for v in adj[u]:
+            if v not in visited:
+                dfs(v)
+        order.append(u)
+
+    for node in range(num_nodes):
+        if node not in visited:
+            dfs(node)
+    return order[::-1]
+\`\`\`
+
+Both algorithms run in $O(V + E)$; Kahn's algorithm makes cycle detection trivial (fewer than $V$ processed nodes means a cycle).
+
+#### 7. Where This Appears in ML Infrastructure
+
+* **PyTorch Autograd** stores the operation graph and traverses it in reverse topological order during \`loss.backward()\`.
+* **Airflow / Prefect / Kubeflow** define pipelines as DAGs: a node runs once all dependencies finish.
+* **GNNs** perform message passing over adjacency lists or sparse matrices.
+* **Training schedulers** (curriculum, multi-task) use dependency DAGs between tasks.`,
     },
     commonMistakes: [
       {
