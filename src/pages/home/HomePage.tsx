@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import {
-  Flame,
   Sparkles,
   Layers,
   ArrowRight,
@@ -220,7 +219,7 @@ export const HomePage: React.FC = () => {
           <div className="sm:w-64 p-3.5 rounded-lg aero-inset space-y-2">
             <div className="flex items-center justify-between text-xs font-semibold">
               <span className="text-slate-700 dark:text-slate-300 flex items-center gap-1.5">
-                <Flame className="w-4 h-4 text-amber-500 fill-amber-500 shrink-0" />
+                <Layers className="w-4 h-4 text-sky-500 shrink-0" />
                 {t('home.daily_goal')}
               </span>
               <span className="text-sky-600 dark:text-sky-400 font-numeric font-bold">
