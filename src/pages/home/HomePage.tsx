@@ -32,6 +32,7 @@ import { LocalizedString, getLocalized } from '@/shared/lib/schemas';
 import { LearningRoadmap } from '@/widgets/roadmap/LearningRoadmap';
 import { MathText } from '@/shared/lib/katex/MathText';
 import { getRandomSplash } from '@/shared/config/splashPhrases';
+import { pluralizeRu } from '@/shared/lib/i18n/plural';
 
 import { STATS_UPDATED_EVENT } from '@/shared/lib/events';
 
@@ -158,6 +159,8 @@ export const HomePage: React.FC = () => {
       window.removeEventListener(STATS_UPDATED_EVENT, loadData);
     };
   }, [navigate]);
+
+  const visibleModuleCount = contentRegistry.modules.filter(m => !m.meta.isPlaceholder).length;
 
   return (
     <div className="space-y-6">
@@ -391,7 +394,7 @@ export const HomePage: React.FC = () => {
           </div>
 
           <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold">
-            {contentRegistry.modules.filter(m => !m.meta.isPlaceholder).length} {lang === 'en' ? 'modules total' : 'разделов'}
+            {visibleModuleCount} {lang === 'en' ? 'modules total' : pluralizeRu(visibleModuleCount, 'раздел', 'раздела', 'разделов')}
           </span>
         </div>
 
