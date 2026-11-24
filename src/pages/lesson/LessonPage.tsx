@@ -61,8 +61,10 @@ export const LessonPage: React.FC = () => {
   if (!lesson || !moduleData) {
     return (
       <div className="py-12 text-center space-y-4">
-        <p className="text-slate-400">Урок не найден</p>
-        <Button onClick={() => navigate('/')}>На главную</Button>
+        <p className="text-slate-400">{lang === 'en' ? 'Lesson not found' : 'Урок не найден'}</p>
+        <Button onClick={() => navigate('/')}>
+          {lang === 'en' ? 'Go home' : 'На главную'}
+        </Button>
       </div>
     );
   }
@@ -176,7 +178,7 @@ export const LessonPage: React.FC = () => {
         className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition cursor-pointer"
       >
         <ArrowLeft className="w-4 h-4" />
-        <span>Назад к урокам</span>
+        <span>{lang === 'en' ? 'Back to lessons' : 'Назад к урокам'}</span>
       </button>
 
       {/* Lesson Header */}
@@ -300,7 +302,9 @@ export const LessonPage: React.FC = () => {
       <div className="pt-4 pb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-xs text-slate-400">
           <Sparkles className="w-4 h-4 text-sky-400" />
-          <span className="font-poppins">Награда за урок: +{XP_REWARDS.LESSON_COMPLETE} XP</span>
+          <span className="font-poppins">
+            {lang === 'en' ? 'Lesson reward' : 'Награда за урок'}: +{XP_REWARDS.LESSON_COMPLETE} XP
+          </span>
         </div>
 
         <Button
@@ -310,7 +314,9 @@ export const LessonPage: React.FC = () => {
           onClick={handleCompleteLesson}
           icon={<CheckCircle2 className="w-5 h-5" />}
         >
-          {isCompleted ? 'Урок уже пройден — Далее' : t('lesson.complete_lesson')}
+          {isCompleted
+            ? (lang === 'en' ? 'Lesson already completed — Next' : 'Урок уже пройден — Далее')
+            : t('lesson.complete_lesson')}
         </Button>
       </div>
     </div>

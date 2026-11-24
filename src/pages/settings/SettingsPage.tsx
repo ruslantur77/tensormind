@@ -101,7 +101,10 @@ export const SettingsPage: React.FC = () => {
         setStatusMessage({ type: 'success', text: t('settings.backup_success') });
       }
     } catch (e: any) {
-      setStatusMessage({ type: 'error', text: e?.message || 'Ошибка экспорта' });
+      setStatusMessage({
+        type: 'error',
+        text: e?.message || (language === 'en' ? 'Export failed' : 'Ошибка экспорта'),
+      });
     } finally {
       setIsExporting(false);
     }
@@ -124,7 +127,9 @@ export const SettingsPage: React.FC = () => {
     if (result.success) {
       setStatusMessage({
         type: 'success',
-        text: `Импорт завершён! ${replaceAll ? 'Все данные заменены.' : `Объединено записей: ${result.mergedCount}`}`,
+        text: language === 'en'
+          ? `Import complete! ${replaceAll ? 'All data replaced.' : `Merged records: ${result.mergedCount}`}`
+          : `Импорт завершён! ${replaceAll ? 'Все данные заменены.' : `Объединено записей: ${result.mergedCount}`}`,
       });
       // Refresh profile state
       const p = await profileRepository.getProfile();
@@ -138,7 +143,7 @@ export const SettingsPage: React.FC = () => {
     } else {
       setStatusMessage({
         type: 'error',
-        text: result.error || 'Ошибка при валидации файла бэкапа',
+        text: result.error || (language === 'en' ? 'Backup file validation failed' : 'Ошибка при валидации файла бэкапа'),
       });
     }
     setPendingFileContent(null);
@@ -149,7 +154,10 @@ export const SettingsPage: React.FC = () => {
     await backupManager.clearOrphanedItems(orphanedCards, orphanedLessons);
     setOrphanedCards([]);
     setOrphanedLessons([]);
-    setStatusMessage({ type: 'success', text: 'Устаревшие записи успешно очищены' });
+    setStatusMessage({
+      type: 'success',
+      text: language === 'en' ? 'Outdated records cleared successfully' : 'Устаревшие записи успешно очищены',
+    });
   };
 
   const handleResetProgress = async () => {
@@ -181,7 +189,10 @@ export const SettingsPage: React.FC = () => {
         updatedAt: new Date().toISOString(),
       });
     });
-    setStatusMessage({ type: 'success', text: 'Весь прогресс был сброшен' });
+    setStatusMessage({
+      type: 'success',
+      text: language === 'en' ? 'All progress has been reset' : 'Весь прогресс был сброшен',
+    });
   };
 
   const totalOrphaned = orphanedCards.length + orphanedLessons.length;
@@ -198,7 +209,9 @@ export const SettingsPage: React.FC = () => {
             {t('settings.title')}
           </h2>
           <p className="text-xs text-slate-600 dark:text-slate-400">
-            Управление профилем, темами и резервным копированием
+            {language === 'en'
+              ? 'Manage profile, themes, and backups'
+              : 'Управление профилем, темами и резервным копированием'}
           </p>
         </div>
       </div>
@@ -341,7 +354,9 @@ export const SettingsPage: React.FC = () => {
         </h3>
 
         <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-          Ваш прогресс хранится исключительно локально в базе данных IndexedDB вашего браузера/устройства. Для сохранения и переноса между устройствами экспортируйте JSON-файл.
+          {language === 'en'
+            ? 'Your progress is stored exclusively on this device in your browser IndexedDB. Export a JSON file to save and transfer it between devices.'
+            : 'Ваш прогресс хранится исключительно локально в базе данных IndexedDB вашего браузера/устройства. Для сохранения и переноса между устройствами экспортируйте JSON-файл.'}
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
@@ -412,11 +427,11 @@ export const SettingsPage: React.FC = () => {
         </h3>
         <div className="space-y-1 text-xs text-slate-600 dark:text-slate-400 font-numeric">
           <div className="flex justify-between">
-            <span>Приложение:</span>
+            <span>{language === 'en' ? 'Application:' : 'Приложение:'}</span>
             <span className="text-slate-900 dark:text-slate-200">{APP_NAME}</span>
           </div>
           <div className="flex justify-between">
-            <span>Версия приложения:</span>
+            <span>{language === 'en' ? 'App version:' : 'Версия приложения:'}</span>
             <span className="text-slate-900 dark:text-slate-200">{APP_VERSION}</span>
           </div>
         </div>
@@ -449,11 +464,13 @@ export const SettingsPage: React.FC = () => {
       <Modal
         isOpen={showReplaceModal}
         onClose={() => setShowReplaceModal(false)}
-        title="Параметры импорта бэкапа"
+        title={language === 'en' ? 'Backup import options' : 'Параметры импорта бэкапа'}
       >
         <div className="space-y-4 text-xs sm:text-sm text-slate-800 dark:text-slate-300">
           <p>
-            Как вы хотите применить резервную копию к текущей базе данных?
+            {language === 'en'
+              ? 'How would you like to apply the backup to the current database?'
+              : 'Как вы хотите применить резервную копию к текущей базе данных?'}
           </p>
 
           <div className="space-y-2">
@@ -461,9 +478,13 @@ export const SettingsPage: React.FC = () => {
               onClick={() => handleExecuteImport(false)}
               className="p-3.5 rounded-xl border border-sky-400/40 bg-sky-500/10 hover:bg-sky-500/20 cursor-pointer transition space-y-1"
             >
-              <h5 className="font-bold text-sky-800 dark:text-sky-300">1. Умное объединение (Рекомендуется)</h5>
+              <h5 className="font-bold text-sky-800 dark:text-sky-300">
+                {language === 'en' ? '1. Smart merge (Recommended)' : '1. Умное объединение (Рекомендуется)'}
+              </h5>
               <p className="text-xs text-slate-600 dark:text-slate-400">
-                Сравнит записи по дате обновления и оставит самые свежие, добавит отсутствующие попытки и XP.
+                {language === 'en'
+                  ? 'Compares records by update date, keeps the newest ones, and adds missing attempts and XP.'
+                  : 'Сравнит записи по дате обновления и оставит самые свежие, добавит отсутствующие попытки и XP.'}
               </p>
             </div>
 
@@ -471,9 +492,13 @@ export const SettingsPage: React.FC = () => {
               onClick={() => handleExecuteImport(true)}
               className="p-3.5 rounded-xl border border-red-500/40 bg-red-500/10 hover:bg-red-500/20 cursor-pointer transition space-y-1"
             >
-              <h5 className="font-bold text-red-800 dark:text-red-300">2. Опция «Заменить всё»</h5>
+              <h5 className="font-bold text-red-800 dark:text-red-300">
+                {language === 'en' ? '2. "Replace all" option' : '2. Опция «Заменить всё»'}
+              </h5>
               <p className="text-xs text-slate-600 dark:text-slate-400">
-                Полностью очистит текущую базу данных устройства и восстановит её из файла.
+                {language === 'en'
+                  ? 'Completely clears the current device database and restores it from the file.'
+                  : 'Полностью очистит текущую базу данных устройства и восстановит её из файла.'}
               </p>
             </div>
           </div>
@@ -484,7 +509,7 @@ export const SettingsPage: React.FC = () => {
       <Modal
         isOpen={showResetModal}
         onClose={() => setShowResetModal(false)}
-        title="Сброс прогресса"
+        title={language === 'en' ? 'Reset progress' : 'Сброс прогресса'}
       >
         <div className="space-y-4 text-xs sm:text-sm text-slate-800 dark:text-slate-300">
           <p className="text-red-600 dark:text-red-400 font-medium">
@@ -492,10 +517,10 @@ export const SettingsPage: React.FC = () => {
           </p>
           <div className="flex justify-end gap-3 pt-2">
             <Button variant="secondary" onClick={() => setShowResetModal(false)}>
-              Отмена
+              {language === 'en' ? 'Cancel' : 'Отмена'}
             </Button>
             <Button variant="danger" onClick={handleResetProgress}>
-              Удалить всё
+              {language === 'en' ? 'Delete everything' : 'Удалить всё'}
             </Button>
           </div>
         </div>

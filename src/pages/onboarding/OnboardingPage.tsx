@@ -11,7 +11,7 @@ import { streakRepository } from '@/entities/streak/model/repository';
 import { platform } from '@/shared/lib/platform';
 
 export const OnboardingPage: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
   const [name, setName] = useState('');
@@ -74,9 +74,9 @@ export const OnboardingPage: React.FC = () => {
               </label>
               <div className="grid grid-cols-1 gap-2">
                 {[
-                  { value: 5, label: t('onboarding.goal_cards_light'), tag: 'Базовый' },
-                  { value: 15, label: t('onboarding.goal_cards_option'), tag: 'Рекомендуется' },
-                  { value: 30, label: t('onboarding.goal_cards_intense'), tag: 'Интенсив' },
+                  { value: 5, label: t('onboarding.goal_cards_light'), tag: i18n.language === 'en' ? 'Basic' : 'Базовый' },
+                  { value: 15, label: t('onboarding.goal_cards_option'), tag: i18n.language === 'en' ? 'Recommended' : 'Рекомендуется' },
+                  { value: 30, label: t('onboarding.goal_cards_intense'), tag: i18n.language === 'en' ? 'Intensive' : 'Интенсив' },
                 ].map((item) => (
                   <div
                     key={item.value}

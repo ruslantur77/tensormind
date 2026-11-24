@@ -196,7 +196,7 @@ export const QuizPage: React.FC = () => {
             onClick={() => navigate('/')}
             icon={<ArrowRight className="w-5 h-5" />}
           >
-            На главную
+            {lang === 'en' ? 'Go home' : 'На главную'}
           </Button>
 
           <Button
@@ -289,7 +289,9 @@ export const QuizPage: React.FC = () => {
 
         {currentQ.type === 'multiple' && (
           <div className="space-y-2.5">
-            <span className="text-xs text-slate-500 dark:text-slate-400">Выберите все подходящие варианты:</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              {lang === 'en' ? 'Select all that apply:' : 'Выберите все подходящие варианты:'}
+            </span>
             {currentQ.options.map((opt, optIdx) => {
               const currentArr = (currentAnswer as number[]) || [];
               const isSelected = currentArr.includes(optIdx);

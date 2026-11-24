@@ -21,6 +21,7 @@ import { lessonRepository } from '@/entities/lesson/model/repository';
 import { platform } from '@/shared/lib/platform';
 import { ModuleIcon } from '@/shared/ui/AppIcons';
 import { MathText } from '@/shared/lib/katex/MathText';
+import { pluralizeRu } from '@/shared/lib/i18n/plural';
 
 export const ModulePage: React.FC = () => {
   const { moduleId } = useParams<{ moduleId: string }>();
@@ -45,8 +46,12 @@ export const ModulePage: React.FC = () => {
   if (!moduleData) {
     return (
       <div className="py-12 text-center space-y-4">
-        <p className="text-slate-500 dark:text-slate-400">Модуль не найден</p>
-        <Button onClick={() => navigate('/')}>На главную</Button>
+        <p className="text-slate-500 dark:text-slate-400">
+          {lang === 'en' ? 'Module not found' : 'Модуль не найден'}
+        </p>
+        <Button onClick={() => navigate('/')}>
+          {lang === 'en' ? 'Go home' : 'На главную'}
+        </Button>
       </div>
     );
   }
@@ -82,7 +87,7 @@ export const ModulePage: React.FC = () => {
             </div>
             <div className="space-y-1">
               <span className="text-xs font-numeric text-[var(--tm-ochre-text)] font-bold">
-                Модуль {moduleData.meta.order}
+                {lang === 'en' ? 'Module' : 'Модуль'} {moduleData.meta.order}
               </span>
               <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
                 {moduleData.meta.title[lang]}
@@ -102,7 +107,7 @@ export const ModulePage: React.FC = () => {
                 icon={<Layers className="w-4 h-4 text-sky-500" />}
                 onClick={() => navigate(`/cards?module=${moduleData.meta.id}`)}
               >
-                Карточки ({moduleData.cards.length})
+                {lang === 'en' ? 'Cards' : 'Карточки'} ({moduleData.cards.length})
               </Button>
             )}
             {moduleData.quiz.length > 0 && (
@@ -112,7 +117,7 @@ export const ModulePage: React.FC = () => {
                 icon={<HelpCircle className="w-4 h-4 text-[var(--tm-wine-text)]" />}
                 onClick={() => navigate(`/quiz?module=${moduleData.meta.id}`)}
               >
-                Тест ({moduleData.quiz.length})
+                {lang === 'en' ? 'Quiz' : 'Тест'} ({moduleData.quiz.length})
               </Button>
             )}
           </div>
@@ -122,7 +127,9 @@ export const ModulePage: React.FC = () => {
         <div className="space-y-1.5 pt-2">
           <div className="flex justify-between text-xs font-semibold text-slate-600 dark:text-slate-400">
             <span>
-              Пройдено: {completedCount} из {totalLessons} уроков
+              {lang === 'en'
+                ? `Completed: ${completedCount} of ${totalLessons} lessons`
+                : `Пройдено: ${completedCount} из ${totalLessons} ${pluralizeRu(totalLessons, 'урока', 'уроков', 'уроков')}`}
             </span>
             <span className="text-[var(--tm-ochre-text)] font-bold">{Math.round(progressPercent)}%</span>
           </div>
@@ -134,7 +141,7 @@ export const ModulePage: React.FC = () => {
       <div className="space-y-3">
         <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-sky-500" />
-          <span>Уроки раздела</span>
+          <span>{lang === 'en' ? 'Lessons' : 'Уроки раздела'}</span>
         </h3>
 
         <div className="space-y-2.5">
@@ -176,12 +183,16 @@ export const ModulePage: React.FC = () => {
                       <div className="flex flex-wrap items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400 font-medium">
                         <span className="flex items-center gap-1 shrink-0 whitespace-nowrap">
                           <Clock className="w-3 h-3 shrink-0" />
-                          {lesson.estimatedMinutes} мин
+                          {lesson.estimatedMinutes} {lang === 'en' ? 'min' : 'мин'}
                         </span>
                         {lesson.checkpointQuiz && (
                           <>
                             <span className="text-slate-300 dark:text-slate-600 select-none">•</span>
-                            <span className="shrink-0 whitespace-nowrap">{lesson.checkpointQuiz.length} проверочных вопросов</span>
+                            <span className="shrink-0 whitespace-nowrap">
+                              {lang === 'en'
+                                ? `${lesson.checkpointQuiz.length} checkpoint ${lesson.checkpointQuiz.length === 1 ? 'question' : 'questions'}`
+                                : `${lesson.checkpointQuiz.length} ${pluralizeRu(lesson.checkpointQuiz.length, 'проверочный вопрос', 'проверочных вопроса', 'проверочных вопросов')}`}
+                            </span>
                           </>
                         )}
                       </div>

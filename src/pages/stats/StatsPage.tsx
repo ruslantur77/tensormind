@@ -24,6 +24,7 @@ import { achievementRepository, ACHIEVEMENTS_LIST } from '@/entities/achievement
 import { contentRegistry } from '@/shared/content';
 import { AchievementIcon } from '@/shared/ui/AppIcons';
 import { STATS_UPDATED_EVENT } from '@/shared/lib/events';
+import { pluralizeRu } from '@/shared/lib/i18n/plural';
 
 export const StatsPage: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -132,7 +133,9 @@ export const StatsPage: React.FC = () => {
             {t('stats.title')}
           </h2>
           <p className="text-xs text-slate-600 dark:text-slate-400">
-            Детальная аналитика вашего прогресса и удержания знаний
+            {lang === 'en'
+              ? 'Detailed analytics of your progress and knowledge retention'
+              : 'Детальная аналитика вашего прогресса и удержания знаний'}
           </p>
         </div>
       </div>
@@ -142,45 +145,53 @@ export const StatsPage: React.FC = () => {
         <Card className="p-4 space-y-1">
           <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-sky-500" />
-            Всего опыта
+            {lang === 'en' ? 'Total XP' : 'Всего опыта'}
           </span>
           <p className="text-xl sm:text-2xl font-extrabold text-sky-700 dark:text-sky-400 font-poppins">
             {totalXP} XP
           </p>
-          <span className="text-[11px] text-slate-500 dark:text-slate-400">Уровень {level}</span>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400">
+            {lang === 'en' ? 'Level' : 'Уровень'} {level}
+          </span>
         </Card>
 
         <Card className="p-4 space-y-1">
           <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <Flame className="w-3.5 h-3.5 text-amber-500 fill-amber-500" />
-            Текущий стрик
+            {lang === 'en' ? 'Current streak' : 'Текущий стрик'}
           </span>
           <p className="text-xl sm:text-2xl font-extrabold text-amber-600 dark:text-amber-400 font-numeric">
             {currentStreak}
           </p>
-          <span className="text-[11px] text-slate-500 dark:text-slate-400">Рекорд: {longestStreak}</span>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400">
+            {lang === 'en' ? 'Best' : 'Рекорд'}: {longestStreak}
+          </span>
         </Card>
 
         <Card className="p-4 space-y-1">
           <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <Layers className="w-3.5 h-3.5 text-indigo-500" />
-            Карточки
+            {lang === 'en' ? 'Cards' : 'Карточки'}
           </span>
           <p className="text-xl sm:text-2xl font-extrabold text-indigo-700 dark:text-indigo-400 font-numeric">
             {cardsReviewedCount}
           </p>
-          <span className="text-[11px] text-slate-500 dark:text-slate-400">в долговременной памяти</span>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400">
+            {lang === 'en' ? 'in long-term memory' : 'в долговременной памяти'}
+          </span>
         </Card>
 
         <Card className="p-4 space-y-1">
           <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <BookOpen className="w-3.5 h-3.5 text-emerald-500" />
-            Уроки
+            {lang === 'en' ? 'Lessons' : 'Уроки'}
           </span>
           <p className="text-xl sm:text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 font-numeric">
             {lessonsCompletedCount}
           </p>
-          <span className="text-[11px] text-slate-500 dark:text-slate-400">полностью пройдено</span>
+          <span className="text-[11px] text-slate-500 dark:text-slate-400">
+            {lang === 'en' ? 'fully completed' : 'полностью пройдено'}
+          </span>
         </Card>
       </div>
 
@@ -188,7 +199,7 @@ export const StatsPage: React.FC = () => {
       <GlassPanel className="p-5 space-y-2.5">
         <div className="flex items-center justify-between text-xs font-semibold">
           <span className="text-slate-700 dark:text-slate-300">
-            Уровень {level} → Уровень {level + 1}
+            {lang === 'en' ? `Level ${level} → Level ${level + 1}` : `Уровень ${level} → Уровень ${level + 1}`}
           </span>
           <span className="text-sky-700 dark:text-sky-400 font-poppins">
             {xpInCurrentLevel} / {xpNeeded} XP
@@ -202,10 +213,12 @@ export const StatsPage: React.FC = () => {
         <div className="flex items-center justify-between">
           <h3 className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
             <Calendar className="w-4 h-4 text-sky-500" />
-            <span>Календарь активности (последние 14 дней)</span>
+            <span>{lang === 'en' ? 'Activity calendar (last 14 days)' : 'Календарь активности (последние 14 дней)'}</span>
           </h3>
           <span className="text-[11px] text-slate-500 dark:text-slate-400">
-            {activeDates.length} активных дней
+            {lang === 'en'
+              ? `${activeDates.length} active ${activeDates.length === 1 ? 'day' : 'days'}`
+              : `${activeDates.length} ${pluralizeRu(activeDates.length, 'активный день', 'активных дня', 'активных дней')}`}
           </span>
         </div>
 
@@ -247,11 +260,11 @@ export const StatsPage: React.FC = () => {
                     #{item.tag}
                   </span>
                   <span className="text-[11px] text-slate-500 dark:text-slate-400 block">
-                    Ошибок в тестах: {item.mistakes}
+                    {lang === 'en' ? 'Quiz mistakes' : 'Ошибок в тестах'}: {item.mistakes}
                   </span>
                 </div>
                 <Badge variant="warning" size="sm">
-                  Требует повторения
+                  {lang === 'en' ? 'Needs review' : 'Требует повторения'}
                 </Badge>
               </Card>
             ))}

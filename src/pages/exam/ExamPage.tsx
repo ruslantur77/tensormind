@@ -28,6 +28,7 @@ import { streakRepository } from '@/entities/streak/model/repository';
 import { achievementRepository } from '@/entities/achievement/model/repository';
 import { fireCelebrationConfetti } from '@/shared/ui/Confetti';
 import { PASSING_EXAM_PERCENT, XP_REWARDS } from '@/shared/config';
+import { pluralizeRu } from '@/shared/lib/i18n/plural';
 import { platform } from '@/shared/lib/platform';
 import { ModuleIcon } from '@/shared/ui/AppIcons';
 
@@ -61,8 +62,10 @@ export const ExamPage: React.FC = () => {
   const topics: ExamTopic[] = [
     {
       id: 'comprehensive',
-      title: 'Генеральный экзамен (Все темы)',
-      description: 'Комплексная аттестация по всем модулям: линейные модели, Байес, деревья, бустинг и нейросети.',
+      title: lang === 'en' ? 'Comprehensive exam (All topics)' : 'Генеральный экзамен (Все темы)',
+      description: lang === 'en'
+        ? 'Comprehensive assessment across all modules: linear models, Bayes, trees, boosting, and neural networks.'
+        : 'Комплексная аттестация по всем модулям: линейные модели, Байес, деревья, бустинг и нейросети.',
       questionCount: 20,
       timeLimitSec: 30 * 60, // 30 minutes
       moduleId: 'all',
@@ -72,7 +75,7 @@ export const ExamPage: React.FC = () => {
       const descStr = typeof m.meta.description === 'string' ? m.meta.description : (lang === 'en' ? m.meta.description.en : m.meta.description.ru);
       return {
         id: m.meta.id,
-        title: `Экзамен: ${titleStr}`,
+        title: lang === 'en' ? `Exam: ${titleStr}` : `Экзамен: ${titleStr}`,
         description: descStr,
         questionCount: Math.min(10, Math.max(5, m.quiz.length || 10)),
         timeLimitSec: 15 * 60, // 15 minutes
@@ -202,15 +205,19 @@ export const ExamPage: React.FC = () => {
 
           <div className="space-y-1">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-              Экзаменационная аттестация
+              {lang === 'en' ? 'Exam assessment' : 'Экзаменационная аттестация'}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-lg mx-auto">
-              Выберите генеральный экзамен по всему курсу или тематический срез знаний по конкретному модулю.
+              {lang === 'en'
+                ? 'Choose the comprehensive exam across the whole course or a topic-specific knowledge check for a single module.'
+                : 'Выберите генеральный экзамен по всему курсу или тематический срез знаний по конкретному модулю.'}
             </p>
           </div>
 
           <div className="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-700 dark:text-amber-300 max-w-md mx-auto">
-            Порог сдачи: {PASSING_EXAM_PERCENT}% правильных ответов. Награды в XP начисляются при успешной сдаче.
+            {lang === 'en'
+              ? `Passing threshold: ${PASSING_EXAM_PERCENT}% correct answers. XP rewards are granted on a successful pass.`
+              : `Порог сдачи: ${PASSING_EXAM_PERCENT}% правильных ответов. Награды в XP начисляются при успешной сдаче.`}
           </div>
         </GlassPanel>
 
@@ -218,7 +225,7 @@ export const ExamPage: React.FC = () => {
         <div className="space-y-3">
           <h3 className="text-sm font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300 flex items-center gap-2">
             <ListChecks className="w-4 h-4 text-sky-500" />
-            <span>Выберите тему экзамена:</span>
+            <span>{lang === 'en' ? 'Choose exam topic:' : 'Выберите тему экзамена:'}</span>
           </h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
@@ -248,7 +255,7 @@ export const ExamPage: React.FC = () => {
                         </h4>
                         {tp.id === 'comprehensive' && (
                           <Badge variant="cyan" size="sm">
-                            Курс
+                            {lang === 'en' ? 'Course' : 'Курс'}
                           </Badge>
                         )}
                       </div>
@@ -261,11 +268,14 @@ export const ExamPage: React.FC = () => {
                   <div className="flex items-center justify-between text-[11px] pt-2 border-t border-slate-200/60 dark:border-white/5 text-slate-500 dark:text-slate-400 font-medium">
                     <span className="flex items-center gap-1 text-sky-700 dark:text-sky-400">
                       <BookOpen className="w-3.5 h-3.5" />
-                      {tp.questionCount} вопросов
+                      {tp.questionCount}{' '}
+                      {lang === 'en'
+                        ? (tp.questionCount === 1 ? 'question' : 'questions')
+                        : pluralizeRu(tp.questionCount, 'вопрос', 'вопроса', 'вопросов')}
                     </span>
                     <span className="flex items-center gap-1 text-slate-600 dark:text-slate-300">
                       <Clock className="w-3.5 h-3.5" />
-                      {Math.round(tp.timeLimitSec / 60)} мин
+                      {Math.round(tp.timeLimitSec / 60)} {lang === 'en' ? 'min' : 'мин'}
                     </span>
                   </div>
                 </div>
@@ -277,9 +287,15 @@ export const ExamPage: React.FC = () => {
         {/* Selected Topic Action Bar */}
         <div className="p-4 rounded-2xl aero-glass border border-slate-200 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="space-y-0.5 text-center sm:text-left">
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">Выбран экзамен:</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+              {lang === 'en' ? 'Selected exam:' : 'Выбран экзамен:'}
+            </span>
             <h4 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white">
-              {currentTopic.title} ({currentTopic.questionCount} вопросов, {Math.round(currentTopic.timeLimitSec / 60)} мин)
+              {currentTopic.title} ({currentTopic.questionCount}{' '}
+              {lang === 'en'
+                ? (currentTopic.questionCount === 1 ? 'question' : 'questions')
+                : pluralizeRu(currentTopic.questionCount, 'вопрос', 'вопроса', 'вопросов')}
+              , {Math.round(currentTopic.timeLimitSec / 60)} {lang === 'en' ? 'min' : 'мин'})
             </h4>
           </div>
 
@@ -290,7 +306,7 @@ export const ExamPage: React.FC = () => {
             onClick={handleStartExam}
             icon={<GraduationCap className="w-5 h-5" />}
           >
-            Начать аттестацию
+            {lang === 'en' ? 'Start assessment' : 'Начать аттестацию'}
           </Button>
         </div>
       </div>
@@ -335,13 +351,19 @@ export const ExamPage: React.FC = () => {
             </h2>
             <p className="text-sm text-slate-600 dark:text-slate-400">
               {passed
-                ? `Поздравляем! Вы успешно подтвердили компетенции по теме: ${currentTopic.title}.`
-                : `Для успешной сдачи необходимо набрать не менее ${PASSING_EXAM_PERCENT}%. Рекомендуем повторить теорию и карточки.`}
+                ? (lang === 'en'
+                    ? `Congratulations! You have successfully confirmed your competencies in: ${currentTopic.title}.`
+                    : `Поздравляем! Вы успешно подтвердили компетенции по теме: ${currentTopic.title}.`)
+                : (lang === 'en'
+                    ? `You need at least ${PASSING_EXAM_PERCENT}% to pass. We recommend reviewing the theory and cards.`
+                    : `Для успешной сдачи необходимо набрать не менее ${PASSING_EXAM_PERCENT}%. Рекомендуем повторить теорию и карточки.`)}
             </p>
           </div>
 
           <div className="p-4 rounded-xl aero-inset max-w-sm mx-auto text-center space-y-1">
-            <span className="text-xs text-slate-500 dark:text-slate-400">Результат аттестации</span>
+            <span className="text-xs text-slate-500 dark:text-slate-400">
+              {lang === 'en' ? 'Assessment result' : 'Результат аттестации'}
+            </span>
             <p className="text-3xl font-extrabold text-slate-900 dark:text-white">
               {score} / {examQuestions.length}{' '}
               <span className={`text-base font-semibold ${passed ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400'}`}>
@@ -352,7 +374,9 @@ export const ExamPage: React.FC = () => {
 
           {passed && (
             <Badge variant="success" size="md">
-              <span className="font-poppins">Награда: +{earnedXP} XP</span>
+              <span className="font-poppins">
+                {lang === 'en' ? 'Reward' : 'Награда'}: +{earnedXP} XP
+              </span>
             </Badge>
           )}
 
@@ -360,7 +384,7 @@ export const ExamPage: React.FC = () => {
           {mistakes.length > 0 && (
             <div className="text-left space-y-3 pt-4 border-t border-slate-200 dark:border-white/10">
               <h3 className="text-sm font-bold text-slate-900 dark:text-slate-200">
-                Разбор допущенных ошибок ({mistakes.length}):
+                {lang === 'en' ? 'Mistake review' : 'Разбор допущенных ошибок'} ({mistakes.length}):
               </h3>
               <div className="space-y-2.5 max-h-72 overflow-y-auto pr-1">
                 {mistakes.map((mq) => (
@@ -369,7 +393,9 @@ export const ExamPage: React.FC = () => {
                       <MathText text={getLocalized(mq.question, lang)} />
                     </h5>
                     <div className="text-xs text-slate-700 dark:text-slate-300">
-                      <span className="font-semibold text-sky-700 dark:text-sky-400">Пояснение: </span>
+                      <span className="font-semibold text-sky-700 dark:text-sky-400">
+                        {lang === 'en' ? 'Explanation: ' : 'Пояснение: '}
+                      </span>
                       <MathText text={getLocalized(mq.explanation, lang)} />
                     </div>
                   </Card>
@@ -389,10 +415,10 @@ export const ExamPage: React.FC = () => {
               }}
               icon={<RotateCcw className="w-5 h-5" />}
             >
-              К выбору тем экзамена
+              {lang === 'en' ? 'Back to exam topics' : 'К выбору тем экзамена'}
             </Button>
             <Button variant="secondary" size="md" fullWidth onClick={() => navigate('/')}>
-              На главную
+              {lang === 'en' ? 'Go home' : 'На главную'}
             </Button>
           </div>
         </GlassPanel>
@@ -410,7 +436,8 @@ export const ExamPage: React.FC = () => {
         <div className="flex items-center gap-2 text-xs font-semibold text-sky-700 dark:text-sky-400">
           <GraduationCap className="w-4 h-4" />
           <span>
-            {currentTopic.title} • Вопрос {currentIndex + 1} из {examQuestions.length}
+            {currentTopic.title} • {lang === 'en' ? 'Question' : 'Вопрос'} {currentIndex + 1}{' '}
+            {lang === 'en' ? 'of' : 'из'} {examQuestions.length}
           </span>
         </div>
         <div
@@ -541,7 +568,7 @@ export const ExamPage: React.FC = () => {
           disabled={currentIndex === 0}
           onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
         >
-          Предыдущий
+          {lang === 'en' ? 'Previous' : 'Предыдущий'}
         </Button>
 
         {currentIndex < examQuestions.length - 1 ? (
@@ -550,7 +577,7 @@ export const ExamPage: React.FC = () => {
             size="md"
             onClick={() => setCurrentIndex(prev => prev + 1)}
           >
-            Следующий
+            {lang === 'en' ? 'Next' : 'Следующий'}
           </Button>
         ) : (
           <Button
@@ -559,7 +586,7 @@ export const ExamPage: React.FC = () => {
             onClick={handleFinishExam}
             icon={<CheckCircle2 className="w-4 h-4" />}
           >
-            Завершить экзамен
+            {lang === 'en' ? 'Finish exam' : 'Завершить экзамен'}
           </Button>
         )}
       </div>

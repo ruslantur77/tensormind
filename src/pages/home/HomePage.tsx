@@ -255,7 +255,9 @@ export const HomePage: React.FC = () => {
                 : (lang === 'en' ? 'Checking due cards...' : 'Проверка карточек...')}
             </h3>
             <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-              Алгоритм FSRS рассчитывает оптимальный интервал повторения для максимального удержания в долговременной памяти.
+              {lang === 'en'
+                ? 'The FSRS algorithm schedules the optimal review interval to maximize long-term retention.'
+                : 'Алгоритм FSRS рассчитывает оптимальный интервал повторения для максимального удержания в долговременной памяти.'}
             </p>
           </div>
 
@@ -286,8 +288,12 @@ export const HomePage: React.FC = () => {
             </h3>
             <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 leading-relaxed">
               {lastIncompleteLesson
-                ? 'Закрепите теорию и пройдите мини-квиз для перехода к следующему разделу.'
-                : 'Вы изучили весь базовый курс ML! Закрепляйте знания в режиме Экзамена.'}
+                ? (lang === 'en'
+                    ? 'Reinforce the theory and pass the mini-quiz to unlock the next section.'
+                    : 'Закрепите теорию и пройдите мини-квиз для перехода к следующему разделу.')
+                : (lang === 'en'
+                    ? 'You have completed the entire ML basics course! Keep sharpening your skills in Exam mode.'
+                    : 'Вы изучили весь базовый курс ML! Закрепляйте знания в режиме Экзамена.')}
             </p>
           </div>
 
@@ -303,7 +309,7 @@ export const HomePage: React.FC = () => {
               }
               icon={<Play className="w-4 h-4 fill-current" />}
             >
-              Перейти к уроку
+              {lang === 'en' ? 'Go to lesson' : 'Перейти к уроку'}
             </Button>
           ) : (
             <Button
@@ -312,7 +318,7 @@ export const HomePage: React.FC = () => {
               fullWidth
               onClick={() => navigate('/exam')}
             >
-              Сдать экзамен
+              {lang === 'en' ? 'Take the exam' : 'Сдать экзамен'}
             </Button>
           )}
         </Card>
@@ -444,7 +450,7 @@ export const HomePage: React.FC = () => {
                           )}
                           {isPlaceholder && (
                             <Badge variant="neutral" size="sm">
-                              Скоро
+                              {lang === 'en' ? 'Soon' : 'Скоро'}
                             </Badge>
                           )}
                         </div>
@@ -462,7 +468,11 @@ export const HomePage: React.FC = () => {
                             {t('home.lessons_count', { count: mod.lessons.length })}
                           </span>
                           <span className="text-slate-300 dark:text-slate-600 select-none">•</span>
-                          <span className="shrink-0 whitespace-nowrap">{mod.cards.length} карточек</span>
+                          <span className="shrink-0 whitespace-nowrap">
+                            {lang === 'en'
+                              ? `${mod.cards.length} ${mod.cards.length === 1 ? 'card' : 'cards'}`
+                              : `${mod.cards.length} ${pluralizeRu(mod.cards.length, 'карточка', 'карточки', 'карточек')}`}
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -473,19 +483,19 @@ export const HomePage: React.FC = () => {
                         <>
                           <div className="w-full space-y-1">
                             <div className="flex justify-between text-[11px] font-semibold text-slate-600 dark:text-slate-400">
-                              <span>Прогресс</span>
+                              <span>{lang === 'en' ? 'Progress' : 'Прогресс'}</span>
                               <span className="text-[var(--tm-ochre-text)] font-bold">{Math.round(progressPercent)}%</span>
                             </div>
                             <ProgressBar value={progressPercent} height="sm" variant={isCompleted ? 'sage' : 'ochre'} />
                           </div>
                           <span className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-[var(--tm-ochre-text)] hover:text-[var(--tm-ochre)]">
-                            Открыть <ArrowRight className="w-3.5 h-3.5 shrink-0" />
+                            {lang === 'en' ? 'Open' : 'Открыть'} <ArrowRight className="w-3.5 h-3.5 shrink-0" />
                           </span>
                         </>
                       ) : (
                         <div className="flex items-center gap-1.5 text-xs text-slate-400">
                           <Lock className="w-4 h-4 shrink-0" />
-                          <span>В разработке</span>
+                          <span>{lang === 'en' ? 'In development' : 'В разработке'}</span>
                         </div>
                       )}
                     </div>

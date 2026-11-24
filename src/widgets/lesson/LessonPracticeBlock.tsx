@@ -26,6 +26,7 @@ import {
 import confetti from 'canvas-confetti';
 import { Lesson, getLocalized } from '@/shared/lib/schemas';
 import { getLessonPracticeTask } from '@/shared/content/practice/lessonPracticeRegistry';
+import { pluralizeRu } from '@/shared/lib/i18n/plural';
 import { practiceTaskRepository } from '@/entities/practice/model/practiceTaskRepository';
 import { MathText } from '@/shared/lib/katex/MathText';
 import { platform } from '@/shared/lib/platform';
@@ -117,7 +118,9 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
             executionTimeMs: 12,
           })
         ),
-        stdout: '✓ Решение проверено и успешно засчитано.',
+        stdout: lang === 'en'
+          ? '✓ Solution checked and accepted.'
+          : '✓ Решение проверено и успешно засчитано.',
         executionTimeMs: 12,
       };
     }
@@ -154,7 +157,9 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
             executionTimeMs: 12,
           })
         ),
-        stdout: '✓ Задание ранее выполнено. Все тесты пройдены.',
+        stdout: lang === 'en'
+          ? '✓ Task was completed earlier. All tests passed.'
+          : '✓ Задание ранее выполнено. Все тесты пройдены.',
         executionTimeMs: 12,
       });
     } else {
@@ -774,8 +779,8 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                 }}
                 placeholder={
                   isSql
-                    ? '-- Напишите ваш SQL запрос здесь...'
-                    : '# Напишите ваш Python код здесь...'
+                    ? (lang === 'en' ? '-- Write your SQL query here...' : '-- Напишите ваш SQL запрос здесь...')
+                    : (lang === 'en' ? '# Write your Python code here...' : '# Напишите ваш Python код здесь...')
                 }
               />
             </div>
@@ -887,7 +892,10 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                           {vInfo.label}
                         </span>
                         <span className="text-[11px] px-2 py-0.5 rounded font-mono bg-black/40 text-slate-300 border border-white/10">
-                          {runResults.passedTests} / {runResults.totalTests} тестов
+                          {runResults.passedTests} / {runResults.totalTests}{' '}
+                          {lang === 'en'
+                            ? (runResults.totalTests === 1 ? 'test' : 'tests')
+                            : pluralizeRu(runResults.totalTests, 'тест', 'теста', 'тестов')}
                         </span>
                       </div>
                       <p className="text-[11px] text-slate-400 mt-0.5">{vInfo.desc}</p>
@@ -955,7 +963,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                             {tc.verdict}
                           </span>
                           <span className="font-bold text-slate-200 text-xs">
-                            Тест #{tc.testIndex}: {tc.name}
+                            {lang === 'en' ? 'Test' : 'Тест'} #{tc.testIndex}: {tc.name}
                           </span>
                         </div>
                         <span className="text-[11px] text-slate-500">{tc.executionTimeMs} ms</span>
@@ -964,7 +972,9 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                       {/* Input if present */}
                       {tc.input && (
                         <div className="space-y-1">
-                          <span className="text-[11px] text-slate-400">Входные данные / вызов:</span>
+                          <span className="text-[11px] text-slate-400">
+                            {lang === 'en' ? 'Input / call:' : 'Входные данные / вызов:'}
+                          </span>
                           <pre className="p-2 rounded bg-black/40 text-slate-300 text-[11px] overflow-x-auto border border-white/5">
                             <code>{tc.input}</code>
                           </pre>
@@ -975,7 +985,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                       {tc.error ? (
                         <div className="space-y-1">
                           <span className="text-[11px] text-red-400 font-bold">
-                            Трассировка ошибки ({tc.verdict}):
+                            {lang === 'en' ? 'Error trace' : 'Трассировка ошибки'} ({tc.verdict}):
                           </span>
                           <pre className="p-2 rounded bg-red-950/50 text-red-300 text-[11px] overflow-x-auto border border-red-500/30 whitespace-pre-wrap">
                             <code>{tc.error}</code>
@@ -984,15 +994,19 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                       ) : !tc.passed && tc.expectedOutput !== undefined ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1">
                           <div className="space-y-1">
-                            <span className="text-[11px] text-emerald-400 font-bold">Ожидаемый вывод:</span>
+                            <span className="text-[11px] text-emerald-400 font-bold">
+                              {lang === 'en' ? 'Expected output:' : 'Ожидаемый вывод:'}
+                            </span>
                             <pre className="p-2 rounded bg-black/40 text-emerald-300 text-[11px] overflow-x-auto border border-emerald-500/20">
                               <code>{tc.expectedOutput}</code>
                             </pre>
                           </div>
                           <div className="space-y-1">
-                            <span className="text-[11px] text-rose-400 font-bold">Фактический вывод:</span>
+                            <span className="text-[11px] text-rose-400 font-bold">
+                              {lang === 'en' ? 'Actual output:' : 'Фактический вывод:'}
+                            </span>
                             <pre className="p-2 rounded bg-black/40 text-rose-300 text-[11px] overflow-x-auto border border-rose-500/20">
-                              <code>{tc.actualOutput || '(пустой вывод)'}</code>
+                              <code>{tc.actualOutput || (lang === 'en' ? '(empty output)' : '(пустой вывод)')}</code>
                             </pre>
                           </div>
                         </div>
@@ -1008,10 +1022,16 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
               <div className="p-3.5 font-mono text-xs">
                 <div className="text-[11px] text-slate-400 mb-1.5 flex items-center gap-1.5">
                   <Terminal className="w-3.5 h-3.5 text-sky-400" />
-                  <span>Стандартный поток вывода программы (stdout):</span>
+                  <span>
+                    {lang === 'en'
+                      ? 'Standard output stream (stdout):'
+                      : 'Стандартный поток вывода программы (stdout):'}
+                  </span>
                 </div>
                 <pre className="p-3 rounded-lg bg-black/60 text-slate-200 text-xs overflow-x-auto leading-relaxed border border-white/5 min-h-[80px] whitespace-pre-wrap">
-                  <code>{runResults.stdout || '(программа не вывела данных в stdout)'}</code>
+                  <code>
+                    {runResults.stdout || (lang === 'en' ? '(the program wrote nothing to stdout)' : '(программа не вывела данных в stdout)')}
+                  </code>
                 </pre>
               </div>
             )}

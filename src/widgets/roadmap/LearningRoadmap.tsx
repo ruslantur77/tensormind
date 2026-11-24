@@ -15,6 +15,7 @@ import { ModuleIcon } from '@/shared/ui/AppIcons';
 import { contentRegistry } from '@/shared/content';
 import { platform } from '@/shared/lib/platform';
 import { MathText } from '@/shared/lib/katex/MathText';
+import { pluralizeRu } from '@/shared/lib/i18n/plural';
 
 export type FlowType = 'sequential' | 'parallel' | 'specialization';
 
@@ -547,11 +548,14 @@ export const LearningRoadmap: React.FC<LearningRoadmapProps> = ({ completedLesso
                         <div className="flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                           <span className="flex items-center gap-1 font-medium">
                             <Clock className="w-3 h-3 shrink-0" />
-                            {mod.meta.estimatedMinutes} мин
+                            {mod.meta.estimatedMinutes} {lang === 'en' ? 'min' : 'мин'}
                           </span>
                           <span className="flex items-center gap-1 font-medium">
                             <BookOpen className="w-3 h-3 shrink-0" />
-                            {mod.lessons.length} уроков
+                            {mod.lessons.length}{' '}
+                            {lang === 'en'
+                              ? (mod.lessons.length === 1 ? 'lesson' : 'lessons')
+                              : pluralizeRu(mod.lessons.length, 'урок', 'урока', 'уроков')}
                           </span>
                           <span className={`font-numeric font-bold ${isDone ? 'text-[var(--tm-sage-text)]' : 'text-[var(--tm-ochre-text)]'}`}>
                             {Math.round(progress)}%

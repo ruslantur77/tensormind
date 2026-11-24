@@ -6,7 +6,7 @@ import { Button } from '@/shared/ui/Button';
 import { Modal } from '@/shared/ui/Modal';
 
 export const PWAInstallButton: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { isInstallable, isInstalled, isIOS, install } = usePWAInstall();
   const [showIOSGuide, setShowIOSGuide] = useState(false);
 
@@ -52,11 +52,11 @@ export const PWAInstallButton: React.FC = () => {
             <div className="p-3 bg-slate-800/80 rounded-xl border border-white/10 text-xs space-y-2">
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold">1</span>
-                <span>Нажмите иконку «Поделиться» (квадрат со стрелкой вверх)</span>
+                <span>{i18n.language === 'en' ? 'Tap the Share icon (square with an arrow pointing up)' : 'Нажмите иконку «Поделиться» (квадрат со стрелкой вверх)'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <span className="w-5 h-5 rounded-full bg-sky-500/20 text-sky-400 flex items-center justify-center font-bold">2</span>
-                <span>Выберите пункт «На экран "Домой"»</span>
+                <span>{i18n.language === 'en' ? 'Choose "Add to Home Screen"' : 'Выберите пункт «На экран "Домой"»'}</span>
               </div>
             </div>
             <Button fullWidth variant="primary" onClick={() => setShowIOSGuide(false)}>

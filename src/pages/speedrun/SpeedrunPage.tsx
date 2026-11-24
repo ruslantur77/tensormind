@@ -29,6 +29,7 @@ import { achievementRepository } from '@/entities/achievement/model/repository';
 import { fireCelebrationConfetti } from '@/shared/ui/Confetti';
 import { platform } from '@/shared/lib/platform';
 import { formatClozeQuestion, formatClozeAnswer } from '@/shared/lib/cloze';
+import { pluralizeRu } from '@/shared/lib/i18n/plural';
 
 interface QuizAnswerRecord {
   question: QuizQuestion;
@@ -356,7 +357,7 @@ export const SpeedrunPage: React.FC = () => {
           <GlassPanel className="p-6 space-y-5 text-center">
             <div className="space-y-1">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                Карточки на скорость (60 секунд)
+                {lang === 'en' ? 'Card speedrun (60 seconds)' : 'Карточки на скорость (60 секунд)'}
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
                 {t('speedrun.mode_cards_desc')}
@@ -366,10 +367,10 @@ export const SpeedrunPage: React.FC = () => {
             <div className="p-3.5 rounded-xl aero-inset flex items-center justify-between max-w-xs mx-auto">
               <span className="text-xs text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
                 <Trophy className="w-4 h-4 text-amber-500" />
-                Личный рекорд:
+                {lang === 'en' ? 'Personal best:' : 'Личный рекорд:'}
               </span>
               <span className="text-base font-bold text-amber-600 dark:text-amber-400 font-numeric">
-                {bestCardsScore} очков
+                {bestCardsScore} {lang === 'en' ? 'pts' : pluralizeRu(bestCardsScore, 'очко', 'очка', 'очков')}
               </span>
             </div>
 
@@ -380,17 +381,19 @@ export const SpeedrunPage: React.FC = () => {
               onClick={startCardsSpeedrun}
               icon={<Play className="w-5 h-5 fill-current" />}
             >
-              Начать спидран (60с)
+              {lang === 'en' ? 'Start speedrun (60s)' : 'Начать спидран (60с)'}
             </Button>
           </GlassPanel>
         ) : (
           <GlassPanel className="p-6 space-y-5 text-center">
             <div className="space-y-1">
               <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                Блиц-тест по машинному обучению
+                {lang === 'en' ? 'Machine learning blitz quiz' : 'Блиц-тест по машинному обучению'}
               </h3>
               <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                Проверьте свои знания на скорость с детальным разбором допущенных ошибок в конце.
+                {lang === 'en'
+                  ? 'Test your knowledge against the clock, with a detailed review of mistakes at the end.'
+                  : 'Проверьте свои знания на скорость с детальным разбором допущенных ошибок в конце.'}
               </p>
             </div>
 
@@ -473,7 +476,7 @@ export const SpeedrunPage: React.FC = () => {
                 {lang === 'en' ? 'Personal best:' : 'Личный рекорд:'}
               </span>
               <span className="text-base font-bold text-amber-600 dark:text-amber-400 font-numeric">
-                {bestQuizScore} {lang === 'en' ? 'pts' : 'очков'}
+                {bestQuizScore} {lang === 'en' ? 'pts' : pluralizeRu(bestQuizScore, 'очко', 'очка', 'очков')}
               </span>
             </div>
 
@@ -508,19 +511,26 @@ export const SpeedrunPage: React.FC = () => {
               {t('speedrun.game_over')}
             </h2>
             <p className="text-sm text-slate-600 dark:text-slate-400">
-              Итоговый счет: <strong className="text-sky-600 dark:text-sky-400">{score} очков</strong>
+              {lang === 'en' ? 'Final score:' : 'Итоговый счет:'}{' '}
+              <strong className="text-sky-600 dark:text-sky-400">
+                {score} {lang === 'en' ? 'pts' : pluralizeRu(score, 'очко', 'очка', 'очков')}
+              </strong>
             </p>
           </div>
 
           <div className="grid grid-cols-2 gap-3 text-xs text-slate-700 dark:text-slate-300">
             <div className="p-3.5 rounded-xl aero-inset">
-              <span className="text-slate-500 dark:text-slate-400 block mb-1">Точность ответов</span>
+              <span className="text-slate-500 dark:text-slate-400 block mb-1">
+                {lang === 'en' ? 'Answer accuracy' : 'Точность ответов'}
+              </span>
               <span className="text-lg font-bold text-sky-700 dark:text-sky-400 font-numeric">
                 {correctCount} / {totalCount} {totalCount > 0 && `(${Math.round((correctCount / totalCount) * 100)}%)`}
               </span>
             </div>
             <div className="p-3.5 rounded-xl aero-inset">
-              <span className="text-slate-500 dark:text-slate-400 block mb-1">Заработано опыта</span>
+              <span className="text-slate-500 dark:text-slate-400 block mb-1">
+                {lang === 'en' ? 'XP earned' : 'Заработано опыта'}
+              </span>
               <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400 font-poppins">
                 +{Math.floor(score / 5)} XP
               </span>
@@ -548,7 +558,7 @@ export const SpeedrunPage: React.FC = () => {
                 setIsPlaying(false);
               }}
             >
-              К выбору режима
+              {lang === 'en' ? 'Back to mode select' : 'К выбору режима'}
             </Button>
           </div>
         </GlassPanel>
@@ -559,12 +569,14 @@ export const SpeedrunPage: React.FC = () => {
             <div className="flex items-center justify-between px-1">
               <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
                 <AlertCircle className="w-5 h-5 text-amber-500" />
-                <span>Разбор ответов</span>
+                <span>{lang === 'en' ? 'Answer review' : 'Разбор ответов'}</span>
               </h3>
               <span className="text-xs text-slate-500 dark:text-slate-400">
                 {incorrectAnswers.length === 0
-                  ? 'Все ответы верные'
-                  : `Ошибок: ${incorrectAnswers.length} из ${quizHistory.length}`}
+                  ? (lang === 'en' ? 'All answers correct' : 'Все ответы верные')
+                  : (lang === 'en'
+                      ? `Mistakes: ${incorrectAnswers.length} of ${quizHistory.length}`
+                      : `Ошибок: ${incorrectAnswers.length} из ${quizHistory.length}`)}
               </span>
             </div>
 
@@ -572,10 +584,12 @@ export const SpeedrunPage: React.FC = () => {
               <GlassPanel className="p-5 text-center space-y-2">
                 <CheckCircle2 className="w-8 h-8 text-emerald-500 mx-auto" />
                 <h4 className="text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                  Идеальный результат!
+                  {lang === 'en' ? 'Perfect result!' : 'Идеальный результат!'}
                 </h4>
                 <p className="text-xs text-slate-600 dark:text-slate-400">
-                  Вы ответили на все вопросы без единой ошибки.
+                  {lang === 'en'
+                    ? 'You answered every question without a single mistake.'
+                    : 'Вы ответили на все вопросы без единой ошибки.'}
                 </p>
               </GlassPanel>
             ) : (
