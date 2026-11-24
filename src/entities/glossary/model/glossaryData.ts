@@ -466,8 +466,253 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   },
 
   // ==========================================
-  // 1. МЕТРИКИ КАЧЕСТВА / METRICS
+  // 1. МЕТРИКИ И ФУНКЦИИ ПОТЕРЬ / METRICS & LOSSES
   // ==========================================
+  {
+    id: 'accuracy-balanced',
+    term: { ru: 'Accuracy и Balanced Accuracy (Доля верных ответов)', en: 'Accuracy & Balanced Accuracy' },
+    englishName: 'Accuracy / Balanced Accuracy / Top-k Accuracy',
+    category: 'metrics',
+    formulaLatex: '\\text{Accuracy} = \\frac{1}{N} \\sum_{i=1}^N \\mathbf{1}[\\hat{y}_i = y_i], \\quad \\text{Balanced} = \\frac{1}{K} \\sum_{k=1}^K \\text{Recall}_k',
+    formulaDescription: {
+      ru: 'N — число объектов, K — число классов, Recall_k — полнота по классу k. Top-k Accuracy — доля примеров, где истинный класс попал в k лучших предсказаний.',
+      en: 'N is the number of samples, K is the number of classes, Recall_k is per-class recall. Top-k accuracy counts samples whose true class is among the k highest-probability predictions.',
+    },
+    shortDefinition: {
+      ru: 'Доля правильных предсказаний. Balanced Accuracy усредняет полноту по классам, поэтому не вознаграждает модель за перекос в мажоритарный класс.',
+      en: 'Fraction of correct predictions. Balanced Accuracy averages per-class recall, so it does not reward a model for favoring the majority class.',
+    },
+    whenToUse: [
+      {
+        ru: 'Сбалансированные задачи классификации, где нужна простая и интерпретируемая метрика для отчёта или демо.',
+        en: 'Balanced classification tasks where a simple, interpretable metric is needed for reporting or demos.',
+      },
+      {
+        ru: 'Balanced Accuracy — при умеренном дисбалансе, когда каждый класс одинаково важен (медицина, редкие события, мультиклассовая диагностика).',
+        en: 'Balanced Accuracy — under moderate imbalance when every class matters equally (medicine, rare events, multi-class diagnostics).',
+      },
+      {
+        ru: 'Top-1 / Top-5 Accuracy — стандарт для ImageNet, retrieval и задач с большим числом классов, где важно попадание в короткий список.',
+        en: 'Top-1 / Top-5 Accuracy — the standard for ImageNet, retrieval, and many-class problems where hitting a shortlist is what matters.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'При дисбалансе Accuracy обманчива: модель, всегда предсказывающая мажоритарный класс, может иметь 99% Accuracy при нулевом Recall редкого класса.',
+        en: 'Accuracy is misleading under imbalance: a model that always predicts the majority class can reach 99% accuracy with zero recall on the rare class.',
+      },
+      {
+        ru: 'Balanced Accuracy — это macro-averaged Recall. Случайный baseline при K классах равен 1/K, а не 0.5.',
+        en: 'Balanced Accuracy is macro-averaged recall. The random baseline for K classes is 1/K, not 0.5.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'linear-models',
+      lessonId: 'lm-hyperplane-geometry',
+      title: { ru: 'Геометрия классификации: гиперплоскости, отступ (Margin) и метрики', en: 'Classification Geometry: Hyperplanes, Margin & Metrics' },
+    },
+    tags: ['accuracy', 'balanced accuracy', 'top-k', 'classification', 'imbalance', 'доля верных'],
+  },
+  {
+    id: 'precision-recall',
+    term: { ru: 'Precision и Recall (Точность и Полнота)', en: 'Precision & Recall' },
+    englishName: 'Precision, Recall & Specificity',
+    category: 'metrics',
+    formulaLatex: '\\text{Precision} = \\frac{TP}{TP + FP}, \\quad \\text{Recall} = \\frac{TP}{TP + FN}, \\quad \\text{Specificity} = \\frac{TN}{TN + FP}',
+    formulaDescription: {
+      ru: 'TP, FP, FN, TN — элементы матрицы ошибок. Precision — доля истинных среди предсказанных положительных, Recall — доля найденных среди всех реальных положительных.',
+      en: 'TP, FP, FN, TN are confusion-matrix cells. Precision is the share of true positives among predicted positives; recall is the share of real positives that were found.',
+    },
+    shortDefinition: {
+      ru: 'Две базовые метрики бинарной классификации: Precision отвечает на вопрос «насколько можно доверять положительному прогнозу», Recall — «сколько реальных целей мы нашли».',
+      en: 'Two core binary-classification metrics: Precision answers how much a positive prediction can be trusted; Recall answers how many real positives were found.',
+    },
+    whenToUse: [
+      {
+        ru: 'Precision важна, когда ложное срабатывание дорого: спам-фильтр, антифрод, рекомендации, где ошибка раздражает пользователя.',
+        en: 'Precision matters when false alarms are costly: spam filtering, fraud detection, and recommendations where a bad suggestion annoys users.',
+      },
+      {
+        ru: 'Recall важен, когда пропуск цели критичен: скрининг заболеваний, поиск дефектов, безопасность, модерация.',
+        en: 'Recall matters when missing a target is critical: disease screening, defect detection, security, and content moderation.',
+      },
+      {
+        ru: 'Specificity используют, когда важно не тревожить нормальные объекты (медицина, алерты, проверки).',
+        en: 'Specificity is used when normal cases must not be flagged (medicine, alerts, audits).',
+      },
+      {
+        ru: 'Порог классификатора двигает рабочую точку на PR-кривой; выбирайте его по стоимости FP и FN.',
+        en: 'The decision threshold moves the operating point on the PR curve; choose it from the costs of FP and FN.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'Precision и Recall конфликтуют: снижение порога повышает Recall и снижает Precision, и наоборот.',
+        en: 'Precision and recall trade off: lowering the threshold raises recall and lowers precision, and vice versa.',
+      },
+      {
+        ru: 'Precision зависит от prevalence: при редком классе даже хорошая модель имеет низкую Precision.',
+        en: 'Precision depends on prevalence: with a rare class, even a good model has low precision.',
+      },
+      {
+        ru: 'Specificity = 1 - FPR. ROC-кривая строится в координатах Recall (TPR) и 1 - Specificity (FPR).',
+        en: 'Specificity = 1 - FPR. The ROC curve is plotted as recall (TPR) versus 1 - specificity (FPR).',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'linear-models',
+      lessonId: 'lm-hyperplane-geometry',
+      title: { ru: 'Геометрия классификации: гиперплоскости, отступ (Margin) и метрики', en: 'Classification Geometry: Hyperplanes, Margin & Metrics' },
+    },
+    tags: ['precision', 'recall', 'specificity', 'tpr', 'fpr', 'classification', 'точность', 'полнота'],
+  },
+  {
+    id: 'mcc',
+    term: { ru: 'MCC (Matthews Correlation Coefficient)', en: 'Matthews Correlation Coefficient (MCC)' },
+    englishName: 'Matthews Correlation Coefficient / Phi Coefficient',
+    category: 'metrics',
+    formulaLatex: '\\text{MCC} = \\frac{TP \\cdot TN - FP \\cdot FN}{\\sqrt{(TP+FP)(TP+FN)(TN+FP)(TN+FN)}}',
+    formulaDescription: {
+      ru: 'Использует все четыре ячейки матрицы ошибок и принимает значения от -1 (полная инверсия) до +1 (идеальное предсказание); 0 — случайный уровень.',
+      en: 'Uses all four confusion-matrix cells and ranges from -1 (complete inversion) to +1 (perfect prediction); 0 is chance level.',
+    },
+    shortDefinition: {
+      ru: 'Коэффициент корреляции между истинными и предсказанными бинарными метками, сбалансированно учитывающий TP, TN, FP и FN.',
+      en: 'Correlation coefficient between true and predicted binary labels that accounts for TP, TN, FP, and FN in a balanced way.',
+    },
+    whenToUse: [
+      {
+        ru: 'Сильный дисбаланс классов, где Accuracy и F1 вводят в заблуждение (фрод, редкие болезни, аномалии).',
+        en: 'Severe class imbalance where accuracy and F1 are misleading (fraud, rare diseases, anomalies).',
+      },
+      {
+        ru: 'Сравнение моделей на датасетах с разным prevalence, когда нужна одна устойчивая метрика.',
+        en: 'Comparing models across datasets with different prevalence when a single robust metric is needed.',
+      },
+      {
+        ru: 'Бинарная и многоклассовая оценка в bioinformatics, геномике и медицинских исследованиях.',
+        en: 'Binary and multi-class evaluation in bioinformatics, genomics, and medical research.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'MCC = 0 соответствует случайному предсказанию, +1 — идеальному, -1 — полной инверсии классов.',
+        en: 'MCC = 0 is chance level, +1 is perfect, and -1 is complete class inversion.',
+      },
+      {
+        ru: 'Если знаменатель равен нулю (модель предсказывает только один класс), MCC не определён; sklearn возвращает 0 с предупреждением.',
+        en: 'If the denominator is zero (the model predicts only one class), MCC is undefined; sklearn returns 0 with a warning.',
+      },
+      {
+        ru: 'Для многоклассовой задачи MCC требует явного усреднения (macro, micro или weighted).',
+        en: 'For multi-class problems, MCC requires explicit averaging (macro, micro, or weighted).',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'probabilistic',
+      lessonId: 'prob-normality-imbalance',
+      title: { ru: 'Проверка нормальности и методы борьбы с дисбалансом классов', en: 'Normality Checks & Class Imbalance Techniques' },
+    },
+    tags: ['mcc', 'matthews', 'phi', 'imbalance', 'classification', 'корреляция'],
+  },
+  {
+    id: 'brier-score',
+    term: { ru: 'Brier Score (Оценка Бриера)', en: 'Brier Score' },
+    englishName: 'Brier Score / Mean Squared Probability Error',
+    category: 'metrics',
+    formulaLatex: '\\text{Brier} = \\frac{1}{N} \\sum_{i=1}^N (\\hat{p}_i - y_i)^2',
+    formulaDescription: {
+      ru: 'p_hat — предсказанная вероятность положительного класса, y in {0, 1} — истинная метка. Чем меньше, тем лучше.',
+      en: 'p_hat is the predicted probability of the positive class, y in {0, 1} is the true label. Lower is better.',
+    },
+    shortDefinition: {
+      ru: 'Среднеквадратичная ошибка вероятностных прогнозов, одновременно отражающая калибровку и разрешающую способность модели.',
+      en: 'Mean squared error of probabilistic forecasts that reflects both calibration and resolution.',
+    },
+    whenToUse: [
+      {
+        ru: 'Оценка калибровки вероятностей в медицине, страховании и кредитном риске, где важна не только метка, но и уверенность.',
+        en: 'Evaluating probability calibration in medicine, insurance, and credit risk, where confidence matters as much as the label.',
+      },
+      {
+        ru: 'Сравнение вероятностных моделей (логистическая регрессия, GBDT, нейросети с sigmoid/softmax) в бинарной классификации.',
+        en: 'Comparing probabilistic models (logistic regression, GBDT, neural nets with sigmoid/softmax) in binary classification.',
+      },
+      {
+        ru: 'Мониторинг деградации вероятностных прогнозов в продакшене.',
+        en: 'Monitoring degradation of probabilistic predictions in production.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'Brier раскладывается на calibration и refinement (reliability и resolution): низкий Brier сам по себе не гарантирует хорошую калибровку.',
+        en: 'Brier decomposes into calibration and refinement (reliability and resolution): a low Brier alone does not guarantee good calibration.',
+      },
+      {
+        ru: 'Brier чувствителен к prevalence: baseline константного прогноза p равен p(1-p).',
+        en: 'Brier is sensitive to prevalence: the baseline for a constant prediction p is p(1-p).',
+      },
+      {
+        ru: 'Для многоклассовой задачи считается сумма по классам или one-vs-all версия.',
+        en: 'For multi-class problems, use the sum over classes or a one-vs-all version.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'probabilistic',
+      lessonId: 'prob-logreg',
+      title: { ru: 'Логистическая регрессия: превращаем числа в вероятности с помощью сигмоиды', en: 'Logistic Regression: Turning Scores into Probabilities with Sigmoid' },
+    },
+    tags: ['brier', 'calibration', 'probability', 'scoring rule', 'калибровка', 'вероятности'],
+  },
+  {
+    id: 'ece-calibration',
+    term: { ru: 'ECE (Expected Calibration Error)', en: 'Expected Calibration Error (ECE)' },
+    englishName: 'Expected Calibration Error / Reliability Diagram',
+    category: 'metrics',
+    formulaLatex: '\\text{ECE} = \\sum_{m=1}^M \\frac{|B_m|}{N} \\left| \\text{acc}(B_m) - \\text{conf}(B_m) \\right|',
+    formulaDescription: {
+      ru: 'B_m — бин предсказанных вероятностей, acc(B_m) — фактическая доля верных ответов в бине, conf(B_m) — средняя уверенность модели в бине.',
+      en: 'B_m is a probability bin, acc(B_m) is the observed accuracy in the bin, and conf(B_m) is the average model confidence in the bin.',
+    },
+    shortDefinition: {
+      ru: 'Средневзвешенное расхождение между уверенностью модели и её фактической точностью по бинам вероятностей.',
+      en: 'Weighted average gap between model confidence and observed accuracy across probability bins.',
+    },
+    whenToUse: [
+      {
+        ru: 'Проверка калибровки нейросетей и ансамблей перед использованием вероятностей в решениях (медицина, автономные системы, риск-менеджмент).',
+        en: 'Checking calibration of neural nets and ensembles before using probabilities in decisions (medicine, autonomous systems, risk management).',
+      },
+      {
+        ru: 'Диагностика overconfidence у глубоких сетей и современных LLM.',
+        en: 'Diagnosing overconfidence in deep networks and modern LLMs.',
+      },
+      {
+        ru: 'Выбор метода калибровки: temperature scaling, Platt scaling, isotonic regression.',
+        en: 'Choosing a calibration method: temperature scaling, Platt scaling, or isotonic regression.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'ECE зависит от числа и границ бинов; сравнивайте модели только при одинаковой схеме бининга.',
+        en: 'ECE depends on the number and boundaries of bins; compare models only with the same binning scheme.',
+      },
+      {
+        ru: 'Низкий ECE не гарантирует калибровку внутри каждого отдельного бина (binning bias).',
+        en: 'A low ECE does not guarantee calibration inside each individual bin (binning bias).',
+      },
+      {
+        ru: 'Калибровка не улучшает Accuracy и ranking, она меняет только интерпретацию вероятностей.',
+        en: 'Calibration does not improve accuracy or ranking; it only changes how probabilities are interpreted.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'probabilistic',
+      lessonId: 'prob-logreg',
+      title: { ru: 'Логистическая регрессия: превращаем числа в вероятности с помощью сигмоиды', en: 'Logistic Regression: Turning Scores into Probabilities with Sigmoid' },
+    },
+    tags: ['ece', 'calibration', 'reliability diagram', 'confidence', 'калибровка', 'уверенность'],
+  },
   {
     id: 'f1-score',
     term: { ru: 'F1-мера (F1-Score)', en: 'F1 Score (Balanced F-Measure)' },
@@ -507,9 +752,9 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
       },
     ],
     lessonPath: {
-      moduleId: 'data-wrangling-eda',
-      lessonId: 'eda-4-validation-metrics',
-      title: { ru: 'Валидация моделей и метрики качества', en: 'Model Validation & Evaluation Metrics' },
+      moduleId: 'linear-models',
+      lessonId: 'lm-hyperplane-geometry',
+      title: { ru: 'Геометрия классификации: гиперплоскости, отступ (Margin) и метрики', en: 'Classification Geometry: Hyperplanes, Margin & Metrics' },
     },
     tags: ['f1', 'f-score', 'precision', 'recall', 'imbalance', 'метрика', 'классификация'],
   },
@@ -552,9 +797,9 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
       },
     ],
     lessonPath: {
-      moduleId: 'data-wrangling-eda',
-      lessonId: 'eda-4-validation-metrics',
-      title: { ru: 'Валидация моделей и метрики качества', en: 'Model Validation & Evaluation Metrics' },
+      moduleId: 'linear-models',
+      lessonId: 'lm-hyperplane-geometry',
+      title: { ru: 'Геометрия классификации: гиперплоскости, отступ (Margin) и метрики', en: 'Classification Geometry: Hyperplanes, Margin & Metrics' },
     },
     tags: ['roc', 'auc', 'roc-auc', 'tpr', 'fpr', 'threshold', 'ranking'],
   },
@@ -589,11 +834,104 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
       },
     ],
     lessonPath: {
-      moduleId: 'data-wrangling-eda',
-      lessonId: 'eda-4-validation-metrics',
-      title: { ru: 'Валидация моделей и метрики качества', en: 'Model Validation & Evaluation Metrics' },
+      moduleId: 'linear-models',
+      lessonId: 'lm-hyperplane-geometry',
+      title: { ru: 'Геометрия классификации: гиперплоскости, отступ (Margin) и метрики', en: 'Classification Geometry: Hyperplanes, Margin & Metrics' },
     },
     tags: ['pr-auc', 'average precision', 'ap', 'precision-recall', 'rare class'],
+  },
+  {
+    id: 'iou-jaccard',
+    term: { ru: 'IoU (Intersection over Union / Коэффициент Жаккара)', en: 'IoU (Intersection over Union / Jaccard Index)' },
+    englishName: 'Intersection over Union / Jaccard Index',
+    category: 'metrics',
+    formulaLatex: '\\text{IoU}(A, B) = \\frac{|A \\cap B|}{|A \\cup B|} = \\frac{|A \\cap B|}{|A| + |B| - |A \\cap B|}',
+    formulaDescription: {
+      ru: 'A и B — площади ограничивающих рамок (Bounding Boxes), бинарные маски сегментации или множества токенов.',
+      en: 'A and B are bounding box areas, binary segmentation masks, or token sets.',
+    },
+    shortDefinition: {
+      ru: 'Метрика геометрического перекрытия двух областей от 0 (нет пересечения) до 1 (полное совпадение). В общем случае — коэффициент Жаккара для двух множеств.',
+      en: 'Geometric overlap metric bounded between 0 (disjoint) and 1 (exact alignment). In general, the Jaccard index between two sets.',
+    },
+    whenToUse: [
+      {
+        ru: 'Детекция объектов: сопоставление предсказанных боксов с Ground Truth и расчёт mAP при порогах IoU 0.5–0.95.',
+        en: 'Object detection: matching predicted boxes with ground truth and computing mAP at IoU thresholds from 0.5 to 0.95.',
+      },
+      {
+        ru: 'Семантическая и instance-сегментация: оценка перекрытия предсказанных и эталонных масок (mIoU).',
+        en: 'Semantic and instance segmentation: measuring overlap between predicted and reference masks (mIoU).',
+      },
+      {
+        ru: 'NMS (Non-Maximum Suppression): IoU — критерий удаления дублирующих боксов.',
+        en: 'Non-Maximum Suppression (NMS): IoU is the criterion for removing duplicate boxes.',
+      },
+      {
+        ru: 'Вне CV: сравнение множеств токенов, тегов или документов как коэффициент Жаккара.',
+        en: 'Outside CV: comparing token, tag, or document sets as the Jaccard index.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'Если рамки не пересекаются, IoU = 0 и его градиент равен нулю. Поэтому для функций потерь используют GIoU, DIoU и CIoU.',
+        en: 'When boxes do not overlap, IoU = 0 with zero gradient. GIoU, DIoU, and CIoU add distance and aspect-ratio terms to keep gradients.',
+      },
+      {
+        ru: 'IoU не различает типы ошибок: сдвиг, масштаб и неверное соотношение сторон могут дать одинаковое значение.',
+        en: 'IoU does not distinguish error types: shift, scale, and aspect-ratio errors can produce the same value.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'computer-vision',
+      lessonId: 'cv-3-detection-metrics-nms-fpn',
+      title: { ru: 'Задачи детекции: метрики (mAP@0.5:0.95), NMS, Anchor boxes, FPN и RoI Align', en: 'Detection Tasks: Metrics (mAP@0.5:0.95), NMS, Anchors, FPN & RoI Align' },
+    },
+    tags: ['iou', 'jaccard', 'bbox', 'detection', 'segmentation', 'miou'],
+  },
+  {
+    id: 'dice-coefficient',
+    term: { ru: 'Dice Coefficient и Dice Loss', en: 'Dice Coefficient & Dice Loss' },
+    englishName: 'Dice Similarity Coefficient / Dice Loss',
+    category: 'metrics',
+    formulaLatex: '\\text{Dice} = \\frac{2|A \\cap B|}{|A| + |B|}, \\quad \\mathcal{L}_{\\text{Dice}} = 1 - \\frac{2\\sum_i p_i g_i + \\epsilon}{\\sum_i p_i + \\sum_i g_i + \\epsilon}',
+    formulaDescription: {
+      ru: 'A и B — бинарные маски; p_i — предсказанная вероятность пикселя, g_i — эталонная маска; epsilon — сглаживание против деления на ноль.',
+      en: 'A and B are binary masks; p_i is the predicted pixel probability, g_i is the reference mask; epsilon prevents division by zero.',
+    },
+    shortDefinition: {
+      ru: 'Мера перекрытия масок, равная F1 для пикселей. Dice Loss напрямую оптимизирует перекрытие и хорошо работает при сильном дисбалансе фона и объекта.',
+      en: 'Mask overlap measure equal to pixel-level F1. Dice Loss directly optimizes overlap and works well when background dominates the object.',
+    },
+    whenToUse: [
+      {
+        ru: 'Семантическая и медицинская сегментация, где объект занимает малую долю изображения (опухоль на фоне).',
+        en: 'Semantic and medical segmentation where the object covers a small fraction of the image (a tumor on a background).',
+      },
+      {
+        ru: 'Когда целевая метрика — Dice/F1 по маскам, и нужно оптимизировать её напрямую.',
+        en: 'When the target metric is mask Dice/F1 and it should be optimized directly.',
+      },
+      {
+        ru: 'В комбинации с BCE (BCE + Dice) для стабильной сходимости и лучшего качества границ.',
+        en: 'Combined with BCE (BCE + Dice) for stable convergence and better boundary quality.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'Dice и IoU связаны: Dice = 2·IoU/(1+IoU), и Dice всегда не меньше IoU для одних и тех же масок.',
+        en: 'Dice and IoU are related: Dice = 2·IoU/(1+IoU), and Dice is always at least IoU for the same masks.',
+      },
+      {
+        ru: 'Dice Loss не дифференцируема для жёстких бинарных масок; используют soft Dice по вероятностям.',
+        en: 'Dice Loss is not differentiable for hard binary masks; use soft Dice over probabilities.',
+      },
+      {
+        ru: 'На пустых масках (объекта нет) возможно деление на ноль; epsilon обязателен.',
+        en: 'Empty masks (no object) can cause division by zero; epsilon is mandatory.',
+      },
+    ],
+    tags: ['dice', 'dice loss', 'segmentation', 'f1', 'overlap', 'сегментация'],
   },
   {
     id: 'map-detection',
@@ -626,9 +964,9 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
       },
     ],
     lessonPath: {
-      moduleId: 'computer-vision-deep-learning',
-      lessonId: 'cv-3-detection-yolo-detr',
-      title: { ru: 'Детекция объектов: YOLO, Faster R-CNN, DETR и NMS', en: 'Object Detection: YOLO, Faster R-CNN, DETR & NMS' },
+      moduleId: 'computer-vision',
+      lessonId: 'cv-3-detection-metrics-nms-fpn',
+      title: { ru: 'Задачи детекции: метрики (mAP@0.5:0.95), NMS, Anchor boxes, FPN и RoI Align', en: 'Detection Tasks: Metrics (mAP@0.5:0.95), NMS, Anchors, FPN & RoI Align' },
     },
     tags: ['map', 'average precision', 'coco', 'detection', 'iou', 'yolo'],
   },
@@ -668,10 +1006,255 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     ],
     lessonPath: {
       moduleId: 'linear-models',
-      lessonId: 'linear-1-analytical-ols',
-      title: { ru: 'Аналитическое решение МНК и сингулярное разложение (SVD)', en: 'Analytical OLS Solution & SVD' },
+      lessonId: 'lm-ols-analytical',
+      title: { ru: 'Аналитическая линейная регрессия (OLS): нормальное уравнение и геометрия проекции', en: 'Analytical Linear Regression (OLS): Normal Equation & Projection Geometry' },
     },
     tags: ['mse', 'rmse', 'regression', 'loss', 'ols', 'квадратичная ошибка'],
+  },
+  {
+    id: 'mae-loss',
+    term: { ru: 'MAE и L1Loss (Средняя абсолютная ошибка)', en: 'MAE & L1 Loss' },
+    englishName: 'Mean Absolute Error / L1 Loss',
+    category: 'metrics',
+    formulaLatex: '\\text{MAE} = \\frac{1}{N} \\sum_{i=1}^N |y_i - \\hat{y}_i|',
+    formulaDescription: {
+      ru: 'y_i — истинное значение, hat{y}_i — прогноз, N — число наблюдений. Ошибка измеряется в тех же единицах, что и целевая переменная.',
+      en: 'y_i is ground truth, hat{y}_i is the prediction, N is the number of samples. The error is in the same units as the target.',
+    },
+    shortDefinition: {
+      ru: 'Средняя абсолютная ошибка: линейно штрафует отклонения и устойчивее к выбросам, чем MSE.',
+      en: 'Mean absolute error: penalizes deviations linearly and is more robust to outliers than MSE.',
+    },
+    whenToUse: [
+      {
+        ru: 'Регрессия с выбросами или шумными метками (цены, спрос, показания датчиков).',
+        en: 'Regression with outliers or noisy labels (prices, demand, sensor readings).',
+      },
+      {
+        ru: 'Когда нужна интерпретируемая ошибка в единицах целевой переменной.',
+        en: 'When an interpretable error in target units is required.',
+      },
+      {
+        ru: 'L1Loss в PyTorch для robust regression и задач, где большие промахи не должны доминировать.',
+        en: 'L1Loss in PyTorch for robust regression and tasks where large misses must not dominate.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'MAE соответствует MLE при Laplace-распределении шума, MSE — при Gaussian.',
+        en: 'MAE corresponds to MLE under Laplace noise, MSE under Gaussian noise.',
+      },
+      {
+        ru: 'Минимум MAE достигается в медиане условного распределения, а не в среднем.',
+        en: 'The MAE minimizer is the conditional median, not the mean.',
+      },
+      {
+        ru: 'Градиент L1 постоянен по модулю и не определён в нуле; около нуля возможны колебания, поэтому используют SmoothL1/Huber.',
+        en: 'The L1 gradient has constant magnitude and is undefined at zero; near zero it can oscillate, so SmoothL1/Huber is often used.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'linear-models',
+      lessonId: 'lm-loss-gd',
+      title: { ru: 'Выпуклая оптимизация: ландшафт функции потерь и сходимость', en: 'Convex Optimization: Loss Landscape & Convergence' },
+    },
+    tags: ['mae', 'l1', 'l1loss', 'regression', 'robust', 'абсолютная ошибка'],
+  },
+  {
+    id: 'huber-loss',
+    term: { ru: 'Huber Loss и SmoothL1Loss', en: 'Huber Loss & Smooth L1 Loss' },
+    englishName: 'Huber Loss / Smooth L1 Loss',
+    category: 'metrics',
+    formulaLatex: 'L_\\delta(r) = \\begin{cases} \\frac{1}{2} r^2, & |r| \\le \\delta \\\\ \\delta (|r| - \\frac{1}{2}\\delta), & |r| > \\delta \\end{cases}, \\quad r = y - \\hat{y}',
+    formulaDescription: {
+      ru: 'delta — порог перехода между квадратичной и линейной зоной. Малые ошибки штрафуются как MSE, большие — как MAE.',
+      en: 'delta is the threshold between the quadratic and linear regions. Small errors are penalized like MSE, large ones like MAE.',
+    },
+    shortDefinition: {
+      ru: 'Гибрид MSE и MAE: квадратичная функция вблизи нуля и линейная для больших ошибок, что даёт гладкость и устойчивость к выбросам.',
+      en: 'A hybrid of MSE and MAE: quadratic near zero and linear for large errors, combining smoothness with outlier robustness.',
+    },
+    whenToUse: [
+      {
+        ru: 'Регрессия, где нужно сочетать гладкость MSE и устойчивость к выбросам MAE.',
+        en: 'Regression that needs both MSE smoothness and MAE outlier robustness.',
+      },
+      {
+        ru: 'Регрессия координат bounding box в детекторах (SmoothL1Loss в Faster R-CNN и SSD).',
+        en: 'Bounding-box coordinate regression in detectors (SmoothL1Loss in Faster R-CNN and SSD).',
+      },
+      {
+        ru: 'Обучение на шумных метках, когда полный переход на MAE замедляет сходимость.',
+        en: 'Training on noisy labels when switching entirely to MAE slows convergence.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'При delta -> 0 Huber стремится к MAE, при delta -> infinity — к MSE (с точностью до масштаба).',
+        en: 'As delta -> 0, Huber approaches MAE; as delta -> infinity, it approaches MSE (up to scale).',
+      },
+      {
+        ru: 'Выбор delta зависит от масштаба целевой переменной; стандартизация целей помогает.',
+        en: 'The choice of delta depends on the target scale; standardizing targets helps.',
+      },
+      {
+        ru: 'SmoothL1Loss в PyTorch использует параметр beta (по умолчанию 1.0) — аналог delta.',
+        en: 'SmoothL1Loss in PyTorch uses a beta parameter (default 1.0) analogous to delta.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'pytorch-pandas-sklearn',
+      lessonId: 'pt-4-training-loop',
+      title: { ru: 'Пайплайн обучения: Dataset, DataLoader и Training Loop', en: 'Training Pipeline: Dataset, DataLoader & Training Loop' },
+    },
+    tags: ['huber', 'smoothl1', 'smooth l1', 'robust', 'regression', 'выбросы'],
+  },
+  {
+    id: 'r2-score',
+    term: { ru: 'R² (Коэффициент детерминации)', en: 'R-squared (Coefficient of Determination)' },
+    englishName: 'Coefficient of Determination (R²)',
+    category: 'metrics',
+    formulaLatex: 'R^2 = 1 - \\frac{\\sum_{i=1}^N (y_i - \\hat{y}_i)^2}{\\sum_{i=1}^N (y_i - \\bar{y})^2}',
+    formulaDescription: {
+      ru: 'bar{y} — среднее целевой переменной; числитель — остаточная сумма квадратов, знаменатель — общая дисперсия цели.',
+      en: 'bar{y} is the target mean; the numerator is the residual sum of squares, the denominator is the total variance of the target.',
+    },
+    shortDefinition: {
+      ru: 'Доля дисперсии целевой переменной, объяснённая моделью. Сравнивает модель с константным прогнозом среднего.',
+      en: 'Share of target variance explained by the model. It compares the model with a constant mean prediction.',
+    },
+    whenToUse: [
+      {
+        ru: 'Оценка регрессионных моделей, когда важно, насколько модель лучше baseline-среднего.',
+        en: 'Evaluating regression models when it matters how much better they are than the mean baseline.',
+      },
+      {
+        ru: 'Сравнение моделей на одной и той же выборке (линейная регрессия, GBDT, нейросети).',
+        en: 'Comparing models on the same dataset (linear regression, GBDT, neural nets).',
+      },
+      {
+        ru: 'Объяснение качества модели бизнесу в процентах объяснённой дисперсии.',
+        en: 'Explaining model quality to stakeholders as a percentage of explained variance.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'R² может быть отрицательным: модель хуже константного прогноза среднего.',
+        en: 'R² can be negative: the model is worse than a constant mean prediction.',
+      },
+      {
+        ru: 'R² растёт при добавлении признаков даже без улучшения обобщения; используйте Adjusted R².',
+        en: 'R² grows when features are added even without better generalization; use Adjusted R².',
+      },
+      {
+        ru: 'R² не говорит о причинности и не заменяет анализ остатков; значения на разных датасетах несравнимы.',
+        en: 'R² does not imply causality and does not replace residual analysis; values are not comparable across datasets.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'linear-models',
+      lessonId: 'lm-ols-analytical',
+      title: { ru: 'Аналитическая линейная регрессия (OLS): нормальное уравнение и геометрия проекции', en: 'Analytical Linear Regression (OLS): Normal Equation & Projection Geometry' },
+    },
+    tags: ['r2', 'r-squared', 'determination', 'regression', 'variance', 'детерминация'],
+  },
+  {
+    id: 'mape-smape',
+    term: { ru: 'MAPE и SMAPE (Относительная ошибка прогноза)', en: 'MAPE & SMAPE' },
+    englishName: 'Mean Absolute Percentage Error / Symmetric MAPE',
+    category: 'metrics',
+    formulaLatex: '\\text{MAPE} = \\frac{100\\%}{N} \\sum_{i=1}^N \\left| \\frac{y_i - \\hat{y}_i}{y_i} \\right|, \\quad \\text{SMAPE} = \\frac{100\\%}{N} \\sum_{i=1}^N \\frac{2|y_i - \\hat{y}_i|}{|y_i| + |\\hat{y}_i|}',
+    formulaDescription: {
+      ru: 'Обе метрики выражают ошибку в процентах. SMAPE ограничен диапазоном [0, 200%] и лучше ведёт себя при значениях, близких к нулю.',
+      en: 'Both metrics express error as a percentage. SMAPE is bounded in [0, 200%] and behaves better near zero.',
+    },
+    shortDefinition: {
+      ru: 'Относительные ошибки в процентах, удобные для сравнения прогнозов на разных масштабах.',
+      en: 'Relative percentage errors useful for comparing forecasts across different scales.',
+    },
+    whenToUse: [
+      {
+        ru: 'Прогнозирование спроса, продаж и трафика, где важна относительная ошибка, а не абсолютная.',
+        en: 'Demand, sales, and traffic forecasting where relative error matters more than absolute error.',
+      },
+      {
+        ru: 'Сравнение моделей на рядах с разным масштабом (SKU, регионы, магазины).',
+        en: 'Comparing models across series with different scales (SKUs, regions, stores).',
+      },
+      {
+        ru: 'SMAPE — когда в данных есть нули или значения, близкие к нулю, где MAPE взрывается.',
+        en: 'SMAPE — when data contains zeros or near-zero values where MAPE explodes.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'MAPE не определён при y_i = 0 и асимметричен: штрафует завышение сильнее, чем занижение.',
+        en: 'MAPE is undefined at y_i = 0 and is asymmetric: it penalizes over-forecasting more than under-forecasting.',
+      },
+      {
+        ru: 'SMAPE ограничен [0, 200%], но тоже имеет смещение и не является симметричным в строгом смысле.',
+        en: 'SMAPE is bounded in [0, 200%] but is still biased and not strictly symmetric.',
+      },
+      {
+        ru: 'Для отрицательных значений и данных около нуля используйте MASE или scaled errors.',
+        en: 'For negative values and data near zero, use MASE or scaled errors.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'time-series-forecasting',
+      lessonId: 'ts-4-validation-feature-engineering-gbdt',
+      title: { ru: 'Валидация (TimeSeriesSplit), Feature Engineering лагов и градиентный бустинг', en: 'Validation (TimeSeriesSplit), Lag Features & Gradient Boosting' },
+    },
+    tags: ['mape', 'smape', 'percentage error', 'forecasting', 'time series', 'относительная ошибка'],
+  },
+  {
+    id: 'quantile-loss',
+    term: { ru: 'Quantile Loss (Pinball Loss)', en: 'Quantile Loss (Pinball Loss)' },
+    englishName: 'Quantile Loss / Pinball Loss',
+    category: 'metrics',
+    formulaLatex: 'L_q(y, \\hat{y}) = \\begin{cases} q (y - \\hat{y}), & y \\ge \\hat{y} \\\\ (1-q)(\\hat{y} - y), & y < \\hat{y} \\end{cases}',
+    formulaDescription: {
+      ru: 'q in (0, 1) — целевой квантиль. При q = 0.5 лосс эквивалентен MAE и предсказывает медиану.',
+      en: 'q in (0, 1) is the target quantile. At q = 0.5 the loss equals MAE and predicts the median.',
+    },
+    shortDefinition: {
+      ru: 'Асимметричная функция потерь, обучающая модель предсказывать заданный квантиль распределения цели.',
+      en: 'Asymmetric loss that trains a model to predict a chosen quantile of the target distribution.',
+    },
+    whenToUse: [
+      {
+        ru: 'Вероятностное прогнозирование и интервалы неопределённости (спрос, энергетика, финансы).',
+        en: 'Probabilistic forecasting and uncertainty intervals (demand, energy, finance).',
+      },
+      {
+        ru: 'Модели с квантильными выходами: Gradient Boosting с quantile loss, Prophet, DeepAR, Temporal Fusion Transformer.',
+        en: 'Models with quantile outputs: Gradient Boosting with quantile loss, Prophet, DeepAR, Temporal Fusion Transformer.',
+      },
+      {
+        ru: 'Когда нужен не точечный прогноз, а диапазон (P10/P50/P90) для планирования запасов.',
+        en: 'When a range (P10/P50/P90) is needed for inventory planning instead of a point forecast.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'Разные квантили обучаются отдельными головами или моделями; следите за монотонностью квантилей (quantile crossing).',
+        en: 'Different quantiles are trained by separate heads or models; watch for quantile crossing (non-monotonic quantiles).',
+      },
+      {
+        ru: 'Pinball loss несимметричен: q = 0.9 сильнее штрафует занижение, чем завышение.',
+        en: 'Pinball loss is asymmetric: q = 0.9 penalizes under-prediction more than over-prediction.',
+      },
+      {
+        ru: 'Качество оценивают по pinball loss или coverage/width интервалов, а не по MAE.',
+        en: 'Quality is measured by pinball loss or interval coverage/width, not by MAE.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'time-series-forecasting',
+      lessonId: 'ts-3-prophet-neural',
+      title: { ru: 'Библиотека Prophet и нейросетевые архитектуры для временных рядов', en: 'Prophet & Modern Neural Time Series Architectures' },
+    },
+    tags: ['quantile', 'pinball', 'probabilistic forecasting', 'interval', 'квантиль', 'интервалы'],
   },
   {
     id: 'cross-entropy',
@@ -709,10 +1292,496 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     ],
     lessonPath: {
       moduleId: 'linear-models',
-      lessonId: 'linear-3-logistic-regression-mle',
-      title: { ru: 'Логистическая регрессия, Log-Loss и метод MLE', en: 'Logistic Regression, Log-Loss & MLE' },
+      lessonId: 'lm-logistic-regression',
+      title: { ru: 'Логистическая регрессия: правдоподобие (MLE), сигмоида и Cross-Entropy', en: 'Logistic Regression: Likelihood (MLE), Sigmoid & Cross-Entropy' },
     },
     tags: ['cross-entropy', 'logloss', 'classification', 'softmax', 'sigmoid', 'loss'],
+  },
+
+  {
+    id: 'bce-with-logits',
+    term: { ru: 'BCEWithLogitsLoss (Бинарная кросс-энтропия с логитами)', en: 'BCEWithLogitsLoss (Binary Cross-Entropy with Logits)' },
+    englishName: 'Binary Cross-Entropy with Logits',
+    category: 'metrics',
+    formulaLatex: '\\mathcal{L} = -\\frac{1}{N} \\sum_{i=1}^N \\left[ y_i \\log \\sigma(z_i) + (1-y_i) \\log(1-\\sigma(z_i)) \\right]',
+    formulaDescription: {
+      ru: 'z_i — логит (выход сети до сигмоиды), sigma — сигмоида. Формула объединяет Sigmoid и BCE в численно устойчивую операцию.',
+      en: 'z_i is the logit (network output before sigmoid), sigma is the sigmoid. The formula fuses Sigmoid and BCE into one numerically stable operation.',
+    },
+    shortDefinition: {
+      ru: 'Численно устойчивая реализация бинарной кросс-энтропии, которая принимает сырые логиты и сама применяет сигмоиду через log-sum-exp.',
+      en: 'Numerically stable binary cross-entropy that takes raw logits and applies the sigmoid internally via log-sum-exp.',
+    },
+    whenToUse: [
+      {
+        ru: 'Бинарная классификация и multi-label задачи на PyTorch (медицинские снимки, теги, детекция).',
+        en: 'Binary classification and multi-label tasks in PyTorch (medical images, tags, detection).',
+      },
+      {
+        ru: 'Когда на выходе сети один логит на класс и нужна устойчивость к насыщению сигмоиды.',
+        en: 'When the network outputs one logit per class and saturation of the sigmoid must not break training.',
+      },
+      {
+        ru: 'В multi-label сценариях, где классы не взаимоисключающие (несколько тегов на объект).',
+        en: 'In multi-label settings where classes are not mutually exclusive (several tags per object).',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'Не подавайте на вход вероятности: внутри уже есть sigmoid, двойное применение исказит лосс.',
+        en: 'Do not pass probabilities: the sigmoid is already inside, and applying it twice distorts the loss.',
+      },
+      {
+        ru: 'Для несбалансированных классов используйте pos_weight или focal loss.',
+        en: 'For imbalanced classes, use pos_weight or focal loss.',
+      },
+      {
+        ru: 'В PyTorch BCEWithLogitsLoss объединяет sigmoid и BCE и использует трюк log-sum-exp для стабильности.',
+        en: 'In PyTorch, BCEWithLogitsLoss fuses sigmoid and BCE and uses the log-sum-exp trick for stability.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'pytorch-pandas-sklearn',
+      lessonId: 'pt-4-training-loop',
+      title: { ru: 'Пайплайн обучения: Dataset, DataLoader и Training Loop', en: 'Training Pipeline: Dataset, DataLoader & Training Loop' },
+    },
+    tags: ['bce', 'bceloss', 'bcewithlogits', 'binary cross-entropy', 'logits', 'multi-label'],
+  },
+  {
+    id: 'nll-loss',
+    term: { ru: 'NLLLoss (Negative Log-Likelihood)', en: 'NLLLoss (Negative Log-Likelihood)' },
+    englishName: 'Negative Log-Likelihood Loss',
+    category: 'metrics',
+    formulaLatex: '\\mathcal{L}_{\\text{NLL}} = -\\frac{1}{N} \\sum_{i=1}^N \\log p_{\\theta}(y_i \\mid x_i)',
+    formulaDescription: {
+      ru: 'p_theta(y_i | x_i) — вероятность истинного класса после softmax или log-softmax.',
+      en: 'p_theta(y_i | x_i) is the probability of the true class after softmax or log-softmax.',
+    },
+    shortDefinition: {
+      ru: 'Отрицательное логарифмическое правдоподобие истинного класса; основа обучения вероятностных классификаторов.',
+      en: 'Negative log-likelihood of the true class; the foundation of training probabilistic classifiers.',
+    },
+    whenToUse: [
+      {
+        ru: 'Многоклассовая классификация в PyTorch: LogSoftmax + NLLLoss эквивалентны CrossEntropyLoss.',
+        en: 'Multi-class classification in PyTorch: LogSoftmax + NLLLoss is equivalent to CrossEntropyLoss.',
+      },
+      {
+        ru: 'Обучение языковых моделей (next-token prediction) и seq2seq.',
+        en: 'Training language models (next-token prediction) and seq2seq models.',
+      },
+      {
+        ru: 'Когда нужен доступ к лог-вероятностям для beam search, перплексии или RL-штрафов.',
+        en: 'When log-probabilities are needed for beam search, perplexity, or RL penalties.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'NLLLoss ожидает на входе log-probabilities (после LogSoftmax), а не сырые логиты; иначе лосс некорректен.',
+        en: 'NLLLoss expects log-probabilities (after LogSoftmax), not raw logits; otherwise the loss is incorrect.',
+      },
+      {
+        ru: 'CrossEntropyLoss = LogSoftmax + NLLLoss, поэтому не применяйте softmax дважды.',
+        en: 'CrossEntropyLoss = LogSoftmax + NLLLoss, so do not apply softmax twice.',
+      },
+      {
+        ru: 'NLL чувствителен к уверенным ошибкам: неверный класс с p -> 0 даёт огромный штраф.',
+        en: 'NLL is sensitive to confident mistakes: a wrong class with p -> 0 yields a huge penalty.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'pytorch-pandas-sklearn',
+      lessonId: 'pt-4-training-loop',
+      title: { ru: 'Пайплайн обучения: Dataset, DataLoader и Training Loop', en: 'Training Pipeline: Dataset, DataLoader & Training Loop' },
+    },
+    tags: ['nll', 'nllloss', 'negative log-likelihood', 'logsoftmax', 'cross-entropy', 'правдоподобие'],
+  },
+  {
+    id: 'focal-loss',
+    term: { ru: 'Focal Loss (Фокальная функция потерь)', en: 'Focal Loss' },
+    englishName: 'Focal Loss for Dense Object Detection',
+    category: 'metrics',
+    formulaLatex: '\\text{FL}(p_t) = -\\alpha_t (1 - p_t)^{\\gamma} \\log(p_t)',
+    formulaDescription: {
+      ru: 'p_t — вероятность истинного класса; gamma >= 0 снижает вклад легко классифицируемых примеров; alpha_t балансирует классы.',
+      en: 'p_t is the probability of the true class; gamma >= 0 down-weights easy examples; alpha_t balances classes.',
+    },
+    shortDefinition: {
+      ru: 'Модификация кросс-энтропии, которая динамически уменьшает вес простых примеров и концентрирует обучение на сложных.',
+      en: 'A cross-entropy variant that dynamically down-weights easy examples and focuses training on hard ones.',
+    },
+    whenToUse: [
+      {
+        ru: 'Детекция объектов с экстремальным дисбалансом foreground/background (RetinaNet, одностадийные детекторы).',
+        en: 'Object detection with extreme foreground/background imbalance (RetinaNet, one-stage detectors).',
+      },
+      {
+        ru: 'Плотная сегментация и медицинские изображения, где фон доминирует.',
+        en: 'Dense segmentation and medical images where background dominates.',
+      },
+      {
+        ru: 'Любая бинарная или многоклассовая классификация с большим числом простых отрицательных примеров.',
+        en: 'Any binary or multi-class classification with many easy negative examples.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'При gamma = 0 focal loss сводится к обычной кросс-энтропии с alpha-балансировкой.',
+        en: 'At gamma = 0, focal loss reduces to standard cross-entropy with alpha balancing.',
+      },
+      {
+        ru: 'Два гиперпараметра (alpha, gamma) требуют подбора; типичные значения gamma = 2, alpha = 0.25.',
+        en: 'Two hyperparameters (alpha, gamma) need tuning; typical values are gamma = 2 and alpha = 0.25.',
+      },
+      {
+        ru: 'Не всегда лучше CE: на сбалансированных данных может замедлить сходимость.',
+        en: 'Not always better than CE: on balanced data it can slow convergence.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'computer-vision',
+      lessonId: 'cv-3-detection-metrics-nms-fpn',
+      title: { ru: 'Задачи детекции: метрики (mAP@0.5:0.95), NMS, Anchor boxes, FPN и RoI Align', en: 'Detection Tasks: Metrics (mAP@0.5:0.95), NMS, Anchors, FPN & RoI Align' },
+    },
+    tags: ['focal loss', 'retinanet', 'detection', 'imbalance', 'hard examples', 'фокальная'],
+  },
+  {
+    id: 'hinge-loss',
+    term: { ru: 'Hinge Loss (Шарнирная функция потерь)', en: 'Hinge Loss' },
+    englishName: 'Hinge Loss / SVM Margin Loss',
+    category: 'metrics',
+    formulaLatex: '\\mathcal{L}_{\\text{hinge}} = \\frac{1}{N} \\sum_{i=1}^N \\max(0, 1 - y_i \\cdot f(x_i))',
+    formulaDescription: {
+      ru: 'y_i in {-1, +1}; f(x_i) — выход модели (score). Лосс равен нулю, если отступ >= 1.',
+      en: 'y_i in {-1, +1}; f(x_i) is the model score. The loss is zero when the margin is at least 1.',
+    },
+    shortDefinition: {
+      ru: 'Кусочно-линейная функция потерь, штрафующая примеры внутри margin или классифицированные неверно.',
+      en: 'Piecewise-linear loss that penalizes examples inside the margin or classified incorrectly.',
+    },
+    whenToUse: [
+      {
+        ru: 'Обучение линейных SVM и максимизация отступа (margin) в классификации.',
+        en: 'Training linear SVMs and maximizing the classification margin.',
+      },
+      {
+        ru: 'Задачи, где важны разреженные опорные векторы и устойчивость к выбросам.',
+        en: 'Tasks where sparse support vectors and outlier robustness matter.',
+      },
+      {
+        ru: 'Историческая база для понимания max-margin подхода; в глубоком обучении используется реже.',
+        en: 'A historical foundation for max-margin methods; less common in deep learning.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'Hinge не дифференцируема в точке 1 - y f(x) = 0; используют subgradient.',
+        en: 'Hinge is non-differentiable at 1 - y f(x) = 0; subgradients are used.',
+      },
+      {
+        ru: 'Hinge не даёт калиброванных вероятностей; для вероятностей нужен Platt scaling.',
+        en: 'Hinge does not produce calibrated probabilities; Platt scaling is needed for that.',
+      },
+      {
+        ru: 'Squared hinge max(0, 1-yf)^2 сильнее штрафует нарушения margin.',
+        en: 'Squared hinge max(0, 1-yf)^2 penalizes margin violations more strongly.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'linear-models',
+      lessonId: 'lm-hyperplane-geometry',
+      title: { ru: 'Геометрия классификации: гиперплоскости, отступ (Margin) и метрики', en: 'Classification Geometry: Hyperplanes, Margin & Metrics' },
+    },
+    tags: ['hinge', 'svm', 'margin', 'max-margin', 'classification', 'шарнирная'],
+  },
+  {
+    id: 'triplet-loss',
+    term: { ru: 'Triplet Loss и Contrastive Loss', en: 'Triplet Loss & Contrastive Loss' },
+    englishName: 'Triplet Loss / Contrastive Loss',
+    category: 'metrics',
+    formulaLatex: '\\mathcal{L}_{\\text{triplet}} = \\sum_i \\max\\left(0, \\|f(x_i^a) - f(x_i^p)\\|_2^2 - \\|f(x_i^a) - f(x_i^n)\\|_2^2 + m\\right)',
+    formulaDescription: {
+      ru: 'a — anchor, p — positive, n — negative; m — margin. Contrastive Loss работает с парами: сближает похожие и раздвигает непохожие.',
+      en: 'a is the anchor, p is positive, n is negative; m is the margin. Contrastive Loss works with pairs: it pulls similar samples together and pushes dissimilar ones apart.',
+    },
+    shortDefinition: {
+      ru: 'Функции потерь для обучения эмбеддингов, которые сближают похожие объекты и раздвигают непохожие.',
+      en: 'Loss functions for embedding learning that pull similar objects together and push dissimilar ones apart.',
+    },
+    whenToUse: [
+      {
+        ru: 'Распознавание лиц (FaceNet), верификация и идентификация людей.',
+        en: 'Face recognition (FaceNet), verification, and person identification.',
+      },
+      {
+        ru: 'Поиск похожих товаров и изображений, metric learning, retrieval и рекомендации.',
+        en: 'Similar product and image search, metric learning, retrieval, and recommendations.',
+      },
+      {
+        ru: 'Contrastive learning (SimCLR, CLIP) для self-supervised представлений.',
+        en: 'Contrastive learning (SimCLR, CLIP) for self-supervised representations.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'Triplet mining критичен: случайные триплеты дают слабый сигнал; используйте hard или semi-hard negatives.',
+        en: 'Triplet mining is critical: random triplets give a weak signal; use hard or semi-hard negatives.',
+      },
+      {
+        ru: 'Нужен margin; слишком большой margin приводит к коллапсу эмбеддингов.',
+        en: 'A margin is required; too large a margin can collapse the embeddings.',
+      },
+      {
+        ru: 'Contrastive Loss работает с парами и требует баланса positive/negative пар.',
+        en: 'Contrastive Loss works with pairs and requires a balance of positive and negative pairs.',
+      },
+    ],
+    tags: ['triplet', 'contrastive', 'metric learning', 'embedding', 'facenet', 'эмбеддинги'],
+  },
+  {
+    id: 'ctc-loss',
+    term: { ru: 'CTC Loss (Connectionist Temporal Classification)', en: 'CTC Loss (Connectionist Temporal Classification)' },
+    englishName: 'Connectionist Temporal Classification Loss',
+    category: 'metrics',
+    formulaLatex: '\\mathcal{L}_{\\text{CTC}} = -\\log \\sum_{\\pi \\in \\mathcal{B}^{-1}(y)} \\prod_{t=1}^T p_\\theta(\\pi_t \\mid x)',
+    formulaDescription: {
+      ru: 'pi — выравнивание по кадрам длины T; B — операция слияния повторов и удаления blank; сумма идёт по всем выравниваниям, дающим целевой текст y.',
+      en: 'pi is a frame-level alignment of length T; B collapses repeats and removes blank; the sum is over all alignments that produce the target sequence y.',
+    },
+    shortDefinition: {
+      ru: 'Функция потерь для последовательностей, которая учит модель выравнивать вход и выход без явной разметки границ символов.',
+      en: 'A sequence loss that teaches a model to align input and output without explicit character-boundary labels.',
+    },
+    whenToUse: [
+      {
+        ru: 'Распознавание речи (ASR) без посимвольной разметки аудио.',
+        en: 'Speech recognition (ASR) without per-character audio labels.',
+      },
+      {
+        ru: 'OCR и распознавание рукописного текста, где неизвестны границы символов.',
+        en: 'OCR and handwritten text recognition where character boundaries are unknown.',
+      },
+      {
+        ru: 'Любая seq2seq задача с монотонным выравниванием и переменной длиной.',
+        en: 'Any seq2seq task with monotonic alignment and variable length.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'CTC предполагает условную независимость выходов при данном входе и монотонное выравнивание; для свободных перестановок нужен attention/seq2seq.',
+        en: 'CTC assumes conditional independence of outputs given the input and monotonic alignment; free reordering needs attention/seq2seq.',
+      },
+      {
+        ru: 'Требуется blank-токен и входная длина T >= длины целевой последовательности.',
+        en: 'A blank token is required, and the input length T must be at least the target length.',
+      },
+      {
+        ru: 'Декодирование: greedy, beam search или prefix beam search; качество зависит от декодера.',
+        en: 'Decoding can be greedy, beam search, or prefix beam search; quality depends on the decoder.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'pytorch-pandas-sklearn',
+      lessonId: 'pt-6-rnn-lstm-gru',
+      title: { ru: 'Рекуррентные сети (RNN, LSTM, GRU): BPTT, ячейка памяти и последовательности', en: 'Recurrent Networks (RNN, LSTM, GRU): BPTT, Memory Cell & Sequences' },
+    },
+    tags: ['ctc', 'ctcloss', 'asr', 'ocr', 'sequence', 'выравнивание'],
+  },
+  {
+    id: 'ndcg',
+    term: { ru: 'NDCG (Normalized Discounted Cumulative Gain)', en: 'NDCG (Normalized Discounted Cumulative Gain)' },
+    englishName: 'Normalized Discounted Cumulative Gain',
+    category: 'metrics',
+    formulaLatex: '\\text{DCG@}k = \\sum_{i=1}^k \\frac{2^{rel_i} - 1}{\\log_2(i+1)}, \\quad \\text{NDCG@}k = \\frac{\\text{DCG@}k}{\\text{IDCG@}k}',
+    formulaDescription: {
+      ru: 'rel_i — релевантность документа на позиции i; IDCG — DCG идеального порядка. Нормализация позволяет сравнивать запросы с разным числом релевантных документов.',
+      en: 'rel_i is the relevance of the document at position i; IDCG is the DCG of the ideal order. Normalization allows comparison across queries with different numbers of relevant documents.',
+    },
+    shortDefinition: {
+      ru: 'Метрика качества ранжирования, учитывающая релевантность документов и позицию в выдаче с логарифмическим дисконтом.',
+      en: 'Ranking quality metric that accounts for document relevance and position with logarithmic discounting.',
+    },
+    whenToUse: [
+      {
+        ru: 'Оценка поиска, рекомендательных систем и ранжирования (поисковые выдачи, ленты, e-commerce).',
+        en: 'Evaluating search, recommender systems, and ranking (search results, feeds, e-commerce).',
+      },
+      {
+        ru: 'Когда важна не только бинарная релевантность, но и её степень (0–4 в поиске).',
+        en: 'When graded relevance matters, not just binary relevance (0–4 in search).',
+      },
+      {
+        ru: 'Сравнение моделей ранжирования при разном числе релевантных документов благодаря нормализации через IDCG.',
+        en: 'Comparing ranking models with different numbers of relevant documents thanks to IDCG normalization.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'NDCG@k зависит от k; сравнивайте модели при одинаковом k.',
+        en: 'NDCG@k depends on k; compare models at the same k.',
+      },
+      {
+        ru: 'Для бинарной релевантности NDCG часто эквивалентен ранжированной AP с логарифмическим дисконтом.',
+        en: 'For binary relevance, NDCG is often equivalent to ranked AP with logarithmic discounting.',
+      },
+      {
+        ru: 'Метрика не учитывает разнообразие и новизну; дополняйте coverage и diversity.',
+        en: 'The metric ignores diversity and novelty; complement it with coverage and diversity metrics.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'recsys',
+      lessonId: 'recsys-4-ranking-metrics',
+      title: { ru: 'Метрики ранжирования и качества RecSys: NDCG@k, MAP@k, MRR и разнообразие', en: 'Ranking & Quality Metrics for RecSys: NDCG@k, MAP@k, MRR, Diversity & Serendipity' },
+    },
+    tags: ['ndcg', 'dcg', 'ranking', 'recsys', 'search', 'ранжирование'],
+  },
+  {
+    id: 'perplexity',
+    term: { ru: 'Perplexity (Перплексия)', en: 'Perplexity (PPL)' },
+    englishName: 'Perplexity / PPL',
+    category: 'metrics',
+    formulaLatex: '\\text{PPL} = \\exp\\left( -\\frac{1}{N} \\sum_{i=1}^N \\log p_\\theta(w_i \\mid w_{<i}) \\right) = \\exp(\\mathcal{L}_{\\text{NLL}})',
+    formulaDescription: {
+      ru: 'w_i — токены; p_theta — вероятность токена по модели; N — число токенов. PPL — экспонента средней отрицательной лог-вероятности.',
+      en: 'w_i are tokens; p_theta is the model probability of a token; N is the token count. PPL is the exponent of the mean negative log-likelihood.',
+    },
+    shortDefinition: {
+      ru: 'Экспонента средней отрицательной лог-вероятности; интерпретируется как эффективное число равновероятных вариантов, между которыми сомневается языковая модель.',
+      en: 'Exponent of the mean negative log-likelihood; it can be read as the effective number of equally likely options the language model is choosing among.',
+    },
+    whenToUse: [
+      {
+        ru: 'Оценка языковых моделей на next-token prediction (валидационный PPL).',
+        en: 'Evaluating language models on next-token prediction (validation PPL).',
+      },
+      {
+        ru: 'Сравнение токенизаторов и архитектур при одинаковом словаре и корпусе.',
+        en: 'Comparing tokenizers and architectures with the same vocabulary and corpus.',
+      },
+      {
+        ru: 'Диагностика обучения LLM: резкий рост PPL сигнализирует о деградации или смене распределения.',
+        en: 'Diagnosing LLM training: a sharp PPL increase signals degradation or distribution shift.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'PPL зависит от токенизации и словаря; модели с разными токенизаторами напрямую несравнимы.',
+        en: 'PPL depends on tokenization and vocabulary; models with different tokenizers are not directly comparable.',
+      },
+      {
+        ru: 'Низкая PPL не гарантирует хорошее качество генерации, следование инструкциям или фактологичность.',
+        en: 'Low PPL does not guarantee good generation quality, instruction following, or factuality.',
+      },
+      {
+        ru: 'PPL считается по эталонному тексту; для open-ended задач нужны human или LLM-judge метрики.',
+        en: 'PPL is computed on reference text; open-ended tasks need human or LLM-judge metrics.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'pytorch-pandas-sklearn',
+      lessonId: 'pt-9-llm',
+      title: { ru: 'Современные LLM: KV-Cache, методы PEFT (LoRA, QLoRA) и архитектура RAG', en: 'Modern LLMs: KV-Cache, PEFT (LoRA, QLoRA) & RAG Architecture' },
+    },
+    tags: ['perplexity', 'ppl', 'language model', 'llm', 'nll', 'перплексия'],
+  },
+  {
+    id: 'bleu-rouge',
+    term: { ru: 'BLEU и ROUGE (Метрики генерации текста)', en: 'BLEU & ROUGE' },
+    englishName: 'BLEU / ROUGE / METEOR',
+    category: 'metrics',
+    formulaLatex: '\\text{BLEU} = \\text{BP} \\cdot \\exp\\left( \\sum_{n=1}^N w_n \\log p_n \\right), \\quad \\text{ROUGE-N} = \\frac{\\sum_{S \\in \\text{ref}} \\sum_{g \\in S} \\text{Count}_{\\text{match}}(g)}{\\sum_{S \\in \\text{ref}} \\sum_{g \\in S} \\text{Count}(g)}',
+    formulaDescription: {
+      ru: 'p_n — точность n-грамм, BP — brevity penalty (штраф за короткий ответ); ROUGE-N — полнота n-грамм относительно эталона, g — n-грамма.',
+      en: 'p_n is n-gram precision, BP is the brevity penalty; ROUGE-N is n-gram recall against the reference, and g is an n-gram.',
+    },
+    shortDefinition: {
+      ru: 'Лексические метрики совпадения с эталонным текстом: BLEU измеряет точность n-грамм (перевод), ROUGE — полноту n-грамм и LCS (суммаризация).',
+      en: 'Lexical overlap metrics: BLEU measures n-gram precision (translation), ROUGE measures n-gram recall and LCS (summarization).',
+    },
+    whenToUse: [
+      {
+        ru: 'Машинный перевод (BLEU), суммирование и генерация описаний (ROUGE).',
+        en: 'Machine translation (BLEU), summarization, and caption generation (ROUGE).',
+      },
+      {
+        ru: 'Быстрый автоматический бенчмарк при обучении seq2seq и LLM.',
+        en: 'A fast automatic benchmark when training seq2seq models and LLMs.',
+      },
+      {
+        ru: 'Сравнение моделей на фиксированном наборе эталонов, когда нужна дешёвая метрика.',
+        en: 'Comparing models on a fixed reference set when a cheap metric is needed.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'BLEU и ROUGE плохо коррелируют с человеческой оценкой смысла, фактологии и беглости.',
+        en: 'BLEU and ROUGE correlate poorly with human judgments of meaning, factuality, and fluency.',
+      },
+      {
+        ru: 'BLEU чувствителен к токенизации и brevity penalty; ROUGE-L использует LCS, а не n-граммы.',
+        en: 'BLEU is sensitive to tokenization and the brevity penalty; ROUGE-L uses LCS rather than n-grams.',
+      },
+      {
+        ru: 'Для диалогов, кода и open-ended генерации используйте BERTScore, COMET, LLM-as-judge или human eval.',
+        en: 'For dialogue, code, and open-ended generation, use BERTScore, COMET, LLM-as-judge, or human evaluation.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'pytorch-pandas-sklearn',
+      lessonId: 'pt-9-llm',
+      title: { ru: 'Современные LLM: KV-Cache, методы PEFT (LoRA, QLoRA) и архитектура RAG', en: 'Modern LLMs: KV-Cache, PEFT (LoRA, QLoRA) & RAG Architecture' },
+    },
+    tags: ['bleu', 'rouge', 'meteor', 'translation', 'summarization', 'text generation'],
+  },
+  {
+    id: 'silhouette-score',
+    term: { ru: 'Silhouette Score (Силуэтный коэффициент)', en: 'Silhouette Score' },
+    englishName: 'Silhouette Coefficient / Silhouette Score',
+    category: 'metrics',
+    formulaLatex: 's(i) = \\frac{b(i) - a(i)}{\\max(a(i), b(i))}, \\quad \\text{Silhouette} = \\frac{1}{N} \\sum_{i=1}^N s(i)',
+    formulaDescription: {
+      ru: 'a(i) — среднее расстояние до объектов своего кластера; b(i) — среднее расстояние до ближайшего чужого кластера.',
+      en: 'a(i) is the mean distance to objects in the same cluster; b(i) is the mean distance to the nearest other cluster.',
+    },
+    shortDefinition: {
+      ru: 'Метрика качества кластеризации, сравнивающая компактность кластера и его отделённость от соседних; диапазон [-1, 1].',
+      en: 'Clustering quality metric comparing cluster compactness and separation from neighboring clusters; range [-1, 1].',
+    },
+    whenToUse: [
+      {
+        ru: 'Выбор числа кластеров k в K-Means и оценка качества разбиения.',
+        en: 'Choosing the number of clusters k in K-Means and evaluating the partition.',
+      },
+      {
+        ru: 'Сравнение алгоритмов кластеризации (K-Means, DBSCAN, иерархическая) на одних данных.',
+        en: 'Comparing clustering algorithms (K-Means, DBSCAN, hierarchical) on the same data.',
+      },
+      {
+        ru: 'Проверка, что кластеры не пересекаются и объекты назначены осмысленно.',
+        en: 'Checking that clusters do not overlap and objects are assigned meaningfully.',
+      },
+    ],
+    interviewCaveats: [
+      {
+        ru: 'Silhouette требует метрики расстояния и плохо работает для несферических кластеров и шума (DBSCAN).',
+        en: 'Silhouette requires a distance metric and works poorly for non-spherical clusters and noise (DBSCAN).',
+      },
+      {
+        ru: 'Вычислительная сложность O(N²) по расстояниям; на больших данных используют сэмплирование.',
+        en: 'Distance computation is O(N²); on large datasets, sampling is used.',
+      },
+      {
+        ru: 'Высокий silhouette не гарантирует полезность кластеров для бизнес-задачи.',
+        en: 'A high silhouette does not guarantee that clusters are useful for the business problem.',
+      },
+    ],
+    lessonPath: {
+      moduleId: 'metric-methods',
+      lessonId: 'metric-clustering',
+      title: { ru: 'Кластеризация: K-Means (алгоритм Ллойда), DBSCAN и иерархический анализ', en: 'Clustering: K-Means (Lloyd Algorithm), DBSCAN & Hierarchical Analysis' },
+    },
+    tags: ['silhouette', 'clustering', 'k-means', 'dbscan', 'unsupervised', 'кластеризация'],
   },
 
   // ==========================================
@@ -1006,43 +2075,6 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   // 4. КОМПЬЮТЕРНОЕ ЗРЕНИЕ / CV
   // ==========================================
   {
-    id: 'iou-jaccard',
-    term: { ru: 'IoU (Intersection over Union / Коэффициент Жаккара)', en: 'IoU (Intersection over Union / Jaccard Index)' },
-    englishName: 'Intersection over Union / Jaccard Index',
-    category: 'cv',
-    formulaLatex: '\\text{IoU}(A, B) = \\frac{|A \\cap B|}{|A \\cup B|} = \\frac{|A \\cap B|}{|A| + |B| - |A \\cap B|}',
-    formulaDescription: {
-      ru: 'A и B — площади ограничивающих рамок (Bounding Boxes) или масок сегментации.',
-      en: 'A and B are bounding box areas or binary segmentation masks.',
-    },
-    shortDefinition: {
-      ru: 'Метрика геометрического перекрытия двух областей, принимающая значения от 0 (нет пересечения) до 1 (полное совпадение).',
-      en: 'Geometric overlap metric bounded between 0 (disjoint) and 1 (exact spatial alignment).',
-    },
-    whenToUse: [
-      {
-        ru: 'Оценка качества детекции объектов (порог совпадения предсказания с Ground Truth).',
-        en: 'Object detection evaluation (matching predicted boxes with ground truth).',
-      },
-      {
-        ru: 'Ключевой критерий фильтрации дубликатов в алгоритме NMS (Non-Maximum Suppression).',
-        en: 'Core overlap criterion in Non-Maximum Suppression (NMS) duplicate filtering.',
-      },
-    ],
-    interviewCaveats: [
-      {
-        ru: 'Если рамки не пересекаются, IoU = 0 и его градиент равен нулю. Поэтому для функций потерь используют GIoU, DIoU и CIoU.',
-        en: 'When boxes do not overlap, IoU = 0 with zero gradient. GIoU, DIoU, and CIoU introduce distance and aspect ratio terms to maintain gradients.',
-      },
-    ],
-    lessonPath: {
-      moduleId: 'computer-vision-deep-learning',
-      lessonId: 'cv-3-detection-yolo-detr',
-      title: { ru: 'Детекция объектов: YOLO, Faster R-CNN, DETR и NMS', en: 'Object Detection: YOLO, Faster R-CNN, DETR & NMS' },
-    },
-    tags: ['iou', 'jaccard', 'bbox', 'detection', 'segmentation'],
-  },
-  {
     id: 'nms',
     term: { ru: 'NMS (Подавление немаксимумов)', en: 'Non-Maximum Suppression (NMS)' },
     englishName: 'Non-Maximum Suppression Algorithm',
@@ -1069,9 +2101,9 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
       },
     ],
     lessonPath: {
-      moduleId: 'computer-vision-deep-learning',
-      lessonId: 'cv-3-detection-yolo-detr',
-      title: { ru: 'Детекция объектов: YOLO, Faster R-CNN, DETR и NMS', en: 'Object Detection: YOLO, Faster R-CNN, DETR & NMS' },
+      moduleId: 'computer-vision',
+      lessonId: 'cv-3-detection-metrics-nms-fpn',
+      title: { ru: 'Задачи детекции: метрики (mAP@0.5:0.95), NMS, Anchor boxes, FPN и RoI Align', en: 'Detection Tasks: Metrics (mAP@0.5:0.95), NMS, Anchors, FPN & RoI Align' },
     },
     tags: ['nms', 'non-maximum suppression', 'yolo', 'detection', 'bounding box'],
   },

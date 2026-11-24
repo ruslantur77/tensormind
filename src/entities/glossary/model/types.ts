@@ -3,10 +3,10 @@ import { LocalizedString } from '@/shared/lib/schemas';
 export type GlossaryCategory =
   | 'all'
   | 'python'           // Python для ML (GIL, Декораторы, Генераторы, Дандеры...)
-  | 'metrics'          // Метрики качества (F1, ROC-AUC, mAP, MSE...)
+  | 'metrics'          // Метрики и функции потерь (F1, ROC-AUC, IoU, BCE, NLL, Dice...)
   | 'regularization'   // Регуляризация и оптимизаторы (L1, L2, AdamW, Dropout...)
   | 'architectures'    // Архитектуры и слои (Self-Attention, BatchNorm, LayerNorm...)
-  | 'cv'               // Компьютерное зрение (IoU, NMS, Receptive Field...)
+  | 'cv'               // Компьютерное зрение (NMS, Receptive Field, FPN...)
   | 'nlp_llm'          // NLP и LLM (LoRA, PagedAttention, Temperature, Speculative...)
   | 'classical_ml'     // Классический ML (Gini, Bias-Variance, Bagging, Boosting...)
   | 'statistics'       // Статистика и теорвер (p-value, Bayes, CLT, KL...)
