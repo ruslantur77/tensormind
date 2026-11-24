@@ -75,12 +75,12 @@ $$z = \\frac{x - \\mu}{\\sigma}$$
 | --- | --- | --- | --- |
 | Линейная зависимость | Линейная алгебра | Один объект получается из других через сложение и умножение на числа. | Векторы $(1, 2)$ и $(3, 6)$; уравнение $y = 2x$ |
 | Линейная независимость | Линейная алгебра | Ни один объект нельзя собрать из других только сложением и умножением на числа. | Векторы $(1, 0)$ и $(0, 1)$ |
-| Нелинейная зависимость | Алгебра, анализ | Связь есть, но она выражается не прямой линией, а кривой (степени, корни и т. д.). | $y = x^2$, $y = \sqrt{x}$ |
+| Нелинейная зависимость | Алгебра, анализ | Связь есть, но она выражается не прямой линией, а кривой (степени, корни и т. д.). | $y = x^2$, $y = \\sqrt{x}$ |
 | Квадратичная / Степенная | Матанализ | Величина растёт или падает пропорционально степени другой величины. | Площадь квадрата от стороны: $S = a^2$ |
-| Обратная (гиперболическая) | Матанализ | Во сколько раз растёт одна величина, во столько же раз уменьшается другая. | Время в пути от скорости: $t = \frac{S}{v}$ |
+| Обратная (гиперболическая) | Матанализ | Во сколько раз растёт одна величина, во столько же раз уменьшается другая. | Время в пути от скорости: $t = \\frac{S}{v}$ |
 | Экспоненциальная | Матанализ | Скорость роста зависит от текущего размера (лавинообразный рост). | Сложные проценты по вкладу: $y = 2^x$ |
-| Логарифмическая | Матанализ | Сначала величина растёт очень быстро, а потом почти останавливается. | Громкость звука в децибелах: $y = \ln x$ |
-| Периодическая | Тригонометрия | Значения повторяются волнами через одинаковые промежутки. | Смена дня и ночи, маятник: $y = \sin x$ |
+| Логарифмическая | Матанализ | Сначала величина растёт очень быстро, а потом почти останавливается. | Громкость звука в децибелах: $y = \\ln x$ |
+| Периодическая | Тригонометрия | Значения повторяются волнами через одинаковые промежутки. | Смена дня и ночи, маятник: $y = \\sin x$ |
 | Алгебраическая зависимость | Высшая алгебра | Величины связаны любым уравнением с многочленом, а не только линейным. | Уравнение окружности: $x^2 + y^2 = 1$ |
 | Статистическая зависимость | Теория вероятностей | Знание одной величины меняет шансы (вероятность) другой, но не на 100%. | Рост и вес человека (высокие в среднем тяжелее) |
 | Корреляционная зависимость | Статистика | Показывает, насколько синхронно две величины растут или падают вместе. | Расходы на рекламу и объём продаж |
@@ -132,12 +132,12 @@ Before choosing a metric or a model, it is important to understand the nature of
 | --- | --- | --- | --- |
 | Linear dependence | Linear algebra | One object can be built from others using only addition and scalar multiplication. | Vectors $(1, 2)$ and $(3, 6)$; equation $y = 2x$ |
 | Linear independence | Linear algebra | No object can be built from the others using only addition and scalar multiplication. | Vectors $(1, 0)$ and $(0, 1)$ |
-| Nonlinear dependence | Algebra, calculus | A relationship exists, but it is a curve rather than a straight line (powers, roots, etc.). | $y = x^2$, $y = \sqrt{x}$ |
+| Nonlinear dependence | Algebra, calculus | A relationship exists, but it is a curve rather than a straight line (powers, roots, etc.). | $y = x^2$, $y = \\sqrt{x}$ |
 | Quadratic / power | Calculus | A quantity grows or falls in proportion to a power of another quantity. | Area of a square vs. its side: $S = a^2$ |
-| Inverse (hyperbolic) | Calculus | When one quantity grows by a factor, the other shrinks by the same factor. | Travel time vs. speed: $t = \frac{S}{v}$ |
+| Inverse (hyperbolic) | Calculus | When one quantity grows by a factor, the other shrinks by the same factor. | Travel time vs. speed: $t = \\frac{S}{v}$ |
 | Exponential | Calculus | The growth rate depends on the current size (explosive growth). | Compound interest: $y = 2^x$ |
-| Logarithmic | Calculus | The quantity grows very fast at first, then almost stops. | Sound level in decibels: $y = \ln x$ |
-| Periodic | Trigonometry | Values repeat in waves at equal intervals. | Day and night, a pendulum: $y = \sin x$ |
+| Logarithmic | Calculus | The quantity grows very fast at first, then almost stops. | Sound level in decibels: $y = \\ln x$ |
+| Periodic | Trigonometry | Values repeat in waves at equal intervals. | Day and night, a pendulum: $y = \\sin x$ |
 | Algebraic dependence | Higher algebra | Quantities are linked by any polynomial equation, not only a linear one. | Circle equation: $x^2 + y^2 = 1$ |
 | Statistical dependence | Probability theory | Knowing one quantity changes the probability of the other, but not with 100% certainty. | Height and weight of a person (taller people are heavier on average) |
 | Correlation | Statistics | Shows how synchronously two quantities rise or fall together. | Advertising spend and sales volume |
