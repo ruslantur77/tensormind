@@ -24,7 +24,7 @@ import {
   Bug,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
-import { Lesson, getLocalized } from '@/shared/lib/schemas';
+import { Lesson, LessonPracticeTask, getLocalized } from '@/shared/lib/schemas';
 import { getLessonPracticeTask } from '@/shared/content/practice/lessonPracticeRegistry';
 import { pluralizeRu } from '@/shared/lib/i18n/plural';
 import { practiceTaskRepository } from '@/entities/practice/model/practiceTaskRepository';
@@ -43,6 +43,10 @@ interface LessonPracticeBlockProps {
   lesson: Lesson;
   lang: 'ru' | 'en';
   onTaskCompleted?: () => void;
+  /** Optional task override, used for the secondary Colab/local project block. */
+  task?: LessonPracticeTask;
+  /** Progress-storage key. Defaults to lesson.id; secondary blocks must use a unique key. */
+  taskKey?: string;
 }
 
 const INDENT_UNIT = '    ';
@@ -71,14 +75,17 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
   lesson,
   lang,
   onTaskCompleted,
+  task,
+  taskKey,
 }) => {
-  const practiceTask = getLessonPracticeTask(lesson, lang);
+  const practiceTask = task ?? getLessonPracticeTask(lesson, lang);
+  const progressKey = taskKey ?? lesson.id;
   const taskTitle = getLocalized(practiceTask.title, lang);
   const isLocalProject = practiceTask.taskMode === 'local_project';
 
   // If saved code was identical to the old full solution, reset to starter skeleton
   const [code, setCode] = useState<string>(() => {
-    const saved = practiceTaskRepository.getUserCode(lesson.id);
+    const saved = practiceTaskRepository.getUserCode(progressKey);
     if (!saved || saved.trim() === practiceTask.solutionCode.trim()) {
       return practiceTask.starterCode;
     }
@@ -86,11 +93,11 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
   });
 
   const [isCompleted, setIsCompleted] = useState<boolean>(() => {
-    return practiceTaskRepository.isCompleted(lesson.id);
+    return practiceTaskRepository.isCompleted(progressKey);
   });
 
   const [hasViewedSolution, setHasViewedSolution] = useState<boolean>(() => {
-    return practiceTaskRepository.hasViewedSolution(lesson.id);
+    return practiceTaskRepository.hasViewedSolution(progressKey);
   });
 
   const [showSolution, setShowSolution] = useState(false);
@@ -104,7 +111,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
   // Test Runner State
   const [isRunning, setIsRunning] = useState(false);
   const [runResults, setRunResults] = useState<RunResults | null>(() => {
-    if (practiceTaskRepository.isCompleted(lesson.id) && !isLocalProject) {
+    if (practiceTaskRepository.isCompleted(progressKey) && !isLocalProject) {
       return {
         verdict: 'AC',
         totalTests: practiceTask.testCases?.length || 1,
@@ -132,16 +139,16 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
 
   // Sync state when lesson changes
   useEffect(() => {
-    const saved = practiceTaskRepository.getUserCode(lesson.id);
+    const saved = practiceTaskRepository.getUserCode(progressKey);
     if (!saved || saved.trim() === practiceTask.solutionCode.trim()) {
       setCode(practiceTask.starterCode);
     } else {
       setCode(saved);
     }
 
-    const completed = practiceTaskRepository.isCompleted(lesson.id);
+    const completed = practiceTaskRepository.isCompleted(progressKey);
     setIsCompleted(completed);
-    setHasViewedSolution(practiceTaskRepository.hasViewedSolution(lesson.id));
+    setHasViewedSolution(practiceTaskRepository.hasViewedSolution(progressKey));
 
     if (completed && !isLocalProject) {
       setRunResults({
@@ -168,7 +175,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
     setShowSolution(false);
     setShowHints(false);
     setCopiedColab(false);
-  }, [lesson.id, practiceTask.starterCode, isLocalProject]);
+  }, [progressKey, practiceTask.starterCode, isLocalProject]);
 
   // Insert text through execCommand so the browser keeps its native undo history
   const insertAtCursor = (
@@ -192,7 +199,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
       const end = el.selectionEnd;
       const next = el.value.slice(0, start) + text + el.value.slice(end);
       setCode(next);
-      practiceTaskRepository.saveUserCode(lesson.id, next);
+      practiceTaskRepository.saveUserCode(progressKey, next);
     }
 
     if (nextSelection) {
@@ -266,7 +273,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
   const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
     setCode(val);
-    practiceTaskRepository.saveUserCode(lesson.id, val);
+    practiceTaskRepository.saveUserCode(progressKey, val);
   };
 
   const handleEditorScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
@@ -279,18 +286,18 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
   const handleResetCode = () => {
     platform.haptics.light();
     setCode(practiceTask.starterCode);
-    practiceTaskRepository.resetUserCode(lesson.id);
+    practiceTaskRepository.resetUserCode(progressKey);
     setRunResults(null);
   };
 
   const handleCopySolutionToEditor = () => {
     platform.haptics.light();
     if (!isCompleted && !hasViewedSolution) {
-      practiceTaskRepository.markSolutionViewed(lesson.id);
+      practiceTaskRepository.markSolutionViewed(progressKey);
       setHasViewedSolution(true);
     }
     setCode(practiceTask.solutionCode);
-    practiceTaskRepository.saveUserCode(lesson.id, practiceTask.solutionCode);
+    practiceTaskRepository.saveUserCode(progressKey, practiceTask.solutionCode);
     setCopiedSolution(true);
     setTimeout(() => setCopiedSolution(false), 2000);
   };
@@ -299,7 +306,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
     platform.haptics.light();
     if (!showSolution) {
       if (!isCompleted && !hasViewedSolution) {
-        practiceTaskRepository.markSolutionViewed(lesson.id);
+        practiceTaskRepository.markSolutionViewed(progressKey);
         setHasViewedSolution(true);
       }
       setShowSolution(true);
@@ -330,7 +337,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
 
       if (results.verdict === 'AC') {
         platform.haptics.success();
-        const res = await practiceTaskRepository.markCompleted(lesson.id, taskTitle);
+        const res = await practiceTaskRepository.markCompleted(progressKey, taskTitle);
         setIsCompleted(true);
 
         if (res.awarded) {
@@ -375,7 +382,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
   // Handle manual completion of local projects
   const handleMarkProjectCompleted = async () => {
     platform.haptics.success();
-    const res = await practiceTaskRepository.markCompleted(lesson.id, taskTitle);
+    const res = await practiceTaskRepository.markCompleted(progressKey, taskTitle);
     setIsCompleted(true);
     if (res.awarded) {
       try {
@@ -422,11 +429,17 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
       lesson.moduleId.includes('ai-assisted') ||
       lesson.moduleId.includes('agent');
     const isMlopsTask = Boolean(practiceTask.id?.includes('mlops')) || lesson.moduleId.includes('mlops');
+    const isDataTask =
+      Boolean(practiceTask.id?.includes('polars')) ||
+      Boolean(practiceTask.id?.includes('eda')) ||
+      lesson.moduleId.includes('data-wrangling');
 
     const projectBadgeText = isAgentTask
       ? (lang === 'en' ? 'CLI Agent / Terminal' : 'Терминал & CLI-агент')
       : isMlopsTask
       ? (lang === 'en' ? 'MLOps / Infra' : 'MLOps & Инфраструктура')
+      : isDataTask
+      ? (lang === 'en' ? 'Polars / DataFrame' : 'Polars / DataFrame')
       : (lang === 'en' ? 'PyTorch / GPU Case' : 'PyTorch / GPU Case');
 
     const projectSubtitle = isAgentTask
@@ -437,6 +450,10 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
       ? (lang === 'en'
           ? 'Requires Docker / production runtime. Run locally or in cloud'
           : 'Требует Docker / FastAPI / MLOps стек. Реализуйте локально или на сервере')
+      : isDataTask
+      ? (lang === 'en'
+          ? 'No GPU required. Run in Google Colab or locally with Python + Polars'
+          : 'GPU не нужен. Запустите в Google Colab или локально с Python + Polars')
       : (lang === 'en'
           ? 'Requires full C++/CUDA runtime. Train in local VS Code or Colab'
           : 'Требует полной среды PyTorch / CUDA. Реализуйте в локальном Jupyter или Colab');
@@ -555,31 +572,44 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                 </span>
               </span>
 
-              <button
-                type="button"
-                onClick={handleCopyColabCode}
-                className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-indigo-500/20"
-              >
-                {copiedColab ? (
-                  <>
-                    <Check className="w-3.5 h-3.5 text-emerald-300" />
-                    <span>{lang === 'en' ? 'Copied to Clipboard!' : 'Скопировано в буфер!'}</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="w-3.5 h-3.5" />
-                    <span>
-                      {isAgentTask
-                        ? lang === 'en'
-                          ? 'Copy Script'
-                          : 'Скопировать код'
-                        : lang === 'en'
-                        ? 'Copy Script to Colab'
-                        : 'Скопировать код для Colab'}
-                    </span>
-                  </>
+              <div className="flex items-center gap-2">
+                {!isAgentTask && (
+                  <a
+                    href="https://colab.research.google.com/#create=true"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-100 font-semibold transition flex items-center gap-1.5"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" />
+                    <span>{lang === 'en' ? 'Open Colab' : 'Открыть Colab'}</span>
+                  </a>
                 )}
-              </button>
+                <button
+                  type="button"
+                  onClick={handleCopyColabCode}
+                  className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-indigo-500/20"
+                >
+                  {copiedColab ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-emerald-300" />
+                      <span>{lang === 'en' ? 'Copied to Clipboard!' : 'Скопировано в буфер!'}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>
+                        {isAgentTask
+                          ? lang === 'en'
+                            ? 'Copy Script'
+                            : 'Скопировать код'
+                          : lang === 'en'
+                          ? 'Copy Script to Colab'
+                          : 'Скопировать код для Colab'}
+                      </span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
 
             <pre className="p-4 bg-black/40 text-slate-200 font-mono text-xs overflow-x-auto leading-relaxed border-t border-white/5 max-h-[380px]">

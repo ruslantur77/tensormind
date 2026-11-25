@@ -3636,6 +3636,204 @@ print("Метрика Pass@1 на выборке из 1 задачи: 100.0%")
 };
 
 /**
+ * Optional SECOND hands-on block rendered after the main practice task.
+ * Reserved for out-of-browser projects (Google Colab / local Jupyter) that need
+ * heavy native libraries unavailable in the in-browser runner.
+ */
+export const COLAB_PRACTICE_TASKS: Record<string, LessonPracticeTask> = {
+  'eda-4-polars-speed': {
+    id: 'pr-eda-4-polars-colab',
+    taskType: 'data_pipeline',
+    taskMode: 'local_project',
+    language: 'python',
+    title: {
+      ru: 'Практический проект: Polars-пайплайн для e-commerce заказов и бенчмарк против Pandas (Google Colab)',
+      en: 'Hands-on Project: Polars E-commerce Pipeline & Pandas Benchmark (Google Colab)',
+    },
+    description: {
+      ru: `Соберите end-to-end аналитический пайплайн на **Polars** для **5 000 000 заказов** интернет-магазина и сравните его с Pandas.
+Вам нужно:
+- сгенерировать воспроизводимый датасет и сохранить его в **Parquet**;
+- построить **LazyFrame** через \`pl.scan_parquet()\`, отфильтровать отменённые заказы и посчитать выручку выражением \`price * quantity * (1 - discount)\`;
+- одним \`.collect()\` материализовать очищенные данные, затем агрегировать выручку по категориям, месяцам и топ-10 пользователям;
+- замерить время Polars и Pandas на одних и тех же данных и доказать паритет сумм.
+
+Скрипт полностью самодостаточен: датасет генерируется в ноутбуке, внешние файлы не нужны.`,
+      en: `Build an end-to-end **Polars** analytics pipeline over **5,000,000 e-commerce orders** and benchmark it against Pandas.
+You will:
+- generate a reproducible dataset and persist it to **Parquet**;
+- build a **LazyFrame** with \`pl.scan_parquet()\`, filter cancelled orders, and compute revenue via \`price * quantity * (1 - discount)\`;
+- materialize the cleaned data with a single \`.collect()\`, then aggregate revenue by category, month, and top-10 users;
+- time Polars vs Pandas on identical data and prove revenue parity.
+
+The notebook is fully self-contained: the dataset is generated in-notebook, no external downloads required.`,
+    },
+    datasetInfo: {
+      name: 'Synthetic E-commerce Orders (5M rows, generated in-notebook)',
+      description: {
+        ru: 'Воспроизводимый датасет (seed=42): order_id, user_id, category, country, price, quantity, discount, status, order_ts. Сохраняется в orders.parquet.',
+        en: 'Reproducible dataset (seed=42): order_id, user_id, category, country, price, quantity, discount, status, order_ts. Saved to orders.parquet.',
+      },
+    },
+    steps: [
+      { ru: 'Установите зависимости: `!pip install -q "polars>=1.0" pyarrow`', en: 'Install dependencies: `!pip install -q "polars>=1.0" pyarrow`' },
+      { ru: 'Сгенерируйте 5 млн заказов через NumPy (seed=42) и сохраните их в `orders.parquet`', en: 'Generate 5M orders with NumPy (seed=42) and persist them to `orders.parquet`' },
+      { ru: 'Постройте LazyFrame: `pl.scan_parquet()` -> `filter(status == "completed")` -> `with_columns(revenue)` -> `with_columns(dt.truncate("1mo"))`', en: 'Build the LazyFrame: `pl.scan_parquet()` -> `filter(status == "completed")` -> `with_columns(revenue)` -> `with_columns(dt.truncate("1mo"))`' },
+      { ru: 'Вызовите `.collect()` один раз и агрегируйте выручку по категориям, месяцам и топ-10 пользователям', en: 'Call `.collect()` once and aggregate revenue by category, month, and top-10 users' },
+      { ru: 'Повторите расчёт на Pandas, сравните суммы с допуском < 0.01% и посчитайте ускорение', en: 'Recompute with Pandas, compare totals with < 0.01% tolerance, and calculate the speedup' },
+      { ru: 'Выведите итоговые таблицы; по желанию постройте график месячной выручки через matplotlib', en: 'Print the result tables; optionally plot monthly revenue with matplotlib' },
+    ],
+    targetBenchmark: {
+      ru: '🎯 Цель: Polars-пайплайн < 5 с, ускорение >= 2x относительно Pandas, расхождение выручки < 0.01%',
+      en: '🎯 Target: Polars pipeline < 5s, >= 2x speedup vs Pandas, revenue parity within 0.01%',
+    },
+    starterCode: `# Шаблон для Google Colab / локального Jupyter
+# !pip install -q "polars>=1.0" pyarrow
+
+import time
+import numpy as np
+import pandas as pd
+import polars as pl
+
+RNG = np.random.default_rng(42)
+N = 5_000_000
+PATH = "orders.parquet"
+
+# TODO 1: сгенерируйте датасет и сохраните его в Parquet
+# TODO 2: постройте LazyFrame через pl.scan_parquet()
+# TODO 3: отфильтруйте completed-заказы и посчитайте revenue
+# TODO 4: материализуйте данные одним .collect()
+# TODO 5: агрегируйте по category, month и user_id
+# TODO 6: сравните с Pandas и замерьте ускорение
+`,
+    solutionCode: `# ============================================================
+# Polars Analytics Pipeline — E-commerce Orders (Google Colab)
+# ============================================================
+!pip install -q "polars>=1.0" pyarrow
+
+import time
+import numpy as np
+import pandas as pd
+import polars as pl
+
+RNG = np.random.default_rng(42)
+N = 5_000_000
+PATH = "orders.parquet"
+
+# ---------- 1. Reproducible synthetic dataset ----------
+categories = np.array(["electronics", "fashion", "home", "sports", "beauty"])
+countries = np.array(["DE", "FR", "ES", "IT", "NL"])
+statuses = np.array(["completed"] * 9 + ["cancelled"])
+
+orders = pd.DataFrame({
+    "order_id": np.arange(1, N + 1, dtype=np.int64),
+    "user_id": RNG.integers(1, 250_000, size=N, dtype=np.int64),
+    "category": RNG.choice(categories, size=N),
+    "country": RNG.choice(countries, size=N),
+    "price": np.round(RNG.uniform(5.0, 500.0, size=N), 2),
+    "quantity": RNG.integers(1, 6, size=N, dtype=np.int16),
+    "discount": RNG.choice([0.0, 0.05, 0.1, 0.15, 0.2], size=N),
+    "status": RNG.choice(statuses, size=N),
+    "order_ts": pd.to_datetime("2023-01-01")
+                + pd.to_timedelta(RNG.integers(0, 730, size=N), unit="D"),
+})
+orders.to_parquet(PATH, index=False)
+print(f"Dataset: {N:,} rows -> {PATH}")
+
+# ---------- 2. Polars Lazy pipeline ----------
+t0 = time.perf_counter()
+
+base = (
+    pl.scan_parquet(PATH)
+    .filter(pl.col("status") == "completed")
+    .with_columns(
+        (pl.col("price") * pl.col("quantity") * (1 - pl.col("discount")))
+        .round(2)
+        .alias("revenue")
+    )
+    .with_columns(pl.col("order_ts").dt.truncate("1mo").alias("month"))
+    .collect()  # single materialization; the scan is optimized by the query planner
+)
+
+by_category = (
+    base.group_by("category")
+    .agg(
+        pl.col("revenue").sum().round(2).alias("revenue"),
+        pl.len().alias("orders"),
+        pl.col("revenue").mean().round(2).alias("avg_order_value"),
+    )
+    .sort("revenue", descending=True)
+)
+
+monthly = (
+    base.group_by("month")
+    .agg(pl.col("revenue").sum().round(2).alias("revenue"))
+    .sort("month")
+)
+
+top_users = (
+    base.group_by("user_id")
+    .agg(pl.col("revenue").sum().round(2).alias("revenue"))
+    .sort("revenue", descending=True)
+    .head(10)
+)
+
+polars_time = time.perf_counter() - t0
+polars_total = float(by_category["revenue"].sum())
+
+print(f"Polars pipeline: {polars_time:.2f}s | total revenue = {polars_total:,.2f}")
+print(by_category)
+
+# ---------- 3. Pandas baseline on identical data ----------
+t1 = time.perf_counter()
+pdf = pd.read_parquet(PATH)
+pdf = pdf[pdf["status"] == "completed"].copy()
+pdf["revenue"] = (pdf["price"] * pdf["quantity"] * (1 - pdf["discount"])).round(2)
+pandas_total = float(pdf["revenue"].sum())
+pandas_time = time.perf_counter() - t1
+
+# ---------- 4. Parity check + benchmark ----------
+relative_diff = abs(polars_total - pandas_total) / pandas_total
+assert relative_diff < 1e-4, f"Revenue mismatch: {relative_diff:.6%}"
+
+speedup = pandas_time / polars_time
+print(f"Pandas baseline: {pandas_time:.2f}s")
+print(f"Speedup: {speedup:.2f}x | revenue parity: {relative_diff:.8%} ✓")
+print("\\nMonthly revenue (head):")
+print(monthly.head())
+print("\\nTop-10 users by revenue:")
+print(top_users)
+
+# ---------- 5. Optional chart ----------
+import matplotlib.pyplot as plt
+
+monthly_pd = monthly.to_pandas()
+plt.figure(figsize=(10, 4))
+plt.plot(monthly_pd["month"], monthly_pd["revenue"], marker="o")
+plt.title("Monthly revenue (Polars pipeline)")
+plt.xlabel("Month")
+plt.ylabel("Revenue")
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+`,
+    hints: [
+      { ru: '`pl.scan_parquet()` не читает файл целиком: сначала строится план, а работа выполняется только в `.collect()`.', en: '`pl.scan_parquet()` is lazy: the file is read only when `.collect()` is called.' },
+      { ru: 'Считайте выручку одним выражением: `pl.col("price") * pl.col("quantity") * (1 - pl.col("discount"))`.', en: 'Compute revenue in one expression: `pl.col("price") * pl.col("quantity") * (1 - pl.col("discount"))`.' },
+      { ru: 'Для месячной агрегации используйте `pl.col("order_ts").dt.truncate("1mo")`.', en: 'For monthly buckets use `pl.col("order_ts").dt.truncate("1mo")`.' },
+      { ru: 'Не вызывайте `.collect()` на каждый агрегат: материализуйте `base` один раз и переиспользуйте DataFrame.', en: 'Do not call `.collect()` for every aggregate: materialize `base` once and reuse the DataFrame.' },
+    ],
+  },
+};
+
+/**
+ * Returns the optional Colab / local project block for a lesson, if one exists.
+ */
+export function getColabPracticeTask(lesson: Lesson): LessonPracticeTask | undefined {
+  return COLAB_PRACTICE_TASKS[lesson.id];
+}
+
+/**
  * Domain-specific contextual task generator.
  * Produces an authentic, mathematically sound task tailored to the exact topic of the lesson.
  * ZERO generic x^2 + y^2 templates!

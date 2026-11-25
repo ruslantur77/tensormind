@@ -25,6 +25,7 @@ import { getLocalized } from '@/shared/lib/schemas';
 import { XP_REWARDS } from '@/shared/config';
 import { platform } from '@/shared/lib/platform';
 import { LessonPracticeBlock } from '@/widgets/lesson/LessonPracticeBlock';
+import { getColabPracticeTask } from '@/shared/content/practice/lessonPracticeRegistry';
 
 export const LessonPage: React.FC = () => {
   const { moduleId, lessonId } = useParams<{ moduleId: string; lessonId: string }>();
@@ -41,6 +42,7 @@ export const LessonPage: React.FC = () => {
 
   const lesson = moduleId && lessonId ? contentRegistry.getLesson(moduleId, lessonId) : undefined;
   const moduleData = moduleId ? contentRegistry.getModule(moduleId) : undefined;
+  const colabProjectTask = lesson ? getColabPracticeTask(lesson) : undefined;
 
   useEffect(() => {
     setSelectedAnswers({});
@@ -230,10 +232,21 @@ export const LessonPage: React.FC = () => {
       </GlassPanel>
 
       {/* Hands-on Practice Block */}
-      <LessonPracticeBlock
-        lesson={lesson}
-        lang={lang}
-      />
+      <div className="space-y-4">
+        <LessonPracticeBlock
+          lesson={lesson}
+          lang={lang}
+        />
+
+        {colabProjectTask && (
+          <LessonPracticeBlock
+            lesson={lesson}
+            lang={lang}
+            task={colabProjectTask}
+            taskKey={`${lesson.id}::colab`}
+          />
+        )}
+      </div>
 
       {/* Checkpoint Mini-Quiz */}
       {checkpointQuizzes.length > 0 && (
