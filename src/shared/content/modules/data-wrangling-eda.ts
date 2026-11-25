@@ -752,6 +752,24 @@ final_df = lazy_plan.collect()
 
 #### 1. Продвинутая обработка пропусков: KNNImputer и IterativeImputer (MICE)
 Простая замена на медиану разрушает взаимосвязи между переменными (например, заменяет зарплату медианой без учета стажа и возраста).
+
+**Сравнение стратегий обработки пропусков**
+
+| Метод | Для каких данных | Когда лучше использовать | Главные минусы / риски |
+| :--- | :--- | :--- | :--- |
+| Удаление строк (dropna) | Любые | Пропусков очень мало (<1–3%), датасет большой, пропуски абсолютно случайны, а пропуск в целевой переменной (target) вообще нельзя заполнять (такие строки удаляют всегда). | Потеря данных; если пропуски не случайны, выборка станет смещенной (например, удалятся все клиенты с высоким доходом). |
+| Удаление столбца (drop) | Любые | В колонке более 60–80% пропусков, она не имеет критической важности для бизнеса/задачи и её невозможно надежно восстановить. | Полная потеря признака, даже если в оставшихся 20% был полезный сигнал. |
+| Оставить как есть | Любые (числа, категории) | Используются современные бустинги (CatBoost, LightGBM, XGBoost), которые сами находят оптимальное направление для NaN. | Не работает в линейных моделях, нейросетях и большинстве алгоритмов scikit-learn. |
+| Медиана | Числовые | Быстрый бейзлайн, мало пропусков (до 5%), в данных есть выбросы или сильная асимметрия (доходы, цены). | Искажает дисперсию и создает искусственный «пик», если пропусков много. |
+| Среднее (Mean) | Числовые | Данные распределены нормально (симметрично) и в них гарантированно нет выбросов (например, рост людей). | Очень чувствительно к выбросам — одна ошибка в данных испортит заполнение. |
+| Мода (Most Frequent) | Категориальные, бинарные | Мало пропусков в категориях, когда есть явно доминирующий класс. | Усиливает дисбаланс классов, искусственно раздувая самую частую категорию. |
+| Отдельная категория ("Unknown", -999) | Категориальные (иногда числовые для деревьев) | Пропуск не случаен и сам по себе несет смысл (например, человек не указал профессию в анкете). | Для линейных моделей константа -999 в числах сломает веса (подходит только для деревьев). |
+| Групповая медиана / среднее | Числовые + категории | Есть сильная связь с категорией (например, заполнять пропущенный вес медианой отдельно для мужчин и женщин). | Сложнее реализовать в пайплайне без утечки данных на test. |
+| KNNImputer | Числовые | Небольшой датасет, сильная корреляция между признаками, данные предварительно отмасштабированы. | Медленно работает на больших данных, плохо справляется при большом числе признаков. |
+| IterativeImputer (MICE) | Числовые | Сложные нелинейные зависимости между признаками, когда важно максимально точно восстановить структуру данных. | Долго обучается, может переобучиться на шум в данных. |
+| Интерполяция / ffill / bfill | Временные ряды и последовательности | Данные упорядочены во времени (показания датчиков, курсы акций), нужно протянуть прошлое значение вперед. | Категорически нельзя применять к обычным табличным данным без временной привязки. |
+| Флаг пропуска (is_missing) | Вспомогательный прием (для любых) | Пропусков много (>5–10%) или они не случайны. Используется в паре с медианой или средним. | Увеличивает количество признаков в датасете. |
+
 * **KNNImputer:** находит $k$ ближайших соседей объекта по евклидову расстоянию среди признаков без пропусков (с взвешиванием по расстоянию) и вычисляет их среднее:
 \`\`\`python
 from sklearn.impute import KNNImputer
@@ -805,6 +823,24 @@ $$S_c = \\frac{n_c \\bar{y}_c + m \\mu_y}{n_c + m}$$
 
 #### 1. Advanced Imputation: KNNImputer & IterativeImputer (MICE)
 Replacing missing values with univariate medians destroys multi-attribute covariance.
+
+**Missing-Value Strategy Comparison**
+
+| Method | Data types | When to use | Main downsides / risks |
+| :--- | :--- | :--- | :--- |
+| Row deletion (dropna) | Any | Very few missing values (<1–3%), a large dataset, missing completely at random (MCAR), and never impute a missing target (always drop those rows). | Data loss; if missingness is not random, the sample becomes biased (e.g., all high-income customers are removed). |
+| Column deletion (drop) | Any | More than 60–80% missing in a column, low business/task importance, and no reliable way to reconstruct it. | Complete loss of the feature, even if the remaining 20% carried useful signal. |
+| Leave as is | Any (numeric, categorical) | Using modern gradient boosting (CatBoost, LightGBM, XGBoost) that learns the optimal split direction for NaN. | Does not work in linear models, neural networks, or most scikit-learn algorithms. |
+| Median | Numeric | Fast baseline, few missing values (up to 5%), data contains outliers or strong skew (income, prices). | Distorts variance and creates an artificial spike when many values are missing. |
+| Mean | Numeric | Data is normally (symmetrically) distributed and guaranteed outlier-free (e.g., human height). | Very sensitive to outliers — a single data error corrupts the imputation. |
+| Mode (Most Frequent) | Categorical, binary | Few missing categories and a clearly dominant class. | Reinforces class imbalance by artificially inflating the most frequent category. |
+| Separate category ("Unknown", -999) | Categorical (sometimes numeric for trees) | Missingness is not random and carries meaning (e.g., a person did not specify their occupation). | For linear models, a -999 constant in numeric features breaks the weights (trees only). |
+| Group median / mean | Numeric + categorical | Strong relationship with a category (e.g., impute missing weight with the median separately for men and women). | Harder to implement in a pipeline without leaking data into the test set. |
+| KNNImputer | Numeric | Small dataset, strong correlation between features, data pre-scaled. | Slow on large data; performs poorly with many features. |
+| IterativeImputer (MICE) | Numeric | Complex non-linear feature dependencies where preserving data structure matters most. | Slow to train; can overfit to noise in the data. |
+| Interpolation / ffill / bfill | Time series and sequences | Data is ordered in time (sensor readings, stock prices) and the previous value should be carried forward. | Never apply to ordinary tabular data without a temporal order. |
+| Missing-value flag (is_missing) | Auxiliary technique (any) | Many missing values (>5–10%) or non-random missingness. Use together with median or mean imputation. | Increases the number of features in the dataset. |
+
 * **KNNImputer:** fills missing values by averaging the $k$ nearest neighbors in Euclidean feature space:
 \`\`\`python
 from sklearn.impute import KNNImputer
