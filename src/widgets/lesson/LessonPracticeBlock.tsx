@@ -140,6 +140,28 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const highlightRef = useRef<HTMLPreElement>(null);
+  const whitespaceRef = useRef<HTMLPreElement>(null);
+
+  // Selection range drives the whitespace-dot overlay (spaces inside the
+  // current selection are rendered as middle dots, similar to Colab).
+  const [selectionRange, setSelectionRange] = useState({ start: 0, end: 0 });
+
+  // `selectionchange` is the only event that reliably fires for every way of
+  // moving the caret (mouse drag, shift+arrows, programmatic selection), so it
+  // keeps the dots in sync while the textarea is focused.
+  useEffect(() => {
+    const syncSelection = () => {
+      const el = textareaRef.current;
+      if (!el || document.activeElement !== el) return;
+      setSelectionRange((prev) =>
+        prev.start === el.selectionStart && prev.end === el.selectionEnd
+          ? prev
+          : { start: el.selectionStart, end: el.selectionEnd }
+      );
+    };
+    document.addEventListener('selectionchange', syncSelection);
+    return () => document.removeEventListener('selectionchange', syncSelection);
+  }, []);
 
   // Sync state when lesson changes
   useEffect(() => {
@@ -179,6 +201,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
     setShowSolution(false);
     setShowHints(false);
     setCopiedColab(false);
+    setSelectionRange({ start: 0, end: 0 });
   }, [progressKey, practiceTask.starterCode, isLocalProject]);
 
   // Insert text through execCommand so the browser keeps its native undo history
@@ -277,19 +300,35 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
   const handleCodeChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
     setCode(val);
+    setSelectionRange({ start: e.target.selectionStart, end: e.target.selectionEnd });
     practiceTaskRepository.saveUserCode(progressKey, val);
   };
 
+  const handleSelectionChange = (e: React.SyntheticEvent<HTMLTextAreaElement>) => {
+    const el = e.currentTarget;
+    setSelectionRange((prev) =>
+      prev.start === el.selectionStart && prev.end === el.selectionEnd
+        ? prev
+        : { start: el.selectionStart, end: el.selectionEnd }
+    );
+  };
+
   const handleEditorScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
-    const pre = highlightRef.current;
-    if (!pre) return;
-    pre.scrollTop = e.currentTarget.scrollTop;
-    pre.scrollLeft = e.currentTarget.scrollLeft;
+    const { scrollTop, scrollLeft } = e.currentTarget;
+    if (highlightRef.current) {
+      highlightRef.current.scrollTop = scrollTop;
+      highlightRef.current.scrollLeft = scrollLeft;
+    }
+    if (whitespaceRef.current) {
+      whitespaceRef.current.scrollTop = scrollTop;
+      whitespaceRef.current.scrollLeft = scrollLeft;
+    }
   };
 
   const handleResetCode = () => {
     platform.haptics.light();
     setCode(practiceTask.starterCode);
+    setSelectionRange({ start: 0, end: 0 });
     practiceTaskRepository.resetUserCode(progressKey);
     setRunResults(null);
   };
@@ -301,6 +340,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
       setHasViewedSolution(true);
     }
     setCode(practiceTask.solutionCode);
+    setSelectionRange({ start: 0, end: 0 });
     practiceTaskRepository.saveUserCode(progressKey, practiceTask.solutionCode);
     setCopiedSolution(true);
     setTimeout(() => setCopiedSolution(false), 2000);
@@ -408,6 +448,39 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
   const highlightedCode = useMemo(() => {
     return highlightSource(code, isSql ? 'sql' : 'python');
   }, [code, isSql]);
+
+  // Render middle dots for spaces inside the current selection. All other
+  // characters stay transparent but keep their natural width, so the dots
+  // align exactly with the textarea's character cells.
+  const whitespaceDots = useMemo(() => {
+    const { start, end } = selectionRange;
+    if (start === end) return null;
+
+    const nodes: React.ReactNode[] = [];
+    let buffer = '';
+    for (let i = 0; i < code.length; i++) {
+      const ch = code[i];
+      if (ch === ' ' && i >= start && i < end) {
+        if (buffer) {
+          nodes.push(buffer);
+          buffer = '';
+        }
+        nodes.push(
+          <span
+            key={`ws-${i}`}
+            className="inline-block text-center text-sky-300/80"
+            style={{ width: '1ch' }}
+          >
+            ·
+          </span>
+        );
+      } else {
+        buffer += ch;
+      }
+    }
+    if (buffer) nodes.push(buffer);
+    return nodes;
+  }, [code, selectionRange]);
 
   // Verdict config helper
   const getVerdictBadge = (verdict: TestVerdict) => {
@@ -793,12 +866,25 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                   dangerouslySetInnerHTML={{ __html: highlightedCode }}
                 />
               </pre>
+              <pre
+                ref={whitespaceRef}
+                aria-hidden="true"
+                className="pointer-events-none select-none absolute inset-0 m-0 py-3 px-3.5 overflow-hidden whitespace-pre bg-transparent text-transparent font-mono text-xs sm:text-sm"
+                style={{ lineHeight: EDITOR_LINE_HEIGHT, tabSize: 4, textShadow: 'none' }}
+              >
+                {whitespaceDots}
+              </pre>
               <textarea
                 ref={textareaRef}
                 value={code}
                 onChange={handleCodeChange}
                 onKeyDown={handleKeyDown}
                 onScroll={handleEditorScroll}
+                onSelect={handleSelectionChange}
+                onKeyUp={handleSelectionChange}
+                onMouseUp={handleSelectionChange}
+                onFocus={handleSelectionChange}
+                onBlur={() => setSelectionRange({ start: 0, end: 0 })}
                 wrap="off"
                 spellCheck={false}
                 autoCapitalize="off"
