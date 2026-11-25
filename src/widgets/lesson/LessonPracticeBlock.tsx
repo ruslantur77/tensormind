@@ -50,6 +50,10 @@ interface LessonPracticeBlockProps {
 }
 
 const INDENT_UNIT = '    ';
+// Keep the transparent textarea, the highlighted overlay and the gutter on the
+// exact same line box. A 24px line-height left the caret/selection visually
+// ~3px above the 14px monospace glyphs.
+const EDITOR_LINE_HEIGHT = '1.25rem';
 
 function getBlockBounds(value: string, start: number, end: number, hasSelection: boolean) {
   const blockStart = value.lastIndexOf('\n', start - 1) + 1;
@@ -769,7 +773,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
             {/* Gutter */}
             <div className="select-none py-3 pl-3 pr-2 text-right text-slate-600 font-mono text-xs border-r border-white/5 bg-black/20 w-10 shrink-0">
               {Array.from({ length: lineCount }).map((_, i) => (
-                <div key={i} className="leading-6">
+                <div key={i} style={{ lineHeight: EDITOR_LINE_HEIGHT }}>
                   {i + 1}
                 </div>
               ))}
@@ -781,11 +785,11 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                 ref={highlightRef}
                 aria-hidden="true"
                 className="pointer-events-none select-none absolute inset-0 m-0 py-3 px-3.5 overflow-hidden whitespace-pre bg-transparent text-slate-200 font-mono text-xs sm:text-sm"
-                style={{ lineHeight: '1.5rem', tabSize: 4, textShadow: 'none' }}
+                style={{ lineHeight: EDITOR_LINE_HEIGHT, tabSize: 4, textShadow: 'none' }}
               >
                 <code
                   className={`language-${isSql ? 'sql' : 'python'} font-mono`}
-                  style={{ lineHeight: '1.5rem', textShadow: 'none' }}
+                  style={{ lineHeight: EDITOR_LINE_HEIGHT, textShadow: 'none' }}
                   dangerouslySetInnerHTML={{ __html: highlightedCode }}
                 />
               </pre>
@@ -803,7 +807,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                 rows={Math.max(lineCount, 8)}
                 className="relative block w-full py-3 px-3.5 bg-transparent text-transparent caret-sky-400 font-mono text-xs sm:text-sm resize-y outline-none focus:ring-0 focus:border-transparent selection:bg-sky-500/30 whitespace-pre placeholder:text-slate-500"
                 style={{
-                  lineHeight: '1.5rem',
+                  lineHeight: EDITOR_LINE_HEIGHT,
                   tabSize: 4,
                   WebkitTextFillColor: 'transparent',
                 }}
