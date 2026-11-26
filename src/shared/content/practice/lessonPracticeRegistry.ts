@@ -779,6 +779,342 @@ The result is a \`retail_star_dashboard.pbix\` file you can add to your portfoli
   },
 
   // ==========================================
+  // MODULE: Combinatorics & Math Foundations (Interactive IDE)
+  // ==========================================
+  'comb-1-basics': {
+    id: 'pr-comb-1',
+    taskType: 'write_function',
+    taskMode: 'interactive_ide',
+    language: 'python',
+    progressKey: 'comb-1-basics::counting',
+    title: {
+      ru: 'Сколько вариантов перебрать: сочетания, размещения и подмножества',
+      en: 'Counting the Search Space: Combinations, Arrangements, and Subsets',
+    },
+    description: {
+      ru: `Реализуйте функцию \`analyze_selection(n_items: int, k: int) -> list\`, которая отвечает на четыре вопроса о выборе $k$ элементов из $n$:
+
+1. **Сочетания** $C_n^k$ — сколько неупорядоченных наборов (порядок не важен).
+2. **Размещения** $A_n^k$ — сколько упорядоченных наборов (порядок важен).
+3. **Все подмножества** $2^n$ — сколько всего подмножеств у $n$ элементов.
+4. **Отношение** $A_n^k / C_n^k$ — оно всегда равно $k!$ и показывает, во сколько раз учёт порядка увеличивает число вариантов.
+
+Верните список \`[C, A, 2**n, k!]\`.
+
+**Пример.** \`analyze_selection(10, 2)\` → \`[45, 90, 1024, 2]\`:
+- пар признаков для scatter plot: $C_{10}^2 = 45$;
+- тех же пар с осями $x$ и $y$: $A_{10}^2 = 90$;
+- всех подмножеств признаков: $2^{10} = 1024$;
+- порядок увеличивает число вариантов в $2! = 2$ раза.
+
+**Подсказка по реализации.** В песочнице нет \`math.comb\`, поэтому посчитайте $C_n^k$ мультипликативно: $\\frac{n(n-1)\\ldots(n-k+1)}{k!}$, обновляя результат как \`result = result * (n - k + i) // i\`. Так промежуточные числа остаются небольшими.`,
+      en: `Implement \`analyze_selection(n_items: int, k: int) -> list\`, which answers four questions about choosing $k$ elements out of $n$:
+
+1. **Combinations** $C_n^k$ — unordered selections (order does not matter).
+2. **Arrangements** $A_n^k$ — ordered selections (order matters).
+3. **All subsets** $2^n$ — the total number of subsets of $n$ elements.
+4. **Ratio** $A_n^k / C_n^k$ — always equal to $k!$, showing how much order multiplies the number of options.
+
+Return the list \`[C, A, 2**n, k!]\`.
+
+**Example.** \`analyze_selection(10, 2)\` → \`[45, 90, 1024, 2]\`:
+- feature pairs for a scatter plot: $C_{10}^2 = 45$;
+- the same pairs with $x$ and $y$ axes: $A_{10}^2 = 90$;
+- all feature subsets: $2^{10} = 1024$;
+- order multiplies the count by $2! = 2$.
+
+**Implementation hint.** The sandbox has no \`math.comb\`, so compute $C_n^k$ multiplicatively: $\\frac{n(n-1)\\ldots(n-k+1)}{k!}$, updating \`result = result * (n - k + i) // i\`. This keeps intermediate numbers small.`,
+    },
+    starterCode: `def analyze_selection(n_items: int, k: int) -> list:
+    """
+    Возвращает [C(n,k), A(n,k), 2**n, k!].
+    """
+    # TODO 1: посчитайте C(n,k) — сочетания без учёта порядка
+    # TODO 2: посчитайте A(n,k) — размещения с учётом порядка
+    # TODO 3: посчитайте число всех подмножеств 2**n
+    # TODO 4: верните список [C, A, 2**n, A // C]
+    pass
+
+# Проверочный запуск:
+print(analyze_selection(10, 2))
+`,
+    solutionCode: `def analyze_selection(n_items: int, k: int) -> list:
+    def comb(n: int, k: int) -> int:
+        if k < 0 or k > n:
+            return 0
+        k = min(k, n - k)
+        result = 1
+        for i in range(1, k + 1):
+            result = result * (n - k + i) // i
+        return result
+
+    def arrangements(n: int, k: int) -> int:
+        result = 1
+        for i in range(n - k + 1, n + 1):
+            result *= i
+        return result
+
+    c = comb(n_items, k)
+    a = arrangements(n_items, k)
+    return [c, a, 2 ** n_items, a // c]
+
+print(analyze_selection(10, 2))
+`,
+    hints: [
+      {
+        ru: '`A // C` всегда даёт `k!`: 90 // 45 = 2 для k = 2, 336 // 56 = 6 для k = 3.',
+        en: '`A // C` always equals `k!`: 90 // 45 = 2 for k = 2, and 336 // 56 = 6 for k = 3.',
+      },
+      {
+        ru: 'Для k = n сочетание равно 1: все элементы входят в набор, а порядков у них n!.',
+        en: 'For k = n the combination equals 1: all elements are in the set, and they have n! orders.',
+      },
+    ],
+    testCases: [
+      {
+        name: { ru: '2 признака из 10 -> [45, 90, 1024, 2]', en: 'Test 1: 2 features out of 10' },
+        testCode: 'print(analyze_selection(10, 2))',
+        expectedOutput: '[45, 90, 1024, 2]',
+      },
+      {
+        name: { ru: '3 модели из 8 -> [56, 336, 256, 6]', en: 'Test 2: 3 models out of 8' },
+        testCode: 'print(analyze_selection(8, 3))',
+        expectedOutput: '[56, 336, 256, 6]',
+      },
+      {
+        name: { ru: 'все 5 элементов -> [1, 120, 32, 120]', en: 'Test 3: all 5 elements selected' },
+        testCode: 'print(analyze_selection(5, 5))',
+        expectedOutput: '[1, 120, 32, 120]',
+      },
+    ],
+  },
+
+  'comb-2-sampling': {
+    id: 'pr-comb-2',
+    taskType: 'write_function',
+    taskMode: 'interactive_ide',
+    language: 'python',
+    progressKey: 'comb-2-sampling::validation',
+    title: {
+      ru: 'Bootstrap OOB и K-Fold: планировщик валидации',
+      en: 'Bootstrap OOB and K-Fold: Validation Planner',
+    },
+    description: {
+      ru: `Реализуйте функцию \`sampling_report(n_samples: int, k_folds: int) -> list\`, которая считает параметры валидации без запуска модели.
+
+Верните список \`[oob_share, unique_share, fold_sizes, max_gap]\`:
+1. \`oob_share\` — ожидаемая доля объектов вне бутстрэп-выборки: $\\left(1 - \\frac{1}{N}\\right)^N$, округлите до 4 знаков.
+2. \`unique_share\` — доля уникальных объектов: \`1 - oob_share\`, округлите до 4 знаков.
+3. \`fold_sizes\` — размеры фолдов при делении \`n_samples\` на \`k_folds\` (сначала фолды на один объект больше, затем меньшие).
+4. \`max_gap\` — разница между самым большим и самым маленьким фолдом.
+
+**Пример.** \`sampling_report(23, 5)\` → \`[0.3597, 0.6403, [5, 5, 5, 4, 4], 1]\`:
+- $\\left(1 - \\frac{1}{23}\\right)^{23} \\approx 0.3597$, то есть около 36% объектов остаются OOB;
+- 23 объекта на 5 фолдов делятся как 5, 5, 5, 4, 4;
+- максимальный разброс размеров — 1 объект.
+
+Обратите внимание, как быстро доля OOB сходится к $1/e \\approx 0.3677$: при $N = 10$ это 0.3487, а при $N = 1000$ — уже 0.3677.`,
+      en: `Implement \`sampling_report(n_samples: int, k_folds: int) -> list\`, which computes validation parameters without training a model.
+
+Return the list \`[oob_share, unique_share, fold_sizes, max_gap]\`:
+1. \`oob_share\` — expected share of objects left out of a bootstrap sample: $\\left(1 - \\frac{1}{N}\\right)^N$, rounded to 4 decimals.
+2. \`unique_share\` — share of unique objects: \`1 - oob_share\`, rounded to 4 decimals.
+3. \`fold_sizes\` — fold sizes when splitting \`n_samples\` into \`k_folds\` (larger folds first, then smaller ones).
+4. \`max_gap\` — difference between the largest and the smallest fold.
+
+**Example.** \`sampling_report(23, 5)\` → \`[0.3597, 0.6403, [5, 5, 5, 4, 4], 1]\`:
+- $\\left(1 - \\frac{1}{23}\\right)^{23} \\approx 0.3597$, so about 36% of objects stay OOB;
+- 23 objects split into 5 folds as 5, 5, 5, 4, 4;
+- the largest size gap is 1 object.
+
+Notice how quickly the OOB share converges to $1/e \\approx 0.3677$: at $N = 10$ it is 0.3487, while at $N = 1000$ it is already 0.3677.`,
+    },
+    starterCode: `def sampling_report(n_samples: int, k_folds: int) -> list:
+    """
+    Возвращает [oob_share, unique_share, fold_sizes, max_gap].
+    """
+    # TODO 1: посчитайте (1 - 1 / n_samples) ** n_samples
+    # TODO 2: разбейте n_samples на k_folds почти равных частей
+    # TODO 3: найдите разницу между максимальным и минимальным фолдом
+    # TODO 4: верните список, округлив доли до 4 знаков
+    pass
+
+# Проверочный запуск:
+print(sampling_report(23, 5))
+`,
+    solutionCode: `def sampling_report(n_samples: int, k_folds: int) -> list:
+    oob = (1.0 - 1.0 / n_samples) ** n_samples
+    unique = 1.0 - oob
+
+    base = n_samples // k_folds
+    extra = n_samples % k_folds
+    folds = [base + 1] * extra + [base] * (k_folds - extra)
+    gap = max(folds) - min(folds)
+
+    return [round(oob, 4), round(unique, 4), folds, gap]
+
+print(sampling_report(23, 5))
+`,
+    hints: [
+      {
+        ru: 'Остаток `n_samples % k_folds` показывает, сколько фолдов получат на один объект больше.',
+        en: '`n_samples % k_folds` is the number of folds that receive one extra object.',
+      },
+      {
+        ru: 'При больших N выражение `(1 - 1/N) ** N` стремится к 1/e ≈ 0.3677, поэтому OOB-доля почти не меняется после N = 1000.',
+        en: 'For large N the expression `(1 - 1/N) ** N` tends to 1/e ≈ 0.3677, so the OOB share barely changes after N = 1000.',
+      },
+    ],
+    testCases: [
+      {
+        name: { ru: '10 объектов, 3 фолда -> [0.3487, 0.6513, [4, 3, 3], 1]', en: 'Test 1: 10 objects, 3 folds' },
+        testCode: 'print(sampling_report(10, 3))',
+        expectedOutput: '[0.3487, 0.6513, [4, 3, 3], 1]',
+      },
+      {
+        name: { ru: '1000 объектов, 5 фолдов -> [0.3677, 0.6323, [200, 200, 200, 200, 200], 0]', en: 'Test 2: 1000 objects, 5 folds' },
+        testCode: 'print(sampling_report(1000, 5))',
+        expectedOutput: '[0.3677, 0.6323, [200, 200, 200, 200, 200], 0]',
+      },
+    ],
+  },
+
+  'comb-3-discrete-distr': {
+    id: 'pr-comb-3',
+    taskType: 'write_function',
+    taskMode: 'interactive_ide',
+    language: 'python',
+    progressKey: 'comb-3-discrete-distr::binomial',
+    title: {
+      ru: 'Биномиальное и полиномиальное распределения для классификатора',
+      en: 'Binomial and Multinomial Probabilities for a Classifier',
+    },
+    description: {
+      ru: `Реализуйте две функции.
+
+**1. \`binomial_report(n: int, p: float, k: int) -> list\`** — сводка по биномиальному распределению $B(n, p)$:
+- $P(X = k) = C_n^k\\, p^k (1-p)^{n-k}$;
+- $P(X \\ge k) = \\sum_{i=k}^{n} C_n^i\\, p^i (1-p)^{n-i}$;
+- $\\mathbb{E}[X] = np$;
+- $\\text{Var}(X) = np(1-p)$.
+
+Верните \`[P(X=k), P(X>=k), E[X], Var(X)]\`, округлив каждое значение до 6 знаков.
+
+**2. \`multinomial_report(counts: list, probs: list) -> float\`** — вероятность конкретного вектора счётчиков:
+$$P(k_1, \\dots, k_m) = \\frac{n!}{k_1! \\cdots k_m!} \\prod_{i=1}^{m} p_i^{k_i}$$
+где $n = \\sum k_i$. Округлите результат до 6 знаков.
+
+**Примеры.**
+- \`binomial_report(10, 0.5, 5)\` → \`[0.246094, 0.623047, 5.0, 2.5]\`;
+- \`multinomial_report([5, 3, 2], [0.5, 0.3, 0.2])\` → \`0.08505\`.
+
+**Подсказка по реализации.** $C_n^k$ можно считать через \`math.factorial\` или мультипликативно. Для мультиномиального коэффициента перемножайте сочетания по классам, уменьшая остаток: $C_n^{k_1} \\cdot C_{n-k_1}^{k_2} \\cdots$ — так промежуточные числа остаются небольшими.`,
+      en: `Implement two functions.
+
+**1. \`binomial_report(n: int, p: float, k: int) -> list\`** — a summary of the binomial distribution $B(n, p)$:
+- $P(X = k) = C_n^k\\, p^k (1-p)^{n-k}$;
+- $P(X \\ge k) = \\sum_{i=k}^{n} C_n^i\\, p^i (1-p)^{n-i}$;
+- $\\mathbb{E}[X] = np$;
+- $\\text{Var}(X) = np(1-p)$.
+
+Return \`[P(X=k), P(X>=k), E[X], Var(X)]\`, rounding every value to 6 decimals.
+
+**2. \`multinomial_report(counts: list, probs: list) -> float\`** — the probability of a specific count vector:
+$$P(k_1, \\dots, k_m) = \\frac{n!}{k_1! \\cdots k_m!} \\prod_{i=1}^{m} p_i^{k_i}$$
+where $n = \\sum k_i$. Round the result to 6 decimals.
+
+**Examples.**
+- \`binomial_report(10, 0.5, 5)\` → \`[0.246094, 0.623047, 5.0, 2.5]\`;
+- \`multinomial_report([5, 3, 2], [0.5, 0.3, 0.2])\` → \`0.08505\`.
+
+**Implementation hint.** Compute $C_n^k$ with \`math.factorial\` or multiplicatively. For the multinomial coefficient, multiply combinations class by class while shrinking the remainder: $C_n^{k_1} \\cdot C_{n-k_1}^{k_2} \\cdots$ keeps intermediate values small.`,
+    },
+    starterCode: `import math
+
+def binomial_report(n: int, p: float, k: int) -> list:
+    """
+    Возвращает [P(X=k), P(X>=k), E[X], Var(X)], округлённые до 6 знаков.
+    """
+    # TODO 1: посчитайте P(X = k)
+    # TODO 2: просуммируйте P(X = i) для i от k до n
+    # TODO 3: добавьте E[X] = n*p и Var(X) = n*p*(1-p)
+    pass
+
+def multinomial_report(counts: list, probs: list) -> float:
+    """
+    Возвращает вероятность вектора counts, округлённую до 6 знаков.
+    """
+    # TODO: соберите мультиномиальный коэффициент и произведение вероятностей
+    pass
+
+# Проверочный запуск:
+print(binomial_report(10, 0.5, 5))
+print(multinomial_report([5, 3, 2], [0.5, 0.3, 0.2]))
+`,
+    solutionCode: `import math
+
+def _comb(n: int, k: int) -> int:
+    if k < 0 or k > n:
+        return 0
+    return math.factorial(n) // (math.factorial(k) * math.factorial(n - k))
+
+def binomial_report(n: int, p: float, k: int) -> list:
+    pmf = _comb(n, k) * (p ** k) * ((1 - p) ** (n - k))
+    tail = 0.0
+    for i in range(k, n + 1):
+        tail += _comb(n, i) * (p ** i) * ((1 - p) ** (n - i))
+    return [
+        round(pmf, 6),
+        round(tail, 6),
+        round(n * p, 6),
+        round(n * p * (1 - p), 6),
+    ]
+
+def multinomial_report(counts: list, probs: list) -> float:
+    n = sum(counts)
+    coef = 1
+    remaining = n
+    for c in counts:
+        coef *= _comb(remaining, c)
+        remaining -= c
+    prob = float(coef)
+    for c, pi in zip(counts, probs):
+        prob *= pi ** c
+    return round(prob, 6)
+
+print(binomial_report(10, 0.5, 5))
+print(multinomial_report([5, 3, 2], [0.5, 0.3, 0.2]))
+`,
+    hints: [
+      {
+        ru: 'Для k = 0 хвостовая вероятность P(X >= 0) равна 1.0: это удобный крайний случай для проверки.',
+        en: 'For k = 0 the tail probability P(X >= 0) equals 1.0, a handy edge case for checking.',
+      },
+      {
+        ru: 'Коэффициент C_n^k обязателен: без него вы получите вероятность одной конкретной последовательности, а не всех последовательностей с k успехами.',
+        en: 'The coefficient C_n^k is essential: without it you get one specific sequence instead of all sequences with k successes.',
+      },
+    ],
+    testCases: [
+      {
+        name: { ru: 'B(10, 0.5), ровно и хотя бы 5 успехов', en: 'Test 1: B(10, 0.5), exactly and at least 5 successes' },
+        testCode: 'print(binomial_report(10, 0.5, 5))',
+        expectedOutput: '[0.246094, 0.623047, 5.0, 2.5]',
+      },
+      {
+        name: { ru: 'B(20, 0.8), ровно и хотя бы 16 успехов', en: 'Test 2: B(20, 0.8), exactly and at least 16 successes' },
+        testCode: 'print(binomial_report(20, 0.8, 16))',
+        expectedOutput: '[0.218199, 0.629648, 16.0, 3.2]',
+      },
+      {
+        name: { ru: 'мультиномиальное распределение [5, 3, 2]', en: 'Test 3: multinomial counts [5, 3, 2]' },
+        testCode: 'print(multinomial_report([5, 3, 2], [0.5, 0.3, 0.2]))',
+        expectedOutput: '0.08505',
+      },
+    ],
+  },
+
+  // ==========================================
   // MODULE: PyTorch & Deep Learning (Hands-on Local / Colab Projects)
   // ==========================================
   'pt-3-nn-module': {
