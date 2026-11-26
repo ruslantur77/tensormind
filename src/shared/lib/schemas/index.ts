@@ -73,6 +73,9 @@ export const LessonPracticeTaskSchema = z.object({
   steps: z.array(LocalizedStringSchema).optional(),
   targetBenchmark: LocalizedStringSchema.optional(),
   colabSnippet: z.string().optional(),
+  // Optional storage key override, used when a task replaces an older one and
+  // must not inherit its completion/code state.
+  progressKey: z.string().optional(),
 });
 
 export type LessonPracticeTask = z.infer<typeof LessonPracticeTaskSchema>;

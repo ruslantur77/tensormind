@@ -701,6 +701,7 @@ HR | 85000 | 2`,
     id: 'pr-eda-7-powerbi',
     taskType: 'data_pipeline',
     taskMode: 'local_project',
+    progressKey: 'eda-7-bi-excel-analytics::powerbi',
     title: {
       ru: 'Практический проект: интерактивный дашборд «Звезда» в Power BI для retail-продаж',
       en: 'Hands-on Project: Power BI Star-Schema Retail Dashboard',

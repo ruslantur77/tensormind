@@ -83,7 +83,7 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
   taskKey,
 }) => {
   const practiceTask = task ?? getLessonPracticeTask(lesson, lang);
-  const progressKey = taskKey ?? lesson.id;
+  const progressKey = taskKey ?? practiceTask.progressKey ?? lesson.id;
   const taskTitle = getLocalized(practiceTask.title, lang);
   const isLocalProject = practiceTask.taskMode === 'local_project';
 
