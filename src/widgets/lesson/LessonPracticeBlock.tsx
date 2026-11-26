@@ -506,13 +506,18 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
       lesson.moduleId.includes('ai-assisted') ||
       lesson.moduleId.includes('agent');
     const isMlopsTask = Boolean(practiceTask.id?.includes('mlops')) || lesson.moduleId.includes('mlops');
+    const isBiTask =
+      Boolean(practiceTask.id?.includes('powerbi')) || lesson.id.includes('bi-excel');
     const isDataTask =
       Boolean(practiceTask.id?.includes('polars')) ||
       Boolean(practiceTask.id?.includes('eda')) ||
       lesson.moduleId.includes('data-wrangling');
+    const hasCode = Boolean(practiceTask.solutionCode.trim());
 
     const projectBadgeText = isAgentTask
       ? (lang === 'en' ? 'CLI Agent / Terminal' : 'Терминал & CLI-агент')
+      : isBiTask
+      ? 'Power BI / DAX'
       : isMlopsTask
       ? (lang === 'en' ? 'MLOps / Infra' : 'MLOps & Инфраструктура')
       : isDataTask
@@ -523,6 +528,10 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
       ? (lang === 'en'
           ? 'Requires terminal / CLI tools. Run with OpenCode / Aider or in Python'
           : 'Реализуйте в локальном терминале (OpenCode / Aider) или Python-скриптом')
+      : isBiTask
+      ? (lang === 'en'
+          ? 'Requires Power BI Desktop. Build the star schema and dashboard locally'
+          : 'Требует Power BI Desktop. Соберите модель «Звезда» и дашборд локально')
       : isMlopsTask
       ? (lang === 'en'
           ? 'Requires Docker / production runtime. Run locally or in cloud'
@@ -550,7 +559,11 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
               <div className="min-w-0">
                 <div className="flex items-center gap-2 flex-wrap">
                   <h3 className="text-sm sm:text-base font-bold text-slate-900 dark:text-white tracking-tight">
-                    {lang === 'en'
+                    {isBiTask
+                      ? lang === 'en'
+                        ? 'Hands-on Project: Power BI Dashboard'
+                        : 'Практический проект: BI-дашборд в Power BI'
+                      : lang === 'en'
                       ? 'Hands-on Project (Local / Google Colab)'
                       : 'Практический проект: Локальный запуск / Google Colab'}
                   </h3>
@@ -602,6 +615,17 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                   {getLocalized(practiceTask.datasetInfo.description, lang)}
                 </p>
               )}
+              {practiceTask.datasetInfo.url && (
+                <a
+                  href={practiceTask.datasetInfo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 pl-5 text-indigo-400 hover:text-indigo-300 font-semibold transition"
+                >
+                  <Download className="w-3 h-3" />
+                  <span>{lang === 'en' ? 'Open dataset' : 'Открыть датасет'}</span>
+                </a>
+              )}
             </div>
           )}
 
@@ -634,70 +658,72 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
           )}
 
           {/* Ready-to-Run Colab / Jupyter Code Section */}
-          <div className="rounded-xl border border-slate-700/60 bg-[#121316] overflow-hidden text-xs">
-            <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-white/10 bg-white/[0.03]">
-              <span className="font-mono text-slate-400 flex items-center gap-2">
-                <Code2 className="w-4 h-4 text-sky-400" />
-                <span>
-                  {isAgentTask
-                    ? lang === 'en'
-                      ? 'CLI Automation Script & Verification'
-                      : 'Скрипт автоматизации / Запуск в терминале'
-                    : lang === 'en'
-                    ? 'Colab / Jupyter Notebook Script'
-                    : 'Готовый скрипт для Colab / Jupyter'}
+          {hasCode && (
+            <div className="rounded-xl border border-slate-700/60 bg-[#121316] overflow-hidden text-xs">
+              <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-white/10 bg-white/[0.03]">
+                <span className="font-mono text-slate-400 flex items-center gap-2">
+                  <Code2 className="w-4 h-4 text-sky-400" />
+                  <span>
+                    {isAgentTask
+                      ? lang === 'en'
+                        ? 'CLI Automation Script & Verification'
+                        : 'Скрипт автоматизации / Запуск в терминале'
+                      : lang === 'en'
+                      ? 'Colab / Jupyter Notebook Script'
+                      : 'Готовый скрипт для Colab / Jupyter'}
+                  </span>
                 </span>
-              </span>
 
-              <div className="flex items-center gap-2">
-                {!isAgentTask && (
-                  <a
-                    href="https://colab.research.google.com/#create=true"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-100 font-semibold transition flex items-center gap-1.5"
-                  >
-                    <ExternalLink className="w-3.5 h-3.5" />
-                    <span>{lang === 'en' ? 'Open Colab' : 'Открыть Colab'}</span>
-                  </a>
-                )}
-                <button
-                  type="button"
-                  onClick={handleCopyColabCode}
-                  className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-indigo-500/20"
-                >
-                  {copiedColab ? (
-                    <>
-                      <Check className="w-3.5 h-3.5 text-emerald-300" />
-                      <span>{lang === 'en' ? 'Copied to Clipboard!' : 'Скопировано в буфер!'}</span>
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-3.5 h-3.5" />
-                      <span>
-                        {isAgentTask
-                          ? lang === 'en'
-                            ? 'Copy Script'
-                            : 'Скопировать код'
-                          : lang === 'en'
-                          ? 'Copy Script to Colab'
-                          : 'Скопировать код для Colab'}
-                      </span>
-                    </>
+                <div className="flex items-center gap-2">
+                  {!isAgentTask && (
+                    <a
+                      href="https://colab.research.google.com/#create=true"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-slate-100 font-semibold transition flex items-center gap-1.5"
+                    >
+                      <ExternalLink className="w-3.5 h-3.5" />
+                      <span>{lang === 'en' ? 'Open Colab' : 'Открыть Colab'}</span>
+                    </a>
                   )}
-                </button>
+                  <button
+                    type="button"
+                    onClick={handleCopyColabCode}
+                    className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white font-semibold transition flex items-center gap-1.5 cursor-pointer shadow-md shadow-indigo-500/20"
+                  >
+                    {copiedColab ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-300" />
+                        <span>{lang === 'en' ? 'Copied to Clipboard!' : 'Скопировано в буфер!'}</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5" />
+                        <span>
+                          {isAgentTask
+                            ? lang === 'en'
+                              ? 'Copy Script'
+                              : 'Скопировать код'
+                            : lang === 'en'
+                            ? 'Copy Script to Colab'
+                            : 'Скопировать код для Colab'}
+                        </span>
+                      </>
+                    )}
+                  </button>
+                </div>
               </div>
-            </div>
 
-            <pre className="p-4 bg-black/40 text-slate-200 font-mono text-xs overflow-x-auto leading-relaxed border-t border-white/5 max-h-[380px]">
-              <code
-                className={`language-${isSql ? 'sql' : 'python'}`}
-                dangerouslySetInnerHTML={{
-                  __html: highlightSource(practiceTask.solutionCode, isSql ? 'sql' : 'python'),
-                }}
-              />
-            </pre>
-          </div>
+              <pre className="p-4 bg-black/40 text-slate-200 font-mono text-xs overflow-x-auto leading-relaxed border-t border-white/5 max-h-[380px]">
+                <code
+                  className={`language-${isSql ? 'sql' : 'python'}`}
+                  dangerouslySetInnerHTML={{
+                    __html: highlightSource(practiceTask.solutionCode, isSql ? 'sql' : 'python'),
+                  }}
+                />
+              </pre>
+            </div>
+          )}
 
           {/* Project Completion Action Bar */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-white/10">
@@ -706,6 +732,10 @@ export const LessonPracticeBlock: React.FC<LessonPracticeBlockProps> = ({
                 ? lang === 'en'
                   ? 'Run the CLI agent setup locally in your terminal, verify the benchmark, then confirm completion.'
                   : 'Запустите агента или скрипт в терминале, выполните шаги и подтвердите завершение.'
+                : !hasCode
+                ? lang === 'en'
+                  ? 'Complete the project steps in Power BI Desktop, verify the control totals, then confirm completion.'
+                  : 'Выполните шаги проекта в Power BI Desktop, сверьте контрольные суммы и подтвердите завершение.'
                 : lang === 'en'
                 ? 'Run the code locally or in Google Colab, verify the benchmark, then confirm completion.'
                 : 'Запустите проект локально или в Colab, достигните целевых метрик и подтвердите выполнение.'}

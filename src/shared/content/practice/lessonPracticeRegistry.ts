@@ -697,6 +697,86 @@ HR | 85000 | 2`,
     ],
   },
 
+  'eda-7-bi-excel-analytics': {
+    id: 'pr-eda-7-powerbi',
+    taskType: 'data_pipeline',
+    taskMode: 'local_project',
+    title: {
+      ru: 'Практический проект: интерактивный дашборд «Звезда» в Power BI для retail-продаж',
+      en: 'Hands-on Project: Power BI Star-Schema Retail Dashboard',
+    },
+    description: {
+      ru: `Соберите end-to-end BI-отчёт в **Power BI Desktop** для сети розничных продаж за 2024–2025 годы. Код не нужен: вы работаете с готовыми CSV-файлами и строите аналитическую модель.
+
+**Что нужно сделать:**
+- загрузить 4 таблицы и собрать схему **«Звезда»**: \`Fact_Sales\` в центре, \`Dim_Customers\`, \`Dim_Products\` и \`Dim_Date\` вокруг;
+- настроить связи **1 : Many** от измерений к таблице фактов с направлением фильтра **Single**;
+- создать меры DAX: \`Total Revenue\`, \`Total Orders\`, \`AOV\`, \`Revenue LY\` и \`YoY %\`;
+- собрать дашборд: KPI-карточки, динамику выручки по месяцам, выручку по категориям, матрицу Segment × Year и срезы по году, сегменту и стране;
+- сверить итоговую выручку с контрольным значением из блока «Датасет и окружение».
+
+В результате останется файл \`retail_star_dashboard.pbix\`, который можно добавить в портфолио.`,
+      en: `Build an end-to-end BI report in **Power BI Desktop** for a retail chain covering 2024–2025. No coding required: you work with ready-made CSV files and an analytical model.
+
+**What to do:**
+- load 4 tables and assemble a **star schema**: \`Fact_Sales\` in the center with \`Dim_Customers\`, \`Dim_Products\`, and \`Dim_Date\` around it;
+- configure **1 : Many** relationships from dimensions to the fact table with **Single** filter direction;
+- create DAX measures: \`Total Revenue\`, \`Total Orders\`, \`AOV\`, \`Revenue LY\`, and \`YoY %\`;
+- build the dashboard: KPI cards, monthly revenue trend, revenue by category, a Segment × Year matrix, and slicers for year, segment, and country;
+- reconcile total revenue against the control value in the "Dataset & Environment" block.
+
+The result is a \`retail_star_dashboard.pbix\` file you can add to your portfolio.`,
+    },
+    datasetInfo: {
+      name: 'Retail Star Schema (4 CSV, 2024–2025)',
+      url: '/datasets/bi-retail-star-schema.zip',
+      description: {
+        ru: 'Архив с 4 CSV: Fact_Sales (318 заказов), Dim_Customers (20 клиентов), Dim_Products (10 товаров), Dim_Date (731 день) + README. Контроль: Total Revenue = $135 704.55, YoY 2025 vs 2024 = +18.91%.',
+        en: 'Archive with 4 CSV files: Fact_Sales (318 orders), Dim_Customers (20 customers), Dim_Products (10 products), Dim_Date (731 days) + README. Control: Total Revenue = $135,704.55, YoY 2025 vs 2024 = +18.91%.',
+      },
+    },
+    steps: [
+      {
+        ru: 'Установите бесплатный Power BI Desktop (Windows): powerbi.microsoft.com/desktop. Скачайте архив с датасетом из блока «Датасет и окружение» и распакуйте его.',
+        en: 'Install free Power BI Desktop (Windows): powerbi.microsoft.com/desktop. Download the dataset archive from the "Dataset & Environment" block and extract it.',
+      },
+      {
+        ru: 'Загрузите 4 CSV через Get Data → Text/CSV: Fact_Sales, Dim_Customers, Dim_Products, Dim_Date. Убедитесь, что OrderDate и Date распознаны как Date, а Revenue, Discount и UnitPrice — как Decimal Number.',
+        en: 'Load the 4 CSV files via Get Data → Text/CSV: Fact_Sales, Dim_Customers, Dim_Products, Dim_Date. Make sure OrderDate and Date are typed as Date, while Revenue, Discount, and UnitPrice are Decimal Number.',
+      },
+      {
+        ru: 'В Model view создайте связи 1:Many: Dim_Customers[CustomerID] → Fact_Sales[CustomerID], Dim_Products[ProductID] → Fact_Sales[ProductID], Dim_Date[Date] → Fact_Sales[OrderDate]. Оставьте Single direction.',
+        en: 'In Model view, create 1:Many relationships: Dim_Customers[CustomerID] → Fact_Sales[CustomerID], Dim_Products[ProductID] → Fact_Sales[ProductID], Dim_Date[Date] → Fact_Sales[OrderDate]. Keep the filter direction Single.',
+      },
+      {
+        ru: 'Отметьте Dim_Date как таблицу дат (Table tools → Mark as date table) и скройте технические ключи из Report view.',
+        en: 'Mark Dim_Date as the date table (Table tools → Mark as date table) and hide technical keys from Report view.',
+      },
+      {
+        ru: 'Создайте меры DAX: Total Revenue = SUM(Fact_Sales[Revenue]); Total Orders = DISTINCTCOUNT(Fact_Sales[OrderID]); AOV = DIVIDE([Total Revenue], [Total Orders]); Revenue LY = CALCULATE([Total Revenue], SAMEPERIODLASTYEAR(Dim_Date[Date])); YoY % = DIVIDE([Total Revenue] - [Revenue LY], [Revenue LY]).',
+        en: 'Create DAX measures: Total Revenue = SUM(Fact_Sales[Revenue]); Total Orders = DISTINCTCOUNT(Fact_Sales[OrderID]); AOV = DIVIDE([Total Revenue], [Total Orders]); Revenue LY = CALCULATE([Total Revenue], SAMEPERIODLASTYEAR(Dim_Date[Date])); YoY % = DIVIDE([Total Revenue] - [Revenue LY], [Revenue LY]).',
+      },
+      {
+        ru: 'Соберите страницу отчёта: 3 KPI-карточки (Total Revenue, AOV, YoY %), line chart выручки по месяцам с легендой по годам, bar chart по Dim_Products[Category] и матрицу Segment × Year.',
+        en: 'Build the report page: 3 KPI cards (Total Revenue, AOV, YoY %), a monthly revenue line chart with a year legend, a bar chart by Dim_Products[Category], and a Segment × Year matrix.',
+      },
+      {
+        ru: 'Добавьте срезы по Dim_Date[Year], Dim_Customers[Segment] и Dim_Customers[Country]; проверьте, что KPI и графики корректно пересчитываются.',
+        en: 'Add slicers for Dim_Date[Year], Dim_Customers[Segment], and Dim_Customers[Country]; verify that KPIs and charts recalculate correctly.',
+      },
+      {
+        ru: 'Сверьте Total Revenue и YoY % с контрольными значениями, сохраните отчёт как retail_star_dashboard.pbix и отметьте проект выполненным.',
+        en: 'Reconcile Total Revenue and YoY % against the control values, save the report as retail_star_dashboard.pbix, and mark the project completed.',
+      },
+    ],
+    targetBenchmark: {
+      ru: '🎯 Чек-лист: 4 таблицы, 5 мер DAX, минимум 6 визуалов и 3 среза. Контроль: Total Revenue = $135 704.55; YoY 2025 vs 2024 = +18.91%.',
+      en: '🎯 Checklist: 4 tables, 5 DAX measures, at least 6 visuals, and 3 slicers. Control: Total Revenue = $135,704.55; YoY 2025 vs 2024 = +18.91%.',
+    },
+    starterCode: '',
+    solutionCode: '',
+  },
+
   // ==========================================
   // MODULE: PyTorch & Deep Learning (Hands-on Local / Colab Projects)
   // ==========================================
