@@ -46,6 +46,9 @@ export default defineConfig(() => {
         workbox: {
           globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
           maximumFileSizeToCacheInBytes: 10 * 1024 * 1024,
+          // Never answer a navigation request for a downloadable asset with the
+          // SPA shell (index.html); /datasets/* must reach the network intact.
+          navigateFallbackDenylist: [/^\/datasets\//],
         },
         devOptions: {
           enabled: true,

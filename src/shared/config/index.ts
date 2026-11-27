@@ -3,7 +3,7 @@
  */
 
 export const APP_NAME = 'TensorMind';
-export const APP_VERSION = '1.2.13';
+export const APP_VERSION = '1.3.0';
 export const GITHUB_URL = 'https://github.com/ruslantur77/tensormind';
 export const SCHEMA_VERSION = 1;
 export const CONTENT_VERSION = '1.0.0';

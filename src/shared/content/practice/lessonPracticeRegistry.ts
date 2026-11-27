@@ -1115,6 +1115,699 @@ print(multinomial_report([5, 3, 2], [0.5, 0.3, 0.2]))
   },
 
   // ==========================================
+  // MODULE: ML Foundations & Probabilistic Methods (Interactive IDE)
+  // ==========================================
+  'prob-logreg': {
+    id: 'pr-prob-logreg',
+    taskType: 'write_function',
+    taskMode: 'interactive_ide',
+    language: 'python',
+    progressKey: 'prob-logreg::sigmoid-logloss',
+    title: {
+      ru: 'Сигмоида, Log-Loss и один шаг градиентного спуска',
+      en: 'Sigmoid, Log-Loss and One Gradient Descent Step',
+    },
+    description: {
+      ru: `Реализуйте три функции логистической регрессии.
+
+**1. \`sigmoid(z: float) -> float\`** — логистическая функция:
+$$\\sigma(z) = \\frac{1}{1 + e^{-z}}$$
+
+**2. \`log_loss(y_true: list[int], probs: list[float]) -> float\`** — средняя бинарная кросс-энтропия:
+$$\\mathcal{L} = -\\frac{1}{N} \\sum_{i=1}^{N} \\Big[ y_i \\ln p_i + (1 - y_i) \\ln(1 - p_i) \\Big]$$
+Чтобы избежать $\\ln 0$, ограничьте каждую вероятность отрезком $[10^{-12}, 1 - 10^{-12}]$. Верните значение, округлённое до 6 знаков.
+
+**3. \`gradient_step(x: list[float], y: int, w: list[float], b: float, lr: float) -> list\`** — один шаг градиентного спуска по Log-Loss. Для $z = \\langle w, x \\rangle + b$ и $p = \\sigma(z)$:
+$$\\frac{\\partial \\mathcal{L}}{\\partial w_j} = (p - y)\\, x_j, \\qquad \\frac{\\partial \\mathcal{L}}{\\partial b} = p - y$$
+Обновите параметры по формулам $w_j \\leftarrow w_j - \\eta (p - y) x_j$ и $b \\leftarrow b - \\eta (p - y)$. Верните \`[new_w, new_b]\`, округлив каждое число до 6 знаков.
+
+**Примеры.**
+- \`sigmoid(0.0)\` → \`0.5\`;
+- \`log_loss([1, 0], [0.9, 0.2])\` → \`0.164252\`;
+- \`gradient_step([1.0, 2.0], 1, [0.0, 0.0], 0.0, 0.5)\` → \`[[0.25, 0.5], 0.25]\`.`,
+      en: `Implement three logistic regression functions.
+
+**1. \`sigmoid(z: float) -> float\`** — the logistic function:
+$$\\sigma(z) = \\frac{1}{1 + e^{-z}}$$
+
+**2. \`log_loss(y_true: list[int], probs: list[float]) -> float\`** — mean binary cross-entropy:
+$$\\mathcal{L} = -\\frac{1}{N} \\sum_{i=1}^{N} \\Big[ y_i \\ln p_i + (1 - y_i) \\ln(1 - p_i) \\Big]$$
+To avoid $\\ln 0$, clamp every probability to $[10^{-12}, 1 - 10^{-12}]$. Return the value rounded to 6 decimals.
+
+**3. \`gradient_step(x: list[float], y: int, w: list[float], b: float, lr: float) -> list\`** — one gradient descent step on Log-Loss. For $z = \\langle w, x \\rangle + b$ and $p = \\sigma(z)$:
+$$\\frac{\\partial \\mathcal{L}}{\\partial w_j} = (p - y)\\, x_j, \\qquad \\frac{\\partial \\mathcal{L}}{\\partial b} = p - y$$
+Update $w_j \\leftarrow w_j - \\eta (p - y) x_j$ and $b \\leftarrow b - \\eta (p - y)$. Return \`[new_w, new_b]\` with every number rounded to 6 decimals.
+
+**Examples.**
+- \`sigmoid(0.0)\` → \`0.5\`;
+- \`log_loss([1, 0], [0.9, 0.2])\` → \`0.164252\`;
+- \`gradient_step([1.0, 2.0], 1, [0.0, 0.0], 0.0, 0.5)\` → \`[[0.25, 0.5], 0.25]\`.`,
+    },
+    starterCode: `import math
+
+def sigmoid(z: float) -> float:
+    """Возвращает сигмоиду sigma(z)."""
+    # TODO: 1 / (1 + exp(-z))
+    pass
+
+def log_loss(y_true: list[int], probs: list[float]) -> float:
+    """Средняя бинарная кросс-энтропия, округлённая до 6 знаков."""
+    # TODO: ограничьте вероятности и просуммируйте штрафы
+    pass
+
+def gradient_step(x: list[float], y: int, w: list[float], b: float, lr: float) -> list:
+    """Один шаг градиентного спуска. Возвращает [new_w, new_b]."""
+    # TODO: посчитайте z, p = sigmoid(z), ошибку p - y и обновите параметры
+    pass
+
+# Проверочный запуск:
+print(sigmoid(0.0))
+print(log_loss([1, 0, 1], [0.9, 0.2, 0.8]))
+print(gradient_step([1.0, 2.0], 1, [0.0, 0.0], 0.0, 0.5))
+`,
+    solutionCode: `import math
+
+def sigmoid(z: float) -> float:
+    return 1.0 / (1.0 + math.exp(-z))
+
+def log_loss(y_true: list[int], probs: list[float]) -> float:
+    eps = 1e-12
+    total = 0.0
+    for y, p in zip(y_true, probs):
+        p = min(max(p, eps), 1.0 - eps)
+        total += y * math.log(p) + (1 - y) * math.log(1.0 - p)
+    return round(-total / len(y_true), 6)
+
+def gradient_step(x: list[float], y: int, w: list[float], b: float, lr: float) -> list:
+    z = sum(wi * xi for wi, xi in zip(w, x)) + b
+    p = sigmoid(z)
+    err = p - y
+    new_w = [round(wi - lr * err * xi, 6) for wi, xi in zip(w, x)]
+    new_b = round(b - lr * err, 6)
+    return [new_w, new_b]
+
+print(sigmoid(0.0))
+print(log_loss([1, 0, 1], [0.9, 0.2, 0.8]))
+print(gradient_step([1.0, 2.0], 1, [0.0, 0.0], 0.0, 0.5))
+`,
+    hints: [
+      {
+        ru: 'Сигмоида никогда не достигает ровно 0 или 1, поэтому `math.log(p)` безопасен для умеренных значений. Отсечение всё равно нужно: при $p = 1$ и $y = 0$ логарифм уходит в минус бесконечность.',
+        en: 'The sigmoid never reaches exactly 0 or 1, so `math.log(p)` is safe for moderate values. Clamping is still needed: with $p = 1$ and $y = 0$ the logarithm goes to minus infinity.',
+      },
+      {
+        ru: 'В `gradient_step` ошибка равна `p - y`, а не `y - p`: веса должны двигаться в сторону уменьшения потерь. Проверьте знак на объекте с `y = 1` — вероятность должна вырасти.',
+        en: 'In `gradient_step` the error is `p - y`, not `y - p`: weights must move toward lower loss. Check the sign on an object with `y = 1` — its probability should increase.',
+      },
+    ],
+    testCases: [
+      {
+        name: { ru: 'Сигмоида от -2: 0.119203', en: 'Test 1: sigmoid(-2) = 0.119203' },
+        testCode: 'print(sigmoid(-2.0))',
+        expectedOutput: '0.119203',
+      },
+      {
+        name: { ru: 'Средний Log-Loss для трёх объектов: 0.183883', en: 'Test 2: mean Log-Loss over three objects = 0.183883' },
+        testCode: 'print(log_loss([1, 0, 1], [0.9, 0.2, 0.8]))',
+        expectedOutput: '0.183883',
+      },
+      {
+        name: { ru: 'Шаг из нулевых весов: [[0.25, 0.5], 0.25]', en: 'Test 3: step from zero weights' },
+        testCode: 'print(gradient_step([1.0, 2.0], 1, [0.0, 0.0], 0.0, 0.5))',
+        expectedOutput: '[[0.25, 0.5], 0.25]',
+      },
+      {
+        name: { ru: 'Шаг из ненулевых весов: [[0.95, 0.55], -0.55]', en: 'Test 4: step from non-zero weights' },
+        testCode: 'print(gradient_step([1.0, -1.0], 0, [1.0, 0.5], -0.5, 0.1))',
+        expectedOutput: '[[0.95, 0.55], -0.55]',
+      },
+    ],
+  },
+
+  'prob-bayes-naive': {
+    id: 'pr-prob-bayes',
+    taskType: 'write_function',
+    taskMode: 'interactive_ide',
+    language: 'python',
+    progressKey: 'prob-bayes-naive::bayes-nb',
+    title: {
+      ru: 'Формула Байеса, сглаживание Лапласа и наивный байесовский классификатор',
+      en: 'Bayes Theorem, Laplace Smoothing and Naive Bayes',
+    },
+    description: {
+      ru: `Реализуйте три функции байесовского подхода.
+
+**1. \`bayes_update(prior: float, sensitivity: float, specificity: float) -> list\`** — апостериорные вероятности болезни после положительного и отрицательного теста:
+$$P(D \\mid +) = \\frac{\\text{sens} \\cdot P(D)}{\\text{sens} \\cdot P(D) + (1 - \\text{spec}) \\cdot (1 - P(D))}$$
+$$P(D \\mid -) = \\frac{(1 - \\text{sens}) \\cdot P(D)}{(1 - \\text{sens}) \\cdot P(D) + \\text{spec} \\cdot (1 - P(D))}$$
+Верните \`[P(D|+), P(D|-)]\`, округлив до 6 знаков.
+
+**2. \`laplace_probability(count: int, total: int, vocab_size: int) -> float\`** — сглаженная вероятность слова:
+$$\\hat{P}(w) = \\frac{\\text{count} + 1}{\\text{total} + \\text{vocab\\_size}}$$
+Округлите результат до 6 знаков.
+
+**3. \`nb_posteriors(priors: list[float], word_probs: list[list[float]]) -> list\`** — нормализованные апостериорные вероятности классов. Здесь \`word_probs[j][c]\` — вероятность $j$-го слова при классе $c$. Считайте в логарифмическом пространстве:
+$$s_c = \\ln P(y = c) + \\sum_{j} \\ln P(x_j \\mid y = c)$$
+затем примените устойчивый softmax (вычтите максимум из всех $s_c$) и верните вероятности, округлённые до 6 знаков.
+
+**Примеры.**
+- \`bayes_update(0.01, 0.99, 0.95)\` → \`[0.166667, 0.000106]\`;
+- \`laplace_probability(0, 90, 1000)\` → \`0.000917\`;
+- \`nb_posteriors([0.5, 0.5], [[0.8, 0.2], [0.6, 0.3]])\` → \`[0.888889, 0.111111]\`.`,
+      en: `Implement three functions of the Bayesian approach.
+
+**1. \`bayes_update(prior: float, sensitivity: float, specificity: float) -> list\`** — posterior probabilities of a disease after a positive and a negative test:
+$$P(D \\mid +) = \\frac{\\text{sens} \\cdot P(D)}{\\text{sens} \\cdot P(D) + (1 - \\text{spec}) \\cdot (1 - P(D))}$$
+$$P(D \\mid -) = \\frac{(1 - \\text{sens}) \\cdot P(D)}{(1 - \\text{sens}) \\cdot P(D) + \\text{spec} \\cdot (1 - P(D))}$$
+Return \`[P(D|+), P(D|-)]\` rounded to 6 decimals.
+
+**2. \`laplace_probability(count: int, total: int, vocab_size: int) -> float\`** — a smoothed word probability:
+$$\\hat{P}(w) = \\frac{\\text{count} + 1}{\\text{total} + \\text{vocab\\_size}}$$
+Round the result to 6 decimals.
+
+**3. \`nb_posteriors(priors: list[float], word_probs: list[list[float]]) -> list\`** — normalized class posteriors. Here \`word_probs[j][c]\` is the probability of word $j$ given class $c$. Work in log space:
+$$s_c = \\ln P(y = c) + \\sum_{j} \\ln P(x_j \\mid y = c)$$
+then apply a stable softmax (subtract the maximum score) and return the probabilities rounded to 6 decimals.
+
+**Examples.**
+- \`bayes_update(0.01, 0.99, 0.95)\` → \`[0.166667, 0.000106]\`;
+- \`laplace_probability(0, 90, 1000)\` → \`0.000917\`;
+- \`nb_posteriors([0.5, 0.5], [[0.8, 0.2], [0.6, 0.3]])\` → \`[0.888889, 0.111111]\`.`,
+    },
+    starterCode: `import math
+
+def bayes_update(prior: float, sensitivity: float, specificity: float) -> list:
+    """Возвращает [P(D|+), P(D|-)]."""
+    # TODO: посчитайте числители и знаменатели для положительного и отрицательного теста
+    pass
+
+def laplace_probability(count: int, total: int, vocab_size: int) -> float:
+    """Сглаженная вероятность слова."""
+    # TODO: добавьте 1 к счётчику и vocab_size к знаменателю
+    pass
+
+def nb_posteriors(priors: list[float], word_probs: list[list[float]]) -> list:
+    """Нормализованные апостериорные вероятности классов."""
+    # TODO: накопите лог-оценки, вычтите максимум и нормализуйте exp
+    pass
+
+# Проверочный запуск:
+print(bayes_update(0.01, 0.99, 0.95))
+print(laplace_probability(0, 90, 1000))
+print(nb_posteriors([0.5, 0.5], [[0.8, 0.2], [0.6, 0.3]]))
+`,
+    solutionCode: `import math
+
+def bayes_update(prior: float, sensitivity: float, specificity: float) -> list:
+    p_pos = sensitivity * prior
+    p_false_pos = (1.0 - specificity) * (1.0 - prior)
+    post_pos = p_pos / (p_pos + p_false_pos)
+
+    p_miss = (1.0 - sensitivity) * prior
+    p_true_neg = specificity * (1.0 - prior)
+    post_neg = p_miss / (p_miss + p_true_neg)
+
+    return [round(post_pos, 6), round(post_neg, 6)]
+
+def laplace_probability(count: int, total: int, vocab_size: int) -> float:
+    return round((count + 1) / (total + vocab_size), 6)
+
+def nb_posteriors(priors: list[float], word_probs: list[list[float]]) -> list:
+    scores = []
+    for c in range(len(priors)):
+        score = math.log(priors[c])
+        for j in range(len(word_probs)):
+            score += math.log(word_probs[j][c])
+        scores.append(score)
+
+    shift = max(scores)
+    exps = [math.exp(s - shift) for s in scores]
+    total = sum(exps)
+    return [round(e / total, 6) for e in exps]
+
+print(bayes_update(0.01, 0.99, 0.95))
+print(laplace_probability(0, 90, 1000))
+print(nb_posteriors([0.5, 0.5], [[0.8, 0.2], [0.6, 0.3]]))
+`,
+    hints: [
+      {
+        ru: 'При prior = 0.01, sens = 0.99 и spec = 0.95 положительный тест даёт всего $1/6 \\approx 16.7\\%$: ложноположительных результатов намного больше, чем истинных, потому что здоровых людей в 99 раз больше.',
+        en: 'With prior = 0.01, sens = 0.99 and spec = 0.95 a positive test yields only $1/6 \\approx 16.7\\%$: false positives outnumber true positives because healthy people are 99 times more common.',
+      },
+      {
+        ru: 'Вычитание максимума не меняет отношения вероятностей, но спасает от underflow при перемножении десятков маленьких чисел.',
+        en: 'Subtracting the maximum does not change probability ratios but prevents underflow when dozens of small numbers are multiplied together.',
+      },
+    ],
+    testCases: [
+      {
+        name: { ru: 'Редкая болезнь: [0.166667, 0.000106]', en: 'Test 1: rare disease posteriors' },
+        testCode: 'print(bayes_update(0.01, 0.99, 0.95))',
+        expectedOutput: '[0.166667, 0.000106]',
+      },
+      {
+        name: { ru: 'Сглаживание Лапласа для невидимого слова: 0.000917', en: 'Test 2: Laplace smoothing for an unseen word' },
+        testCode: 'print(laplace_probability(0, 90, 1000))',
+        expectedOutput: '0.000917',
+      },
+      {
+        name: { ru: 'Naive Bayes, равные приоры: [0.888889, 0.111111]', en: 'Test 3: Naive Bayes with equal priors' },
+        testCode: 'print(nb_posteriors([0.5, 0.5], [[0.8, 0.2], [0.6, 0.3]]))',
+        expectedOutput: '[0.888889, 0.111111]',
+      },
+      {
+        name: { ru: 'Naive Bayes, дисбаланс приоров: [0.989011, 0.010989]', en: 'Test 4: Naive Bayes with imbalanced priors' },
+        testCode: 'print(nb_posteriors([0.9, 0.1], [[0.5, 0.2], [0.4, 0.1]]))',
+        expectedOutput: '[0.989011, 0.010989]',
+      },
+    ],
+  },
+
+  'prob-fisher': {
+    id: 'pr-prob-fisher',
+    taskType: 'write_function',
+    taskMode: 'interactive_ide',
+    language: 'python',
+    progressKey: 'prob-fisher::lda-direction',
+    title: {
+      ru: 'Линейный дискриминант Фишера: направление проекции и порог',
+      en: 'Fisher Linear Discriminant: Projection Direction and Threshold',
+    },
+    description: {
+      ru: `Реализуйте LDA для двух классов в двумерном пространстве.
+
+\`fisher_lda(class0: list[list[float]], class1: list[list[float]]) -> list\` должна:
+1. Найти центры классов $\\mu_0$ и $\\mu_1$.
+2. Собрать внутриклассовую матрицу рассеяния:
+$$S_W = \\sum_{x \\in C_0} (x - \\mu_0)(x - \\mu_0)^T + \\sum_{x \\in C_1} (x - \\mu_1)(x - \\mu_1)^T$$
+3. Вычислить направление $w \\propto S_W^{-1}(\\mu_1 - \\mu_0)$ и нормировать его до единичной длины.
+4. Зафиксировать знак: $w_0 > 0$; если $w_0 = 0$, то $w_1 > 0$. Без этого одно и то же направление могло бы вернуться с противоположным знаком.
+5. Посчитать порог $t = w \\cdot \\frac{\\mu_0 + \\mu_1}{2}$.
+6. Вернуть \`[w0, w1, t]\`, округлив каждое число до 6 знаков.
+
+Все промежуточные вычисления (нормировку, обращение матрицы, скалярное произведение) выполняйте без округления — округляйте только три финальных значения. Иначе порог может разойтись в шестом знаке.
+
+**Обращение матрицы 2×2.** Для $S = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$:
+$$S^{-1} = \\frac{1}{ad - bc} \\begin{pmatrix} d & -b \\\\ -c & a \\end{pmatrix}$$
+
+**Примеры.**
+- Два квадрата со сдвигом $(4, 4)$ → \`[0.707107, 0.707107, 3.535534]\`;
+- Кластеры с наклонной формой → \`[0.894427, -0.447214, 2.571478]\`.`,
+      en: `Implement LDA for two classes in 2D.
+
+\`fisher_lda(class0: list[list[float]], class1: list[list[float]]) -> list\` must:
+1. Compute the class means $\\mu_0$ and $\\mu_1$.
+2. Build the within-class scatter matrix:
+$$S_W = \\sum_{x \\in C_0} (x - \\mu_0)(x - \\mu_0)^T + \\sum_{x \\in C_1} (x - \\mu_1)(x - \\mu_1)^T$$
+3. Compute the direction $w \\propto S_W^{-1}(\\mu_1 - \\mu_0)$ and normalize it to unit length.
+4. Fix the sign: $w_0 > 0$; if $w_0 = 0$, then $w_1 > 0$. Otherwise the same direction could come back with the opposite sign.
+5. Compute the threshold $t = w \\cdot \\frac{\\mu_0 + \\mu_1}{2}$.
+6. Return \`[w0, w1, t]\` with every number rounded to 6 decimals.
+
+Do all intermediate work (normalization, matrix inversion, dot product) without rounding — round only the three final values. Otherwise the threshold may drift in the sixth decimal.
+
+**2×2 matrix inverse.** For $S = \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix}$:
+$$S^{-1} = \\frac{1}{ad - bc} \\begin{pmatrix} d & -b \\\\ -c & a \\end{pmatrix}$$
+
+**Examples.**
+- Two squares shifted by $(4, 4)$ → \`[0.707107, 0.707107, 3.535534]\`;
+- Clusters with an elongated diagonal shape → \`[0.894427, -0.447214, 2.571478]\`.`,
+    },
+    starterCode: `import math
+
+def mean_point(points: list[list[float]]) -> list[float]:
+    """Центр облака точек."""
+    # TODO: усредните каждую координату
+    pass
+
+def within_scatter(points: list[list[float]], center: list[float]) -> list[list[float]]:
+    """Матрица рассеяния класса 2x2."""
+    # TODO: накопите внешние произведения (x - center)(x - center)^T
+    pass
+
+def fisher_lda(class0: list[list[float]], class1: list[list[float]]) -> list:
+    """Возвращает [w0, w1, threshold]."""
+    # TODO: соберите S_W, обратите её, найдите направление и порог
+    pass
+
+# Проверочный запуск:
+print(fisher_lda(
+    [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [1.0, 1.0]],
+    [[4.0, 4.0], [5.0, 4.0], [4.0, 5.0], [5.0, 5.0]]
+))
+`,
+    solutionCode: `import math
+
+def mean_point(points: list[list[float]]) -> list[float]:
+    dim = len(points[0])
+    return [sum(p[d] for p in points) / len(points) for d in range(dim)]
+
+def within_scatter(points: list[list[float]], center: list[float]) -> list[list[float]]:
+    dim = len(center)
+    matrix = [[0.0] * dim for _ in range(dim)]
+    for p in points:
+        diff = [p[d] - center[d] for d in range(dim)]
+        for i in range(dim):
+            for j in range(dim):
+                matrix[i][j] += diff[i] * diff[j]
+    return matrix
+
+def fisher_lda(class0: list[list[float]], class1: list[list[float]]) -> list:
+    mu0 = mean_point(class0)
+    mu1 = mean_point(class1)
+
+    s0 = within_scatter(class0, mu0)
+    s1 = within_scatter(class1, mu1)
+    sw = [[s0[i][j] + s1[i][j] for j in range(2)] for i in range(2)]
+
+    det = sw[0][0] * sw[1][1] - sw[0][1] * sw[1][0]
+    diff = [mu1[i] - mu0[i] for i in range(2)]
+    inv = [
+        [sw[1][1] / det, -sw[0][1] / det],
+        [-sw[1][0] / det, sw[0][0] / det],
+    ]
+    w = [
+        inv[0][0] * diff[0] + inv[0][1] * diff[1],
+        inv[1][0] * diff[0] + inv[1][1] * diff[1],
+    ]
+
+    norm = math.sqrt(w[0] ** 2 + w[1] ** 2)
+    w = [w[0] / norm, w[1] / norm]
+    if w[0] < 0 or (w[0] == 0 and w[1] < 0):
+        w = [-w[0], -w[1]]
+
+    mid = [(mu0[i] + mu1[i]) / 2.0 for i in range(2)]
+    threshold = w[0] * mid[0] + w[1] * mid[1]
+    return [round(w[0], 6), round(w[1], 6), round(threshold, 6)]
+
+print(fisher_lda(
+    [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [1.0, 1.0]],
+    [[4.0, 4.0], [5.0, 4.0], [4.0, 5.0], [5.0, 5.0]]
+))
+`,
+    hints: [
+      {
+        ru: 'Сначала проверьте себя на симметричных квадратах: там $S_W = 2I$, поэтому $w$ просто совпадает с направлением $\\mu_1 - \\mu_0$ после нормировки.',
+        en: 'Validate on the symmetric squares first: there $S_W = 2I$, so $w$ is simply the normalized $\\mu_1 - \\mu_0$.',
+      },
+      {
+        ru: 'Порог — это середина проекций центров, а не середина по каждой координате. Сравнивайте новые точки по скалярному произведению $w \\cdot x$.',
+        en: 'The threshold is the midpoint of the projected centers, not a per-coordinate midpoint. Classify new points by the dot product $w \\cdot x$.',
+      },
+    ],
+    testCases: [
+      {
+        name: { ru: 'Параллельные квадраты: [0.707107, 0.707107, 3.535534]', en: 'Test 1: parallel squares' },
+        testCode: `print(fisher_lda(
+    [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [1.0, 1.0]],
+    [[4.0, 4.0], [5.0, 4.0], [4.0, 5.0], [5.0, 5.0]]
+))`,
+        expectedOutput: '[0.707107, 0.707107, 3.535534]',
+      },
+      {
+        name: { ru: 'Наклонные кластеры: [0.894427, -0.447214, 2.571478]', en: 'Test 2: diagonal clusters' },
+        testCode: `print(fisher_lda(
+    [[0.0, 0.0], [2.0, 1.0], [1.0, 2.0], [2.0, 2.0]],
+    [[5.0, 1.0], [7.0, 2.0], [6.0, 3.0], [7.0, 3.0]]
+))`,
+        expectedOutput: '[0.894427, -0.447214, 2.571478]',
+      },
+      {
+        name: { ru: 'Обратный порядок классов не меняет знак: [0.707107, 0.707107, 3.535534]', en: 'Test 3: swapped classes keep the sign convention' },
+        testCode: `print(fisher_lda(
+    [[4.0, 4.0], [5.0, 4.0], [4.0, 5.0], [5.0, 5.0]],
+    [[0.0, 0.0], [1.0, 0.0], [0.0, 1.0], [1.0, 1.0]]
+))`,
+        expectedOutput: '[0.707107, 0.707107, 3.535534]',
+      },
+    ],
+  },
+
+  'prob-mle-correlation-stats': {
+    id: 'pr-prob-mle',
+    taskType: 'write_function',
+    taskMode: 'interactive_ide',
+    language: 'python',
+    progressKey: 'prob-mle-correlation-stats::mle-pearson',
+    title: {
+      ru: 'MLE для Бернулли и корреляция Пирсона без иллюзий',
+      en: 'Bernoulli MLE and Pearson Correlation Without Illusions',
+    },
+    description: {
+      ru: `Реализуйте две функции.
+
+**1. \`bernoulli_mle(flips: list[int]) -> list\`** — оценка максимального правдоподобия для распределения Бернулли:
+$$\\hat{p} = \\frac{1}{N} \\sum_{i=1}^{N} y_i, \\qquad \\log L = \\sum_{i=1}^{N} \\Big[ y_i \\ln \\hat{p} + (1 - y_i) \\ln(1 - \\hat{p}) \\Big]$$
+Ограничьте $\\hat{p}$ отрезком $[10^{-12}, 1 - 10^{-12}]$ перед логарифмированием. Верните \`[p_hat, log_likelihood, nll]\`, округлив до 6 знаков, где \`nll = -log_likelihood\`.
+
+**2. \`pearson_r(x: list[float], y: list[float]) -> float\`** — коэффициент корреляции Пирсона:
+$$r = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{\\sqrt{\\sum_i (x_i - \\bar{x})^2} \\cdot \\sqrt{\\sum_i (y_i - \\bar{y})^2}}$$
+Если дисперсия хотя бы одной переменной равна нулю, верните \`0.0\`. Если $|r| < 10^{-12}$, тоже верните \`0.0\` (чтобы не получить \`-0.0\` из-за плавающей точки). Округлите до 6 знаков.
+
+**Примеры.**
+- \`bernoulli_mle([1, 1, 0, 1, 0])\` → \`[0.6, -3.365058, 3.365058]\`;
+- \`pearson_r([-1, -0.5, 0, 0.5, 1], [1, 0.25, 0, 0.25, 1])\` → \`0.0\` (зависимость $Y = X^2$ идеальна, но линейная корреляция нулевая);
+- \`pearson_r([1, 2, 3, 4], [2, 4, 6, 8])\` → \`1.0\`.`,
+      en: `Implement two functions.
+
+**1. \`bernoulli_mle(flips: list[int]) -> list\`** — maximum likelihood estimate for a Bernoulli distribution:
+$$\\hat{p} = \\frac{1}{N} \\sum_{i=1}^{N} y_i, \\qquad \\log L = \\sum_{i=1}^{N} \\Big[ y_i \\ln \\hat{p} + (1 - y_i) \\ln(1 - \\hat{p}) \\Big]$$
+Clamp $\\hat{p}$ to $[10^{-12}, 1 - 10^{-12}]$ before taking logarithms. Return \`[p_hat, log_likelihood, nll]\` rounded to 6 decimals, where \`nll = -log_likelihood\`.
+
+**2. \`pearson_r(x: list[float], y: list[float]) -> float\`** — the Pearson correlation coefficient:
+$$r = \\frac{\\sum_i (x_i - \\bar{x})(y_i - \\bar{y})}{\\sqrt{\\sum_i (x_i - \\bar{x})^2} \\cdot \\sqrt{\\sum_i (y_i - \\bar{y})^2}}$$
+If either variance is zero, return \`0.0\`. If $|r| < 10^{-12}$, also return \`0.0\` (so floating point does not produce \`-0.0\`). Round to 6 decimals.
+
+**Examples.**
+- \`bernoulli_mle([1, 1, 0, 1, 0])\` → \`[0.6, -3.365058, 3.365058]\`;
+- \`pearson_r([-1, -0.5, 0, 0.5, 1], [1, 0.25, 0, 0.25, 1])\` → \`0.0\` (the relation $Y = X^2$ is perfect, yet the linear correlation is zero);
+- \`pearson_r([1, 2, 3, 4], [2, 4, 6, 8])\` → \`1.0\`.`,
+    },
+    starterCode: `import math
+
+def bernoulli_mle(flips: list[int]) -> list:
+    """Возвращает [p_hat, log_likelihood, nll]."""
+    # TODO: посчитайте долю успехов, затем сумму логарифмов правдоподобия
+    pass
+
+def pearson_r(x: list[float], y: list[float]) -> float:
+    """Коэффициент корреляции Пирсона, округлённый до 6 знаков."""
+    # TODO: центрируйте ряды, посчитайте ковариацию и нормируйте на произведения СКО
+    pass
+
+# Проверочный запуск:
+print(bernoulli_mle([1, 1, 0, 1, 0]))
+print(pearson_r([-1.0, -0.5, 0.0, 0.5, 1.0], [1.0, 0.25, 0.0, 0.25, 1.0]))
+print(pearson_r([1.0, 2.0, 3.0, 4.0], [2.0, 4.0, 6.0, 8.0]))
+`,
+    solutionCode: `import math
+
+def bernoulli_mle(flips: list[int]) -> list:
+    n = len(flips)
+    p = sum(flips) / n
+    eps = 1e-12
+    p_safe = min(max(p, eps), 1.0 - eps)
+
+    log_likelihood = 0.0
+    for y in flips:
+        log_likelihood += y * math.log(p_safe) + (1 - y) * math.log(1.0 - p_safe)
+
+    return [round(p, 6), round(log_likelihood, 6), round(-log_likelihood, 6)]
+
+def pearson_r(x: list[float], y: list[float]) -> float:
+    n = len(x)
+    mean_x = sum(x) / n
+    mean_y = sum(y) / n
+
+    cov = sum((xi - mean_x) * (yi - mean_y) for xi, yi in zip(x, y))
+    var_x = sum((xi - mean_x) ** 2 for xi in x)
+    var_y = sum((yi - mean_y) ** 2 for yi in y)
+
+    if var_x == 0 or var_y == 0:
+        return 0.0
+
+    r = cov / math.sqrt(var_x * var_y)
+    if abs(r) < 1e-12:
+        r = 0.0
+    return round(r, 6)
+
+print(bernoulli_mle([1, 1, 0, 1, 0]))
+print(pearson_r([-1.0, -0.5, 0.0, 0.5, 1.0], [1.0, 0.25, 0.0, 0.25, 1.0]))
+print(pearson_r([1.0, 2.0, 3.0, 4.0], [2.0, 4.0, 6.0, 8.0]))
+`,
+    hints: [
+      {
+        ru: 'MLE для Бернулли — это просто доля единиц. Логарифм правдоподобия нужен, чтобы увидеть связь с Log-Loss: NLL — это сумма штрафов, которую минимизирует логистическая регрессия.',
+        en: 'The Bernoulli MLE is simply the fraction of ones. The log-likelihood reveals the link to Log-Loss: NLL is the total penalty that logistic regression minimizes.',
+      },
+      {
+        ru: 'Для $X = [-1, -0.5, 0, 0.5, 1]$ и $Y = X^2$ числитель корреляции равен нулю из-за симметрии, хотя $Y$ полностью определяется через $X$. Это и есть ловушка «r = 0 значит независимы».',
+        en: 'For $X = [-1, -0.5, 0, 0.5, 1]$ and $Y = X^2$ the correlation numerator is zero by symmetry, even though $Y$ is fully determined by $X$. This is the “r = 0 means independence” trap.',
+      },
+    ],
+    testCases: [
+      {
+        name: { ru: 'MLE и лог-правдоподобие: [0.6, -3.365058, 3.365058]', en: 'Test 1: MLE and log-likelihood' },
+        testCode: 'print(bernoulli_mle([1, 1, 0, 1, 0]))',
+        expectedOutput: '[0.6, -3.365058, 3.365058]',
+      },
+      {
+        name: { ru: 'Y = X^2: корреляция 0.0 при полной зависимости', en: 'Test 2: Y = X^2 gives r = 0.0 despite dependence' },
+        testCode: 'print(pearson_r([-1.0, -0.5, 0.0, 0.5, 1.0], [1.0, 0.25, 0.0, 0.25, 1.0]))',
+        expectedOutput: '0.0',
+      },
+      {
+        name: { ru: 'Идеальная положительная связь: 1.0', en: 'Test 3: perfect positive linear relation' },
+        testCode: 'print(pearson_r([1.0, 2.0, 3.0, 4.0], [2.0, 4.0, 6.0, 8.0]))',
+        expectedOutput: '1.0',
+      },
+      {
+        name: { ru: 'Идеальная отрицательная связь: -1.0', en: 'Test 4: perfect negative linear relation' },
+        testCode: 'print(pearson_r([1.0, 2.0, 3.0, 4.0], [4.0, 3.0, 2.0, 1.0]))',
+        expectedOutput: '-1.0',
+      },
+    ],
+  },
+
+  'prob-normality-imbalance': {
+    id: 'pr-prob-normality',
+    taskType: 'write_function',
+    taskMode: 'interactive_ide',
+    language: 'python',
+    progressKey: 'prob-normality-imbalance::imbalance-smote',
+    title: {
+      ru: 'Дисбаланс классов, SMOTE и асимметрия распределения',
+      en: 'Class Imbalance, SMOTE and Distribution Skewness',
+    },
+    description: {
+      ru: `Реализуйте три функции диагностики и борьбы с дисбалансом.
+
+**1. \`imbalance_report(labels: list[int]) -> list\`** — сводка по бинарным меткам (0 и 1):
+- \`minority\` — число объектов редкого класса;
+- \`majority\` — число объектов частого класса;
+- \`ratio = majority / minority\`;
+- \`weight = majority / minority\` — вес редкого класса в функции потерь.
+
+Верните \`[minority, majority, ratio, weight]\`, округлив отношения до 4 знаков.
+
+**2. \`smote_point(x_i: list[float], x_nn: list[float], lam: float) -> list\`** — синтетическая точка SMOTE:
+$$x_{new} = x_i + \\lambda (x_{nn} - x_i)$$
+Верните список координат, округлённых до 4 знаков.
+
+**3. \`skewness(data: list[float]) -> float\`** — выборочная асимметрия (третий стандартизованный момент):
+$$m_2 = \\frac{1}{N} \\sum (x_i - \\bar{x})^2, \\qquad m_3 = \\frac{1}{N} \\sum (x_i - \\bar{x})^3, \\qquad \\text{skew} = \\frac{m_3}{m_2^{3/2}}$$
+Если $m_2 = 0$, верните \`0.0\`. Округлите результат до 4 знаков. Положительная асимметрия соответствует «банану» на Q-Q Plot с длинным правым хвостом.
+
+**Примеры.**
+- \`imbalance_report([0] * 9 + [1])\` → \`[1, 9, 9.0, 9.0]\`;
+- \`smote_point([1.0, 2.0], [5.0, 4.0], 0.25)\` → \`[2.0, 2.5]\`;
+- \`skewness([1.0, 2.0, 3.0, 4.0, 5.0])\` → \`0.0\`;
+- \`skewness([1.0, 2.0, 3.0, 4.0, 10.0])\` → \`1.1384\`.`,
+      en: `Implement three functions for diagnosing and handling class imbalance.
+
+**1. \`imbalance_report(labels: list[int]) -> list\`** — a summary of binary labels (0 and 1):
+- \`minority\` — the number of rare-class objects;
+- \`majority\` — the number of frequent-class objects;
+- \`ratio = majority / minority\`;
+- \`weight = majority / minority\` — the rare-class weight in the loss function.
+
+Return \`[minority, majority, ratio, weight]\` with ratios rounded to 4 decimals.
+
+**2. \`smote_point(x_i: list[float], x_nn: list[float], lam: float) -> list\`** — a synthetic SMOTE point:
+$$x_{new} = x_i + \\lambda (x_{nn} - x_i)$$
+Return the coordinates rounded to 4 decimals.
+
+**3. \`skewness(data: list[float]) -> float\`** — sample skewness (the third standardized moment):
+$$m_2 = \\frac{1}{N} \\sum (x_i - \\bar{x})^2, \\qquad m_3 = \\frac{1}{N} \\sum (x_i - \\bar{x})^3, \\qquad \\text{skew} = \\frac{m_3}{m_2^{3/2}}$$
+If $m_2 = 0$, return \`0.0\`. Round the result to 4 decimals. Positive skewness corresponds to a “banana” Q-Q plot with a long right tail.
+
+**Examples.**
+- \`imbalance_report([0] * 9 + [1])\` → \`[1, 9, 9.0, 9.0]\`;
+- \`smote_point([1.0, 2.0], [5.0, 4.0], 0.25)\` → \`[2.0, 2.5]\`;
+- \`skewness([1.0, 2.0, 3.0, 4.0, 5.0])\` → \`0.0\`;
+- \`skewness([1.0, 2.0, 3.0, 4.0, 10.0])\` → \`1.1384\`.`,
+    },
+    starterCode: `def imbalance_report(labels: list[int]) -> list:
+    """Возвращает [minority, majority, ratio, weight]."""
+    # TODO: посчитайте единицы и нули, определите редкий класс
+    pass
+
+def smote_point(x_i: list[float], x_nn: list[float], lam: float) -> list:
+    """Синтетическая точка на отрезке между x_i и x_nn."""
+    # TODO: примените формулу x_i + lam * (x_nn - x_i) покоординатно
+    pass
+
+def skewness(data: list[float]) -> float:
+    """Выборочная асимметрия, округлённая до 4 знаков."""
+    # TODO: посчитайте m2 и m3, затем m3 / m2 ** 1.5
+    pass
+
+# Проверочный запуск:
+print(imbalance_report([0] * 9 + [1]))
+print(smote_point([1.0, 2.0], [5.0, 4.0], 0.25))
+print(skewness([1.0, 2.0, 3.0, 4.0, 5.0]))
+print(skewness([1.0, 2.0, 3.0, 4.0, 10.0]))
+`,
+    solutionCode: `def imbalance_report(labels: list[int]) -> list:
+    n1 = sum(labels)
+    n0 = len(labels) - n1
+    minority = min(n0, n1)
+    majority = max(n0, n1)
+    ratio = majority / minority
+    return [minority, majority, round(ratio, 4), round(ratio, 4)]
+
+def smote_point(x_i: list[float], x_nn: list[float], lam: float) -> list:
+    return [round(a + lam * (b - a), 4) for a, b in zip(x_i, x_nn)]
+
+def skewness(data: list[float]) -> float:
+    n = len(data)
+    mean = sum(data) / n
+    m2 = sum((x - mean) ** 2 for x in data) / n
+    m3 = sum((x - mean) ** 3 for x in data) / n
+    if m2 == 0:
+        return 0.0
+    return round(m3 / (m2 ** 1.5), 4)
+
+print(imbalance_report([0] * 9 + [1]))
+print(smote_point([1.0, 2.0], [5.0, 4.0], 0.25))
+print(skewness([1.0, 2.0, 3.0, 4.0, 5.0]))
+print(skewness([1.0, 2.0, 3.0, 4.0, 10.0]))
+`,
+    hints: [
+      {
+        ru: 'При 10% редкого класса отношение 9:1 даёт вес 9.0 — именно этот множитель компенсирует дисбаланс в `scale_pos_weight` XGBoost и `class_weight` sklearn.',
+        en: 'With a 10% rare class the 9:1 ratio gives weight 9.0 — the same multiplier used by XGBoost `scale_pos_weight` and sklearn `class_weight`.',
+      },
+      {
+        ru: 'SMOTE интерполирует, а не копирует: при $\\lambda = 0$ точка совпадает с $x_i$, при $\\lambda = 1$ — с соседом $x_{nn}$. Поэтому дубликатов не возникает.',
+        en: 'SMOTE interpolates instead of copying: at $\\lambda = 0$ the point equals $x_i$, at $\\lambda = 1$ it equals the neighbor $x_{nn}$. That is why no duplicates appear.',
+      },
+    ],
+    testCases: [
+      {
+        name: { ru: 'Дисбаланс 9:1: [1, 9, 9.0, 9.0]', en: 'Test 1: 9:1 imbalance report' },
+        testCode: 'print(imbalance_report([0] * 9 + [1]))',
+        expectedOutput: '[1, 9, 9.0, 9.0]',
+      },
+      {
+        name: { ru: 'SMOTE при lambda = 0.25: [2.0, 2.5]', en: 'Test 2: SMOTE interpolation at lambda = 0.25' },
+        testCode: 'print(smote_point([1.0, 2.0], [5.0, 4.0], 0.25))',
+        expectedOutput: '[2.0, 2.5]',
+      },
+      {
+        name: { ru: 'Симметричные данные: skewness 0.0', en: 'Test 3: symmetric data has zero skewness' },
+        testCode: 'print(skewness([1.0, 2.0, 3.0, 4.0, 5.0]))',
+        expectedOutput: '0.0',
+      },
+      {
+        name: { ru: 'Длинный правый хвост: skewness 1.1384', en: 'Test 4: long right tail gives skewness 1.1384' },
+        testCode: 'print(skewness([1.0, 2.0, 3.0, 4.0, 10.0]))',
+        expectedOutput: '1.1384',
+      },
+    ],
+  },
+
+  // ==========================================
   // MODULE: PyTorch & Deep Learning (Hands-on Local / Colab Projects)
   // ==========================================
   'pt-3-nn-module': {
