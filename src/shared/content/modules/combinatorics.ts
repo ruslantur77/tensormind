@@ -108,12 +108,51 @@ $$A_n^k = C_n^k \\cdot k!$$
 
 #### 6. Бином Ньютона: откуда берутся коэффициенты
 
+**Идея: раскрытие скобок — это последовательность выборов.**
+Запишем степень как произведение $n$ одинаковых скобок:
+$$(a+b)^n = (a+b)(a+b)\\cdots(a+b)$$
+Чтобы раскрыть произведение, из каждой скобки нужно выбрать ровно один член — $a$ или $b$ — и перемножить выбранные. Для $n=3$:
+$$(a+b)(a+b)(a+b)$$
+Одна ветка раскрытия дает $a \\cdot a \\cdot b = a^2b$. Другая дает $a \\cdot b \\cdot a = a^2b$. Это разные выборы, но одинаковый одночлен, поэтому такие вклады нужно сложить.
+
+**Сколько раз встретится $a^{n-k}b^k$?**
+Ровно столько, сколькими способами можно выбрать $k$ скобок из $n$, из которых берется $b$; в остальных $n-k$ скобках берется $a$. Это число сочетаний:
+$$C_n^k = \\binom{n}{k} = \\frac{n!}{k!\\,(n-k)!}$$
+Отсюда и получается формула бинома:
 $$(a+b)^n = \\sum_{k=0}^{n} C_n^k\\, a^{n-k} b^k$$
 
-Разберём $n = 3$:
-$$(a+b)^3 = a^3 + 3a^2b + 3ab^2 + b^3$$
+**Полный пайплайн для $n = 3$.**
 
-Коэффициенты \`1, 3, 3, 1\` — это $C_3^0, C_3^1, C_3^2, C_3^3$. Коэффициент $C_n^k$ показывает, сколькими способами из $n$ скобок можно выбрать $k$ штук, дающих $b$.
+| Какие скобки дали $b$ | Какие одночлены получаются | Сколько способов |
+|---|---|---|
+| ни одной | $aaa = a^3$ | $C_3^0 = 1$ |
+| одна | $baa,\\ aba,\\ aab$ — все дают $a^2b$ | $C_3^1 = 3$ |
+| две | $bba,\\ bab,\\ abb$ — все дают $ab^2$ | $C_3^2 = 3$ |
+| три | $bbb = b^3$ | $C_3^3 = 1$ |
+
+Складываем вклады:
+$$(a+b)^3 = 1a^3 + 3a^2b + 3ab^2 + 1b^3$$
+Числа $1, 3, 3, 1$ — это в точности $C_3^0, C_3^1, C_3^2, C_3^3$.
+
+**Треугольник Паскаля.** Те же коэффициенты удобно считать без факториалов:
+
+| $n$ | Коэффициенты |
+|---|---|
+| 0 | 1 |
+| 1 | 1, 1 |
+| 2 | 1, 2, 1 |
+| 3 | 1, 3, 3, 1 |
+| 4 | 1, 4, 6, 4, 1 |
+| 5 | 1, 5, 10, 10, 5, 1 |
+
+Каждое число равно сумме двух чисел над ним. При переходе от $n-1$ к $n$ добавляется новая скобка $(a+b)$: либо в ней берется $b$ (тогда $b$ выбирается из $k-1$ старых скобок), либо берется $a$ (тогда все $k$ выбираются из старых). Отсюда правило Паскаля:
+$$C_n^k = C_{n-1}^{k-1} + C_{n-1}^{k}, \\qquad C_n^0 = C_n^n = 1$$
+
+**Проверка для $n = 4$.** Средний коэффициент $C_4^2 = 6$: выбрать 2 скобки из 4, дающие $b$, можно шестью способами. Поэтому:
+$$(a+b)^4 = a^4 + 4a^3b + 6a^2b^2 + 4ab^3 + b^4$$
+
+**Числовой пример.** Подставим $a = x$, $b = 2$:
+$$(x+2)^3 = x^3 + 3x^2 \\cdot 2 + 3x \\cdot 2^2 + 2^3 = x^3 + 6x^2 + 12x + 8$$
 
 **Следствие для Data Science.** Подставим $a = b = 1$:
 $$\\sum_{k=0}^{n} C_n^k = 2^n$$
@@ -207,12 +246,51 @@ In the example: $90 = 45 \\cdot 2!$. If you counted arrangements but need combin
 
 #### 6. Binomial theorem: where the coefficients come from
 
+**The idea: expanding brackets is a sequence of choices.**
+Write the power as a product of $n$ identical brackets:
+$$(a+b)^n = (a+b)(a+b)\\cdots(a+b)$$
+To expand the product, choose exactly one term from each bracket — either $a$ or $b$ — and multiply the choices. For $n=3$:
+$$(a+b)(a+b)(a+b)$$
+One branch gives $a \\cdot a \\cdot b = a^2b$. Another gives $a \\cdot b \\cdot a = a^2b$. These are different choices but the same monomial, so their contributions must be added.
+
+**How many times does $a^{n-k}b^k$ appear?**
+Exactly as many times as there are ways to choose the $k$ brackets out of $n$ that contribute $b$; the remaining $n-k$ brackets contribute $a$. That is the number of combinations:
+$$C_n^k = \\binom{n}{k} = \\frac{n!}{k!\\,(n-k)!}$$
+Hence the binomial formula:
 $$(a+b)^n = \\sum_{k=0}^{n} C_n^k\\, a^{n-k} b^k$$
 
-For $n = 3$:
-$$(a+b)^3 = a^3 + 3a^2b + 3ab^2 + b^3$$
+**The full pipeline for $n = 3$.**
 
-The coefficients \`1, 3, 3, 1\` are $C_3^0, C_3^1, C_3^2, C_3^3$. The coefficient $C_n^k$ counts how many ways you can pick $k$ of the $n$ brackets to contribute $b$.
+| Brackets that gave $b$ | Monomials produced | Number of ways |
+|---|---|---|
+| none | $aaa = a^3$ | $C_3^0 = 1$ |
+| one | $baa,\\ aba,\\ aab$ — all give $a^2b$ | $C_3^1 = 3$ |
+| two | $bba,\\ bab,\\ abb$ — all give $ab^2$ | $C_3^2 = 3$ |
+| three | $bbb = b^3$ | $C_3^3 = 1$ |
+
+Add the contributions:
+$$(a+b)^3 = 1a^3 + 3a^2b + 3ab^2 + 1b^3$$
+The numbers $1, 3, 3, 1$ are exactly $C_3^0, C_3^1, C_3^2, C_3^3$.
+
+**Pascal's triangle.** The same coefficients are easy to compute without factorials:
+
+| $n$ | Coefficients |
+|---|---|
+| 0 | 1 |
+| 1 | 1, 1 |
+| 2 | 1, 2, 1 |
+| 3 | 1, 3, 3, 1 |
+| 4 | 1, 4, 6, 4, 1 |
+| 5 | 1, 5, 10, 10, 5, 1 |
+
+Each number is the sum of the two numbers above it. When moving from $n-1$ to $n$, a new bracket $(a+b)$ is added: either it contributes $b$ (then $b$ is chosen from $k-1$ old brackets), or it contributes $a$ (then all $k$ are chosen from the old brackets). This gives Pascal's rule:
+$$C_n^k = C_{n-1}^{k-1} + C_{n-1}^{k}, \\qquad C_n^0 = C_n^n = 1$$
+
+**Check for $n = 4$.** The middle coefficient $C_4^2 = 6$: there are six ways to choose 2 of 4 brackets for $b$. Therefore:
+$$(a+b)^4 = a^4 + 4a^3b + 6a^2b^2 + 4ab^3 + b^4$$
+
+**A numeric example.** Substitute $a = x$, $b = 2$:
+$$(x+2)^3 = x^3 + 3x^2 \\cdot 2 + 3x \\cdot 2^2 + 2^3 = x^3 + 6x^2 + 12x + 8$$
 
 **A Data Science consequence.** Setting $a = b = 1$ gives
 $$\\sum_{k=0}^{n} C_n^k = 2^n$$
